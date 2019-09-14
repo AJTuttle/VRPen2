@@ -1,0 +1,178 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &838241788090320960
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 54203106253316033}
+  m_Layer: 0
+  m_Name: Canvas Area
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &54203106253316033
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 838241788090320960}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.0274, y: 0, z: 0}
+  m_LocalScale: {x: 0.153, y: 0.153, z: 0.153}
+  m_Children:
+  - {fileID: 6656644162230625143}
+  m_Father: {fileID: 6656644161125225617}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6656644161125225621
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6656644161125225617}
+  - component: {fileID: 6656644161125225623}
+  - component: {fileID: 6656644161125225622}
+  - component: {fileID: 6656644161125225619}
+  m_Layer: 0
+  m_Name: VRPenManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6656644161125225617
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6656644161125225621}
+  m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
+  m_LocalPosition: {x: 0.2, y: 0, z: 0.2}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 54203106253316033}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
+--- !u!114 &6656644161125225623
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6656644161125225621}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a873e0b5a9fab6048a78d52b4bdccc1b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  vectorMan: {fileID: 0}
+  autoConnect: 0
+  tabletPrefab: {fileID: 4162737611858156914, guid: e993f40c859b92f4ca2d8e94fe053b7f,
+    type: 3}
+  remoteMarkerPrefab: {fileID: 8217082110612787815, guid: f929d31bb578d7349baa4813213b4f55,
+    type: 3}
+  mousePrefab: {fileID: 6923511768144376201, guid: e4a21bd05ba0d744db8229ab9df9462f,
+    type: 3}
+--- !u!114 &6656644161125225622
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6656644161125225621}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fc54dc0f8c0b2041bc421af44831579, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  displays:
+  - {fileID: 0}
+  canvasPrefab: {fileID: 4493597344066582299, guid: 5829e2701877af64bad27fca4b6e0e4b,
+    type: 3}
+  MAX_CANVAS_COUNT: 6
+  lineShader: {fileID: 4800000, guid: 0ab7ce2918a837445a6856cd7cc18696, type: 3}
+  renderAreaOrigin: {x: 0, y: -5, z: 0}
+  lineMaterial: {fileID: 2100000, guid: 37f9f4ea955cb7840bf83d23ca7fe751, type: 2}
+  minDistanceDelta: 0.002
+  canvasParent: {fileID: 6656644162230625143}
+  markerPrefab: {fileID: 0}
+  quadPrefab: {fileID: 5229868460911306089, guid: 78c7fe814c087254fa5566c0b51e29f3,
+    type: 3}
+--- !u!114 &6656644161125225619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6656644161125225621}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 122c43d698894ee49b0ea84319bd72d8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  penTracker: {fileID: 0}
+  tabletTracker: {fileID: 0}
+  tipOffset: {x: 0, y: 0, z: -0.15}
+  tabletTransform:
+    e00: 0
+    e01: 0
+    e02: 0
+    e03: 0
+    e10: 0
+    e11: 0
+    e12: 0
+    e13: 0
+    e20: 0
+    e21: 0
+    e22: 0
+    e23: 0
+    e30: 0
+    e31: 0
+    e32: 0
+    e33: 0
+  penTrackerTransforms: []
+  tabletTrackerTransforms: []
+  tabletPoints: []
+  calibrationPointPrefab: {fileID: 0}
+--- !u!1 &6656644162230625142
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6656644162230625143}
+  m_Layer: 0
+  m_Name: canvases
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6656644162230625143
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6656644162230625142}
+  m_LocalRotation: {x: -0, y: 1, z: -0, w: 0}
+  m_LocalPosition: {x: 0.83267975, y: 0, z: 0.5}
+  m_LocalScale: {x: 1.6666666, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 54203106253316033}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}

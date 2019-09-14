@@ -1,0 +1,242 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace VRPen {
+
+	public class UIManager : MonoBehaviour {
+
+
+		[Header("Will autofill")]
+		public VectorDrawing vectorMan;
+		public NetworkManager network;
+
+
+		[Header("Will not autofill")]
+		public GameObject SideMenuParent;
+		public GameObject calculatorParent;
+		public GameObject canvasMenuParent;
+		public GameObject canvasListParent;
+		public GameObject clearMenuParent;
+		public GameObject mapParent;
+		public GameObject menuArrow;
+		public Display display;
+		
+
+		public GameObject canvasButtonPrefab;
+
+
+		public bool sideMenuOpen = false;
+		private bool sideMenuMoving = false;
+
+		const float RESIZE_TIME = .2f;
+
+
+
+		//for outside access
+		public Button invisButton;
+		public GameObject colorPanel;
+		public GameObject grayPanel;
+
+
+		private void Awake() {
+
+			//grab scripts if not in prefab
+			if (vectorMan == null) vectorMan = FindObjectOfType<VectorDrawing>();
+			if (network == null) network = FindObjectOfType<NetworkManager>();
+		}
+
+
+
+		public void openSideMenu(bool localInput) {
+			if (sideMenuMoving) return;
+			sideMenuMoving = true;
+
+			// uncull things that will be visible
+			SideMenuParent.SetActive(true);
+
+			StartCoroutine(resizeMenu(SideMenuParent, SideMenuParent.transform.localScale,
+				SideMenuParent.transform.localScale, SideMenuParent.transform.localPosition,
+				SideMenuParent.transform.localPosition + new Vector3(200, 0, 0), false, localInput));
+			StartCoroutine(resizeMenu(menuArrow, menuArrow.transform.localScale, menuArrow.transform.localScale,
+				menuArrow.transform.localPosition, menuArrow.transform.localPosition + new Vector3(200f, 0, 0), false, localInput));
+			StartCoroutine(resizeMenu(calculatorParent, calculatorParent.transform.localScale, calculatorParent.transform.localScale,
+				calculatorParent.transform.localPosition, calculatorParent.transform.localPosition + new Vector3(200f, 0, 0), false, localInput));
+			StartCoroutine(resizeMenu(canvasMenuParent, canvasMenuParent.transform.localScale, canvasMenuParent.transform.localScale,
+				canvasMenuParent.transform.localPosition, canvasMenuParent.transform.localPosition + new Vector3(200f, 0, 0), false, localInput));
+			StartCoroutine(resizeMenu(clearMenuParent, clearMenuParent.transform.localScale, clearMenuParent.transform.localScale,
+				clearMenuParent.transform.localPosition, clearMenuParent.transform.localPosition + new Vector3(200f, 0, 0), false, localInput));
+			sideMenuOpen = true;
+			menuArrow.transform.GetChild(0).gameObject.SetActive(false);
+			menuArrow.transform.GetChild(1).gameObject.SetActive(true);
+
+			if (localInput) packState();
+
+		}
+
+		public void closeSideMenu(bool localInput) {
+			if (sideMenuMoving) return;
+			sideMenuMoving = true;
+
+			StartCoroutine(resizeMenu(SideMenuParent, SideMenuParent.transform.localScale,
+				SideMenuParent.transform.localScale, SideMenuParent.transform.localPosition,
+				SideMenuParent.transform.localPosition - new Vector3(200, 0, 0), true, localInput));
+			StartCoroutine(resizeMenu(menuArrow, menuArrow.transform.localScale, menuArrow.transform.localScale,
+				menuArrow.transform.localPosition, menuArrow.transform.localPosition - new Vector3(200f, 0, 0), false, localInput));
+			StartCoroutine(resizeMenu(calculatorParent, calculatorParent.transform.localScale, calculatorParent.transform.localScale,
+				calculatorParent.transform.localPosition, calculatorParent.transform.localPosition - new Vector3(200f, 0, 0), false, localInput));
+			StartCoroutine(resizeMenu(canvasMenuParent, canvasMenuParent.transform.localScale, canvasMenuParent.transform.localScale,
+				canvasMenuParent.transform.localPosition, canvasMenuParent.transform.localPosition - new Vector3(200f, 0, 0), false, localInput));
+			StartCoroutine(resizeMenu(clearMenuParent, clearMenuParent.transform.localScale, clearMenuParent.transform.localScale,
+				clearMenuParent.transform.localPosition, clearMenuParent.transform.localPosition - new Vector3(200f, 0, 0), false, localInput));
+			sideMenuOpen = false;
+			menuArrow.transform.GetChild(0).gameObject.SetActive(true);
+			menuArrow.transform.GetChild(1).gameObject.SetActive(false);
+
+
+		}
+
+		public void calculatorToggle(bool localInput) {
+
+			calculatorParent.SetActive(!calculatorParent.activeSelf);
+			canvasMenuParent.SetActive(false);
+			clearMenuParent.SetActive(false);
+			mapParent.SetActive(false);
+
+			
+			if (localInput) packState();
+
+		}
+
+		public void canvasMenuToggle(bool localInput) {
+
+			canvasMenuParent.SetActive(!canvasMenuParent.activeSelf);
+			calculatorParent.SetActive(false);
+			clearMenuParent.SetActive(false);
+			mapParent.SetActive(false);
+			
+			if (localInput) packState();
+
+		}public void clearMenuToggle(bool localInput) {
+
+			clearMenuParent.SetActive(!clearMenuParent.activeSelf);
+			calculatorParent.SetActive(false);
+			canvasMenuParent.SetActive(false);
+			mapParent.SetActive(false);
+
+			
+
+			if (localInput) packState();
+
+		}
+		public void mapToggle(bool localInput) {
+
+			mapParent.SetActive(!mapParent.activeSelf);
+			calculatorParent.SetActive(false);
+			canvasMenuParent.SetActive(false);
+			clearMenuParent.SetActive(false);
+
+
+			if (localInput) packState();
+
+		}
+
+        public void highlightTimer(float time) {
+            StartCoroutine(turnOffHighlight(time));
+        }
+
+        IEnumerator turnOffHighlight(float time) {
+            yield return new WaitForSeconds(time);
+            invisButton.Select();
+            
+        }
+
+        IEnumerator resizeMenu(GameObject obj, Vector3 startScale, Vector3 endScale, Vector3 startPos, Vector3 endPos, bool setInactive, bool localInput) {
+            Vector3 scaleChange = endScale - startScale;
+            Vector3 posChange = endPos - startPos;
+            float startTime = Time.time;
+            while (startTime + RESIZE_TIME > Time.time) {
+                obj.transform.localScale += scaleChange * Time.deltaTime / RESIZE_TIME;
+                obj.transform.localPosition += posChange * Time.deltaTime / RESIZE_TIME;
+                yield return null;
+            }
+            obj.transform.localPosition = endPos;
+            obj.transform.localScale = endScale;
+
+			sideMenuMoving = false;
+
+			if (setInactive) {
+				obj.SetActive(false);
+				if (localInput) packState();
+			}
+
+		}
+
+     
+
+      
+        public void addCanvas(byte canvasId) {
+
+           
+
+            //make button
+            GameObject buttonObj = GameObject.Instantiate(canvasButtonPrefab, canvasListParent.transform);
+            buttonObj.GetComponent<RectTransform>().sizeDelta = new Vector2(200f, 50f);
+            buttonObj.GetComponent<BoxCollider>().size = new Vector3(200, 50, 0.002f);
+            canvasListParent.GetComponent<RectTransform>().sizeDelta += new Vector2(0,60);
+            canvasListParent.GetComponent<RectTransform>().localPosition += new Vector3(0, -30, 0);
+            canvasListParent.GetComponent<BoxCollider>().size += new Vector3(0,60, 0);
+            buttonObj.transform.SetAsFirstSibling();
+            
+
+            //assign listener to button
+            buttonObj.GetComponent<Button>().onClick.AddListener(() => display.swapCurrentCanvas(canvasId));
+
+            //change text
+            Text text = buttonObj.transform.GetChild(0).GetComponent<Text>();
+            text.text = "Canvas " + canvasId;
+            buttonObj.name = text.text;
+            text.fontSize = 25;
+
+
+          
+
+        }
+
+		public void packState() {
+
+			byte stateMask = 0;
+
+			stateMask += (byte)((SideMenuParent.activeSelf ? 1 : 0) << 0);
+			stateMask += (byte)((calculatorParent.activeSelf ? 1 : 0) << 1);
+			stateMask += (byte)((canvasMenuParent.activeSelf ? 1 : 0) << 2);
+			stateMask += (byte)((clearMenuParent.activeSelf ? 1 : 0) << 3);
+			stateMask += (byte)((mapParent.activeSelf ? 1 : 0) << 4);
+
+			network.sendUIState(display.DisplayId, stateMask);
+
+		}
+
+		public void unpackState(byte stateMask) {
+
+			//side menu
+			if (!SideMenuParent.activeInHierarchy && ((stateMask & (1 << 0)) > 0)) {
+				openSideMenu(false);
+			}
+			else if (SideMenuParent.activeInHierarchy && !((stateMask & (1 << 0)) > 0)) {
+				closeSideMenu(false);
+			}
+
+			//menu toggles
+			if (calculatorParent.activeSelf ^ ((stateMask & (1 << 1)) > 0)) calculatorToggle(false);
+			if (canvasMenuParent.activeSelf ^ ((stateMask & (1 << 2)) > 0)) canvasMenuToggle(false);
+			if (clearMenuParent.activeSelf ^ ((stateMask & (1 << 3)) > 0)) clearMenuToggle(false);
+			if (mapParent.activeSelf ^ ((stateMask & (1 << 4)) > 0)) mapToggle(false);
+
+
+		}
+
+    }
+
+}
