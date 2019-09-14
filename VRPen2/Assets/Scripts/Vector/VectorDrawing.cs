@@ -173,6 +173,13 @@ namespace VRPen {
 
             //turn off last mesh for render texture
             if (device.currentLine != null) {
+
+                //reset the renderqueue so that the depth is set when the line is finished drawing (so that it doesnt shift when undos happen for example)
+                VectorCanvas canvas = getCanvas(device.currentLine.canvasId);
+                device.currentLine.obj.GetComponent<Renderer>().material.renderQueue = canvas.renderQueueCounter;
+                canvas.renderQueueCounter++;
+
+                //turn off and remove from curr
                 device.currentLine.obj.GetComponent<MeshRenderer>().enabled = false;
                 device.currentLine = null;
             }
