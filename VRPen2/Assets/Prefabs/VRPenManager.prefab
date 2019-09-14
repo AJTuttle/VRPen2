@@ -99,13 +99,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displays:
   - {fileID: 0}
+  - {fileID: 0}
   canvasPrefab: {fileID: 4493597344066582299, guid: 5829e2701877af64bad27fca4b6e0e4b,
     type: 3}
   MAX_CANVAS_COUNT: 6
   lineShader: {fileID: 4800000, guid: 0ab7ce2918a837445a6856cd7cc18696, type: 3}
   renderAreaOrigin: {x: 0, y: -5, z: 0}
   lineMaterial: {fileID: 2100000, guid: 37f9f4ea955cb7840bf83d23ca7fe751, type: 2}
-  minDistanceDelta: 0.002
+  minDistanceDelta: 0.0001
   canvasParent: {fileID: 6656644162230625143}
   markerPrefab: {fileID: 0}
   quadPrefab: {fileID: 5229868460911306089, guid: 78c7fe814c087254fa5566c0b51e29f3,
@@ -117,7 +118,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6656644161125225621}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 122c43d698894ee49b0ea84319bd72d8, type: 3}
   m_Name: 
