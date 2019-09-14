@@ -119,11 +119,19 @@ namespace VRPen {
             return canvases.Count;
         }
 
-        public void draw(NetworkedPlayer player, byte deviceIndex, bool newLine, Color32 color, float x, float y, float pressure, byte canvasId, bool localInput) {
+        public void endLineEvent(NetworkedPlayer player, byte deviceIndex, bool localInput) {
+            draw(player, deviceIndex, true, Color.black, 0, 0, 0, 0, localInput);
+        }
+
+        public void draw(NetworkedPlayer player, byte deviceIndex, bool endLine, Color32 color, float x, float y, float pressure, byte canvasId, bool localInput) {
 
            
             //get canvas
             VectorCanvas canvas = getCanvas(canvasId);
+            if (canvas == null) {
+                Debug.LogError("No canvas found for draw input");
+                return;
+            }
 
             //get device
             InputDevice device;
@@ -132,41 +140,54 @@ namespace VRPen {
                 return;
             }
 
-            //get or create mesh
-            Mesh currentMesh = getMesh(player, device, newLine, color, canvas);
-            
-            //if adding to line that doesnt exist
-            if (!newLine && currentMesh == null) {
-                Debug.Log("Attempting to add to line that doesnt exist, beginning new line (this is not an error)");
-                draw(player, deviceIndex, true, color, x, y, pressure, canvasId, localInput);
-                return;
+            //end line or draw
+            if (endLine || pressure == 0) {
+
+                endLineData(device);
+                if (localInput) network.addToDataOutbox(endLine, color, x, y, pressure, canvasId, deviceIndex);
+                
             }
+            else {
 
-            //got vector pos
-            Vector3 drawPoint = new Vector3(x, 0, y);
+                //newline bool, useful for delta compression
+                bool newLine = false;
 
-            //delta compression
-            bool validInput = deltaCompression(device, newLine, drawPoint);
+                //get or create mesh
+                Mesh currentMesh = getMesh(player, device, color, canvas, ref newLine);
 
-            //add to that mesh and network
-            if (validInput) {
-                canvas.addToLine(device, currentMesh, drawPoint, pressure);
-                if (localInput) network.addToDataOutbox(newLine, color, x, y, pressure, canvasId, deviceIndex);
+                //got vector pos
+                Vector3 drawPoint = new Vector3(x, 0, y);
+
+                //delta compression
+                bool validInput = deltaCompression(device, newLine, drawPoint);
+
+                //add to that mesh and network
+                if (validInput) {
+                    canvas.addToLine(device, currentMesh, drawPoint, pressure);
+                    if (localInput) network.addToDataOutbox(endLine, color, x, y, pressure, canvasId, deviceIndex);
+                }
+            }
+        }
+
+        void endLineData(InputDevice device) {
+
+            //turn off last mesh for render texture
+            if (device.currentLine != null) {
+                device.currentLine.obj.GetComponent<MeshRenderer>().enabled = false;
+                device.currentLine = null;
+            }
+            else {
+                Debug.LogError("Line end event but theres no line to end (this could also be caused by draw calls that have 0 pressure)");
             }
 
         }
 
-        Mesh getMesh(NetworkedPlayer player, InputDevice device, bool newLine, Color32 color, VectorCanvas canvas) {
+        Mesh getMesh(NetworkedPlayer player, InputDevice device, Color32 color, VectorCanvas canvas, ref bool newLine) {
 
             Mesh currentMesh;
 
-            
-
-            //if new line
-            if (newLine) {
-
-				//turn off last mesh for render texture
-				if (device.currentLine != null) device.currentLine.obj.GetComponent<MeshRenderer>().enabled = false;
+            //if new line needed
+            if (device.currentLine == null) {
 
                 //make obj
                 GameObject obj = new GameObject();
@@ -206,14 +227,14 @@ namespace VRPen {
                 mat.renderQueue = canvas.renderQueueCounter;
                 canvas.renderQueueCounter++;
 
+                newLine = true;
+
             }
             //if addition to existing line
             else {
-                //error case
-                if (device.currentLine == null) {
-                    currentMesh = null;
-                }
-                else currentMesh = device.currentLine.mesh;
+                currentMesh = device.currentLine.mesh;
+
+                newLine = false;
             }
 
             return currentMesh;
@@ -234,7 +255,10 @@ namespace VRPen {
 			//get line
 			if (player.lines.Count == 0) return;
             VectorLine undid = player.lines.Last();
+
+            //remove from data
             player.lines.RemoveAt(player.lines.Count - 1);
+
             byte deviceIndex = undid.deviceIndex;
 
             //get canvas
@@ -246,7 +270,7 @@ namespace VRPen {
             //reset curr line
             InputDevice device;
             if ((device = player.inputDevices[deviceIndex]) == null) {
-                Debug.LogError("Failed retreiving input device");
+                Debug.LogError("Failed retreiving input device from undo event");
                 return;
             }
             device.currentLine = null;

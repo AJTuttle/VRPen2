@@ -38,7 +38,7 @@ namespace VRPen {
 
         //data vars
         private Color32[] colors = new Color32[1];
-        private bool[] newLines = new bool[1];
+        private bool[] endLines = new bool[1];
         private float[] xFloats = new float[1];
         private float[] yFloats = new float[1];
         private float[] pressures = new float[1];
@@ -78,16 +78,16 @@ namespace VRPen {
         /// <summary>
         /// A method that input scripts can access to add the drawing data necesarry to be sent to other clients.
         /// </summary>
-        /// <param name="newLine">Boolean value that is responsible for deciding if the space between points needs to be interpolated.</param>
+        /// <param name="endLine">Boolean value that is responsible for deciding if the space between points needs to be interpolated.</param>
         /// <param name="currentColor">The color of each input.</param>
         /// <param name="x">The x coordinate, 0 - 1.</param>
         /// <param name="y">The y coordinate, 0 - 1.</param>
         /// <param name="pressure">The value that determines the thickenss of the line, 0 - 1.</param>
         /// <param name="canvasId">index of board to write to</param>
-        public void addToDataOutbox(bool newLine, Color32 currentColor, float x, float y, float pressure, byte canvas, byte deviceIndex) {
+        public void addToDataOutbox(bool endLine, Color32 currentColor, float x, float y, float pressure, byte canvas, byte deviceIndex) {
 
             //make new temp arrays with +1 length
-            bool[] tempNL = new bool[newLines.Length + 1];
+            bool[] tempEL = new bool[endLines.Length + 1];
             Color32[] tempC = new Color32[colors.Length + 1];
             float[] tempX = new float[xFloats.Length + 1];
             float[] tempY = new float[yFloats.Length + 1];
@@ -98,7 +98,7 @@ namespace VRPen {
             //copy existing data to temp array
             for (int i = 0; i < pressures.Length; i++) {
 
-                tempNL[i] = newLines[i];
+                tempEL[i] = endLines[i];
                 tempC[i] = colors[i];
                 tempX[i] = xFloats[i];
                 tempY[i] = yFloats[i];
@@ -108,7 +108,7 @@ namespace VRPen {
             }
 
             //add the most recent data entry
-            tempNL[tempNL.Length - 1] = newLine;
+            tempEL[tempEL.Length - 1] = endLine;
             tempC[tempC.Length - 1] = currentColor;
             tempX[tempX.Length - 1] = x;
             tempY[tempY.Length - 1] = y;
@@ -117,7 +117,7 @@ namespace VRPen {
             tempDeviceIndices[tempDeviceIndices.Length - 1] = deviceIndex;
 
             //replace the array references with the temp array references
-            newLines = tempNL;
+            endLines = tempEL;
             colors = tempC;
             xFloats = tempX;
             yFloats = tempY;
@@ -158,8 +158,8 @@ namespace VRPen {
             //set values for byte array
             for (int i = 0; i < xFloats.Length; i++) {
 
-                //newline
-                sendBufferList.Add(newLines[i]? (byte)1 : (byte)0);
+                //endline
+                sendBufferList.Add(endLines[i]? (byte)1 : (byte)0);
 
                 //color
                 sendBufferList.Add(colors[i].r);
@@ -179,9 +179,9 @@ namespace VRPen {
             // convert to an array
             byte[] sendBuffer = sendBufferList.ToArray();
 
-            
 
-            newLines = new bool[0];
+
+            endLines = new bool[0];
             colors = new Color32[0];
             xFloats = new float[0];
             yFloats = new float[0];
@@ -371,7 +371,7 @@ namespace VRPen {
             for(int x = 0; x < length; x++) {
 
 
-                byte newLine = ReadByte(packet, ref offset);
+                byte endLine = ReadByte(packet, ref offset);
                 Color32 color = new Color32(ReadByte(packet, ref offset), ReadByte(packet, ref offset), ReadByte(packet, ref offset), ReadByte(packet, ref offset));
                 float xFloat = ReadFloat(packet, ref offset);
                 float yFloat = ReadFloat(packet, ref offset);
@@ -379,14 +379,21 @@ namespace VRPen {
                 byte canvasId = ReadByte(packet, ref offset);
                 byte deviceIndex = ReadByte(packet, ref offset);
 
-
-                if (pressure > 0) {
-                    vectorMan.draw(player, deviceIndex,(newLine == 1) ? true : false, color, xFloat, yFloat, pressure, canvasId, false);
+                //end line or draw
+                if (endLine == 1) {
+                    vectorMan.endLineEvent(player, deviceIndex, false);
                 }
+                else {
 
-                //update cursor at the last input
-                if (x == length - 1) {
-                    //input.updateTabletCursor(player, xFloat, yFloat);
+                    if (pressure > 0) {
+                        vectorMan.draw(player, deviceIndex, (endLine == 1) ? true : false, color, xFloat, yFloat, pressure, canvasId, false);
+                    }
+
+                    //update cursor at the last input
+                    if (x == length - 1) {
+                        //input.updateTabletCursor(player, xFloat, yFloat);
+                    }
+
                 }
 
             }

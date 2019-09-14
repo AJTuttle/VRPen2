@@ -29,7 +29,6 @@ namespace VRPen {
         //drawing data
         float xFloat = 0f;
         float yFloat = 0f;
-        bool newline = true;
         Color32 currentColor = new Color32(0, 0, 0, 255);
         
 
@@ -54,10 +53,7 @@ namespace VRPen {
         protected abstract InputData getInputData();
         protected abstract void updateColorIndicator(Color32 color);
 
-		//logging data
-		float lineTime = 0;
-		float lastLineInputTime = 0;
-
+		
 
         protected void Start() {
 
@@ -85,21 +81,8 @@ namespace VRPen {
         }
 
         protected void idle() {
-            
             hover = HoverState.NONE;
-            newline = true;
-			//log
-			if (lineTime > 0.001f) {
-				List<string> logData = new List<string> {
-						deviceData.deviceIndex.ToString(),
-						lineTime.ToString(),
-						"draw",
-						"null"
-					};
-				Logger.LogRow("marker_data", logData);
-				lineTime = 0;
-			}
-
+            endLine();
         }
 
 
@@ -140,15 +123,6 @@ namespace VRPen {
                 //select
                 button.Select();
 
-				//logging
-				List<string> logData = new List<string> {
-						deviceData.deviceIndex.ToString(),
-						"null",
-						button.gameObject.name,
-						"null"
-					};
-				Logger.LogRow("marker_data", logData);
-
 				//add data to passthrough
 				ButtonPassthrough bp;
                 if((bp = button.GetComponent<ButtonPassthrough>()) != null) {
@@ -173,9 +147,9 @@ namespace VRPen {
                 button.Select();
             }
 
+            //endline
+            endLine();
 
-            //newline 
-            newline = true;
 
         }
 
@@ -196,22 +170,13 @@ namespace VRPen {
                 //set            
                 currentColor = paletteColor;
 
-				//logging
-				List<string> logData = new List<string> {
-						deviceData.deviceIndex.ToString(),
-						"null",
-						"pallete",
-						currentColor.ToString()
-					};
-				Logger.LogRow("marker_data", logData);
-
 				//indicator
 				updateColorIndicator(currentColor);
 
             }
 
-            //newline
-            newline = true;
+            //endline
+            endLine();
 
         }
 
@@ -253,13 +218,7 @@ namespace VRPen {
         }
 
         void canvasHover(InputData data) {
-
             
-			//logging
-			if(state == MarkerState.ERASE || state == MarkerState.NORMAL) {
-				if (!newline) lineTime += Time.time - lastLineInputTime;
-				lastLineInputTime = Time.time;
-			}
 
 
             //get vars from ray
@@ -273,14 +232,9 @@ namespace VRPen {
             switch (state) {
 
                 case MarkerState.NORMAL:
-
-                    if (data.pressure < 0.001f) newline = true;
-                    else {
-                        vectorMan.draw(network.localPlayer, deviceData.deviceIndex, newline, currentColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
-                        //newline 
-                        newline = false;
-                    }
-
+                    
+                    vectorMan.draw(network.localPlayer, deviceData.deviceIndex, false, currentColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
+                    
                     break;
 
                 case MarkerState.EYEDROPPER:
@@ -305,18 +259,15 @@ namespace VRPen {
                         //update indicator
                         updateColorIndicator(currentColor);
 
-                        //newline 
-                        newline = true;
-
                     }
+
+                    endLine();
+
                     break;
 
                 case MarkerState.ERASE:
 
-                    vectorMan.draw(network.localPlayer, deviceData.deviceIndex, newline, data.display.currentLocalCanvas.bgColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
-
-                    //newline 
-                    newline = false;
+                    vectorMan.draw(network.localPlayer, deviceData.deviceIndex, false, data.display.currentLocalCanvas.bgColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
                     break;
             }
 
@@ -325,10 +276,12 @@ namespace VRPen {
         }
 
         void noDrawHover(InputData data) {
-
-            newline = true;
+            endLine();
         }
 
+        void endLine() {
+            if (deviceData.currentLine != null) vectorMan.endLineEvent(network.localPlayer, deviceData.deviceIndex, true);
+        }
         
 
     }
