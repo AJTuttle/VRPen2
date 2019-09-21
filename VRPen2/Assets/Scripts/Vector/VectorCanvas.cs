@@ -108,15 +108,28 @@ namespace VRPen {
             currentMesh.GetIndices(indices, 0);
 
 
+
             if (newVertices.Length > 2) {
 
+                //check if it is a cusp. This will require slightly different indices so that no tris are facing the wrong way
+                bool cusp = Vector3.Angle(device.lastDrawPoint - device.secondLastDrawPoint, drawPoint - device.lastDrawPoint) > 90f;
 
-                indices.Add(newVertices.Length - 4);
-                indices.Add(newVertices.Length - 2);
-                indices.Add(newVertices.Length - 3);
-                indices.Add(newVertices.Length - 2);
-                indices.Add(newVertices.Length - 1);
-                indices.Add(newVertices.Length - 3);
+                if (cusp) {
+                    indices.Add(newVertices.Length - 4);
+                    indices.Add(newVertices.Length - 3);
+                    indices.Add(newVertices.Length - 1);
+                    indices.Add(newVertices.Length - 2);
+                    indices.Add(newVertices.Length - 1);
+                    indices.Add(newVertices.Length - 3);
+                }
+                else {
+                    indices.Add(newVertices.Length - 4);
+                    indices.Add(newVertices.Length - 2);
+                    indices.Add(newVertices.Length - 3);
+                    indices.Add(newVertices.Length - 2);
+                    indices.Add(newVertices.Length - 1);
+                    indices.Add(newVertices.Length - 3);
+                }
 
             }
 
