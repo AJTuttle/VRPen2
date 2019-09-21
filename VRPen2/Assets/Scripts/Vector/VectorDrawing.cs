@@ -32,7 +32,8 @@ namespace VRPen {
         public float minDistanceDelta;
         [Tooltip("This is used for smoothing and refers to the angle between the last line segment and the new one [0-180]. " +
             "Recommended values are between 135 (high performance) and 175 (high fidelity). Warning, values >= 180 will not work and may cause infinite loops.")]
-        public float minAngle;
+        public float minCurveAngle;
+        public float maxCuspAngle;
         public Transform canvasParent;
 
 
@@ -175,7 +176,7 @@ namespace VRPen {
                         float angle = 180f - Vector3.Angle(device.lastDrawPoint - device.secondLastDrawPoint, drawPoint - device.lastDrawPoint);
                         if (Vector3.Cross(device.lastDrawPoint - device.secondLastDrawPoint, drawPoint - device.lastDrawPoint).y < 0) angle *= -1;
 
-                        slopeSmoothing(canvas, device, currentMesh, pressure, angle, device.lastDrawPoint, drawPoint);
+                        Debug.Log(slopeSmoothing(canvas, device, currentMesh, pressure, angle, device.lastDrawPoint, drawPoint));
                     }
                     else canvas.addToLine(device, currentMesh, drawPoint, pressure);
 
@@ -205,26 +206,31 @@ namespace VRPen {
         }
 
         //recursive method that, depending on the angle between the last line and the new line, will split the new line into two new lines to make the slope more gradual
-        void slopeSmoothing(VectorCanvas canvas, InputDevice device, Mesh currentMesh, float pressure, float angle, Vector3 start, Vector3 end) {
+        int slopeSmoothing(VectorCanvas canvas, InputDevice device, Mesh currentMesh, float pressure, float angle, Vector3 start, Vector3 end) {
 
-            
+            int counter = 1;
             //if angle is too large
-            if (Mathf.Abs(angle) < minAngle) {
+            if (Mathf.Abs(angle) < minCurveAngle && Mathf.Abs(angle) > maxCuspAngle) {
+
+                //Debug.Log("angle smoothing needed  ");
 
                 //get the new angle that represents both angles in for the 2 new lines
-                float newAngle = (2 * Mathf.Abs(angle) + 180) / 3 * (angle > 0 ? 1: -1);
+                float newAngle = (3 * Mathf.Abs(angle) + 360) / 5 * (angle > 0 ? 1: -1);
 
                 //get the new midpoint
                 float length = Vector3.Distance(start, end);
+                float midPointLength = length / (1 + Mathf.Tan(Mathf.Deg2Rad * Mathf.Abs(newAngle - angle)) / Mathf.Tan(Mathf.Deg2Rad * Mathf.Abs(newAngle - angle) / 2));
                 Vector3 notSmoothedDir = (end - start).normalized;
-                Vector3 midpointDisplacment = new Vector3(-notSmoothedDir.z, 0, notSmoothedDir.x) * (length / 2) * (angle > 0 ? 1 : -1) * Mathf.Tan(Mathf.Deg2Rad * Mathf.Abs(newAngle - angle));
-                Vector3 middle = start + (end - start)/2 + midpointDisplacment;
+                Vector3 midpointDisplacment = new Vector3(-notSmoothedDir.z, 0, notSmoothedDir.x) * midPointLength * (angle > 0 ? 1 : -1) * Mathf.Tan(Mathf.Deg2Rad * Mathf.Abs(newAngle - angle));
+                Vector3 middle = start + (end - start).normalized * midPointLength + midpointDisplacment;
 
-                //recursively call for the first new line segment to check if the first part needs more curve
-                slopeSmoothing(canvas, device, currentMesh, pressure, newAngle, start, middle);
 
-                //draw the second line segment
-                canvas.addToLine(device, currentMesh, end, pressure);
+
+
+                //recursively call for each new line segment now that we split this one
+                counter += slopeSmoothing(canvas, device, currentMesh, pressure, newAngle, start, middle);
+                counter += slopeSmoothing(canvas, device, currentMesh, pressure, newAngle, middle, end);
+                //canvas.addToLine(device, currentMesh, end, pressure);
 
             }
 
@@ -232,6 +238,7 @@ namespace VRPen {
             else {
                 canvas.addToLine(device, currentMesh, end, pressure);
             }
+            return counter;
 
         }
 
