@@ -126,7 +126,9 @@ namespace VRPen {
             //currentMesh.RecalculateNormals();
             currentMesh.RecalculateBounds();
 
+            device.secondLastDrawPoint = device.lastDrawPoint;
             device.lastDrawPoint = drawPoint;
+            
         }
 
         public IEnumerator rerenderCanvas() {

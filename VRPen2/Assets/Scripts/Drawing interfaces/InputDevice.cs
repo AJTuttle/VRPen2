@@ -22,6 +22,8 @@ namespace VRPen {
         public VectorLine currentLine;
         [System.NonSerialized]
         public Vector3 lastDrawPoint;
+        [System.NonSerialized]
+        public Vector3 secondLastDrawPoint;
 
     }
 
