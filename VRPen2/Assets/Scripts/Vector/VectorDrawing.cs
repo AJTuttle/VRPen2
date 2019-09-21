@@ -31,8 +31,9 @@ namespace VRPen {
         [Header("Line Smoothing and compression parameters")]
         public float minDistanceDelta;
         [Tooltip("This is used for smoothing and refers to the angle between the last line segment and the new one [0-180]. " +
-            "Recommended values are between 135 (high performance) and 175 (high fidelity). Warning, values >= 180 will not work and may cause infinite loops.")]
+            "Recommended values are between 135 (high performance) and 170 (high fidelity). Warning, values >= 180 will not work and may cause infinite loops.")]
         public float minCurveAngle;
+        [Tooltip("For each new line segment, if its angle to the previous line segment is lower than this then it is a cusp. This means that it will not do slope smoothing.")]
         public float maxCuspAngle;
         public Transform canvasParent;
 
@@ -176,7 +177,7 @@ namespace VRPen {
                         float angle = 180f - Vector3.Angle(device.lastDrawPoint - device.secondLastDrawPoint, drawPoint - device.lastDrawPoint);
                         if (Vector3.Cross(device.lastDrawPoint - device.secondLastDrawPoint, drawPoint - device.lastDrawPoint).y < 0) angle *= -1;
 
-                        Debug.Log(slopeSmoothing(canvas, device, currentMesh, pressure, angle, device.lastDrawPoint, drawPoint));
+                        slopeSmoothing(canvas, device, currentMesh, pressure, angle, device.lastDrawPoint, drawPoint);
                     }
                     else canvas.addToLine(device, currentMesh, drawPoint, pressure);
 
@@ -206,13 +207,15 @@ namespace VRPen {
         }
 
         //recursive method that, depending on the angle between the last line and the new line, will split the new line into two new lines to make the slope more gradual
-        int slopeSmoothing(VectorCanvas canvas, InputDevice device, Mesh currentMesh, float pressure, float angle, Vector3 start, Vector3 end) {
+        void slopeSmoothing(VectorCanvas canvas, InputDevice device, Mesh currentMesh, float pressure, float angle, Vector3 start, Vector3 end) {
+            
+            if (minCurveAngle >= 179.9f) {
+                Debug.LogError("Error: Unresonable/impossible target smoothing angle, please adgust public variable that controls this");
+                return;
+            }
 
-            int counter = 1;
             //if angle is too large
             if (Mathf.Abs(angle) < minCurveAngle && Mathf.Abs(angle) > maxCuspAngle) {
-
-                //Debug.Log("angle smoothing needed  ");
 
                 //get the new angle that represents both angles in for the 2 new lines
                 float newAngle = (3 * Mathf.Abs(angle) + 360) / 5 * (angle > 0 ? 1: -1);
@@ -224,13 +227,9 @@ namespace VRPen {
                 Vector3 midpointDisplacment = new Vector3(-notSmoothedDir.z, 0, notSmoothedDir.x) * midPointLength * (angle > 0 ? 1 : -1) * Mathf.Tan(Mathf.Deg2Rad * Mathf.Abs(newAngle - angle));
                 Vector3 middle = start + (end - start).normalized * midPointLength + midpointDisplacment;
 
-
-
-
                 //recursively call for each new line segment now that we split this one
-                counter += slopeSmoothing(canvas, device, currentMesh, pressure, newAngle, start, middle);
-                counter += slopeSmoothing(canvas, device, currentMesh, pressure, newAngle, middle, end);
-                //canvas.addToLine(device, currentMesh, end, pressure);
+                slopeSmoothing(canvas, device, currentMesh, pressure, newAngle, start, middle);
+                slopeSmoothing(canvas, device, currentMesh, pressure, newAngle, middle, end);
 
             }
 
@@ -238,7 +237,6 @@ namespace VRPen {
             else {
                 canvas.addToLine(device, currentMesh, end, pressure);
             }
-            return counter;
 
         }
 

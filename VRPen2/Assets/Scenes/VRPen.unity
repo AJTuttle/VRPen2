@@ -693,12 +693,12 @@ PrefabInstance:
     - target: {fileID: 6656644161125225622, guid: 7573795c7992d7d4eb01493fb658bf3c,
         type: 3}
       propertyPath: minCurveAngle
-      value: 164
+      value: 135
       objectReference: {fileID: 0}
     - target: {fileID: 6656644161125225622, guid: 7573795c7992d7d4eb01493fb658bf3c,
         type: 3}
       propertyPath: maxCuspAngle
-      value: 50
+      value: 70
       objectReference: {fileID: 0}
     - target: {fileID: 6656644161125225622, guid: 7573795c7992d7d4eb01493fb658bf3c,
         type: 3}
