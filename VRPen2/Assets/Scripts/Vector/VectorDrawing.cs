@@ -175,7 +175,7 @@ namespace VRPen {
                         float angle = 180f - Vector3.Angle(device.lastDrawPoint - device.secondLastDrawPoint, drawPoint - device.lastDrawPoint);
                         if (Vector3.Cross(device.lastDrawPoint - device.secondLastDrawPoint, drawPoint - device.lastDrawPoint).y < 0) angle *= -1;
 
-                        slopeSmoothing(canvas, device, currentMesh, pressure, angle, device.lastDrawPoint, drawPoint, device.secondLastDrawPoint);
+                        slopeSmoothing(canvas, device, currentMesh, pressure, angle, device.lastDrawPoint, drawPoint);
                     }
                     else canvas.addToLine(device, currentMesh, drawPoint, pressure);
 
@@ -205,13 +205,11 @@ namespace VRPen {
         }
 
         //recursive method that, depending on the angle between the last line and the new line, will split the new line into two new lines to make the slope more gradual
-        void slopeSmoothing(VectorCanvas canvas, InputDevice device, Mesh currentMesh, float pressure, float angle, Vector3 start, Vector3 end, Vector3 before) {
+        void slopeSmoothing(VectorCanvas canvas, InputDevice device, Mesh currentMesh, float pressure, float angle, Vector3 start, Vector3 end) {
 
             
             //if angle is too large
             if (Mathf.Abs(angle) < minAngle) {
-
-                //Debug.Log("angle smoothing needed  ");
 
                 //get the new angle that represents both angles in for the 2 new lines
                 float newAngle = (2 * Mathf.Abs(angle) + 180) / 3 * (angle > 0 ? 1: -1);
@@ -222,14 +220,11 @@ namespace VRPen {
                 Vector3 midpointDisplacment = new Vector3(-notSmoothedDir.z, 0, notSmoothedDir.x) * (length / 2) * (angle > 0 ? 1 : -1) * Mathf.Tan(Mathf.Deg2Rad * Mathf.Abs(newAngle - angle));
                 Vector3 middle = start + (end - start)/2 + midpointDisplacment;
 
+                //recursively call for the first new line segment to check if the first part needs more curve
+                slopeSmoothing(canvas, device, currentMesh, pressure, newAngle, start, middle);
 
-                Debug.Log("1st  " + (180f - Vector3.Angle(start - before, middle - start)));
-                Debug.Log("2nt  " + (180f - Vector3.Angle(middle - start, end - middle)));
-
-
-                //recursively call for each new line segment now that we split this one
-                slopeSmoothing(canvas, device, currentMesh, pressure, newAngle, start, middle, before);
-                slopeSmoothing(canvas, device, currentMesh, pressure, newAngle, middle, end, start);
+                //draw the second line segment
+                canvas.addToLine(device, currentMesh, end, pressure);
 
             }
 
