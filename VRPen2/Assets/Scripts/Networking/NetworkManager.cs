@@ -22,6 +22,7 @@ namespace VRPen {
 
 
         //scripts
+        [System.NonSerialized]
         public VectorDrawing vectorMan;
         UIManager UIMan;
 		public bool autoConnect;

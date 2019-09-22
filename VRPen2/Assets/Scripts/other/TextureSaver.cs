@@ -7,14 +7,8 @@ namespace VRPen {
 
     public static class TextureSaver {
 
+
         
-
-        //importing vars
-        //public List<Texture2D> importList;
-        //List<Texture2D[,]> importedArraysList = new List<Texture2D[,]>();
-
-
-
 
 
         /// <summary>
@@ -73,56 +67,6 @@ namespace VRPen {
     }
 }
 
-    /*
-    void importAll() {
-
-        //add default image to pics
-        Texture2D[,] defaultTex = canvas.planesTex;
-        importedArraysList.Add(defaultTex);
-        
-        //add imported pics to list
-        foreach (Texture2D texture in importList) {
-            convertToTextureArray(texture);
-        }
-
-    }
-
-    IEnumerator convertToTextureArray(Texture2D full) {
-
-        //make the texture array and add to import list
-        Texture2D[,] textureArray = new Texture2D[canvas.width,canvas.height];
-        importedArraysList.Add(textureArray);
-
-        //go through each sector
-        for (int x = 0; x < canvas.width / canvas.sectorDimensions; x++) {
-            for (int y = 0; y < canvas.height / canvas.sectorDimensions; y++) {
-
-                //get pixels
-                Color[] pixels = canvas.getPlaneTex(x, y).GetPixels(x*canvas.sectorDimensions, y*canvas.sectorDimensions, canvas.sectorDimensions, canvas.sectorDimensions);
-
-                //apply to textures
-                textureArray[x, y] = new Texture2D(canvas.sectorDimensions, canvas.sectorDimensions, TextureFormat.ARGB32, false);
-                textureArray[x,y].SetPixels(0, 0, canvas.sectorDimensions, canvas.sectorDimensions, pixels);
-
-                //apply
-                textureArray[x, y].Apply(false);
-
-                //wait untill next frame
-                yield return null;
-
-            }
-
-        }
-
-    }
-
-    public void swapTextureArray(int index) {
-
-        canvas.planesTex = importedArraysList[index];
-
-    }
-    
-}*/
 
 
 
