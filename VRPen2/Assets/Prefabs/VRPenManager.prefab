@@ -77,7 +77,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a873e0b5a9fab6048a78d52b4bdccc1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vectorMan: {fileID: 0}
   autoConnect: 0
   tabletPrefab: {fileID: 4162737611858156914, guid: e993f40c859b92f4ca2d8e94fe053b7f,
     type: 3}
@@ -100,18 +99,23 @@ MonoBehaviour:
   displays:
   - {fileID: 0}
   - {fileID: 0}
-  canvasPrefab: {fileID: 4493597344066582299, guid: 5829e2701877af64bad27fca4b6e0e4b,
-    type: 3}
+  localInputDevices:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  autoSaveOnExit: 0
   MAX_CANVAS_COUNT: 6
-  lineShader: {fileID: 4800000, guid: 0ab7ce2918a837445a6856cd7cc18696, type: 3}
   renderAreaOrigin: {x: 0, y: -5, z: 0}
-  lineMaterial: {fileID: 2100000, guid: 37f9f4ea955cb7840bf83d23ca7fe751, type: 2}
   minDistanceDelta: 0.01
-  minCurveAngle: 135
-  maxCuspAngle: 70
-  canvasParent: {fileID: 6656644162230625143}
+  minCurveAngle: 159.3
+  maxCuspAngle: 68.2
   quadPrefab: {fileID: 5229868460911306089, guid: 78c7fe814c087254fa5566c0b51e29f3,
     type: 3}
+  lineShader: {fileID: 4800000, guid: 0ab7ce2918a837445a6856cd7cc18696, type: 3}
+  canvasPrefab: {fileID: 4493597344066582299, guid: 5829e2701877af64bad27fca4b6e0e4b,
+    type: 3}
+  lineMaterial: {fileID: 2100000, guid: 37f9f4ea955cb7840bf83d23ca7fe751, type: 2}
+  canvasParent: {fileID: 6656644162230625143}
 --- !u!114 &6656644161125225619
 MonoBehaviour:
   m_ObjectHideFlags: 0

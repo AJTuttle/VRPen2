@@ -8,43 +8,59 @@ namespace VRPen {
 
     public class VectorDrawing : MonoBehaviour {
 
-        //canvas
-        public List<Display> displays = new List<Display>();
-        List<InputDevice> localInputDevices = new List<InputDevice>();
-        [System.NonSerialized]
-        public List<VectorCanvas> canvases = new List<VectorCanvas>();
-        public GameObject canvasPrefab;
-        public int MAX_CANVAS_COUNT;
-        public Shader lineShader;
-
-        //rendertexture area
-        public Vector3 renderAreaOrigin;
-
         //scripts
         StarTablet tablet;
         NetworkManager network;
-
+        
+        //non serialized / private vars
+        [System.NonSerialized]
+        public List<VectorCanvas> canvases = new List<VectorCanvas>();
 
         //public vars
-        public Material lineMaterial;
+        [Space(5)]
+        [Header("Important variables to set")]
+        [Space(5)]
+        [Tooltip("Make sure to add any displays in the scene here")]
+        public List<Display> displays = new List<Display>();
+        [Tooltip("Make sure to add any input devices in the scene here")]
+        public List<InputDevice> localInputDevices = new List<InputDevice>();
+        [Tooltip("In build, canvases will autosave on applicationQuit and scenchange event.")]
+        public bool autoSaveOnExit;
+        [Tooltip("Max number of unique canvases stored")]
+        public int MAX_CANVAS_COUNT;
+        [Tooltip("The render area is where the meshs for the drawing is constructed and rendered, this var sets its location in the scene")]
+        public Vector3 renderAreaOrigin;
+        
 
+
+        [Space(5)]
         [Header("Line Smoothing and compression parameters")]
+        [Space(15)]
+        [Tooltip("Minimum distance from the last drawn point before a new one is registered, this primarilly is used for performance but also helps a bit with smoothing.")]
+        [Range(0f, 0.1f)]
         public float minDistanceDelta;
         [Tooltip("This is used for smoothing and refers to the angle between the last line segment and the new one [0-180]. " +
             "Recommended values are between 135 (high performance) and 170 (high fidelity). Warning, values >= 180 will not work and may cause infinite loops.")]
+        [Range(90, 175)]
         public float minCurveAngle;
         [Tooltip("For each new line segment, if its angle to the previous line segment is lower than this then it is a cusp. This means that it will not do slope smoothing.")]
+        [Range(0, 90)]
         public float maxCuspAngle;
+        
+
+        [Space(5)]
+        [Header("Variables that don't need to be changed")]
+        [Space(15)]
+        public GameObject quadPrefab;
+        public Shader lineShader;
+        public GameObject canvasPrefab;
+        public Material lineMaterial;
         public Transform canvasParent;
 
 
-		public delegate void InputDeviceCreatedEvent(InputDevice pen, int deviceIndex);
-		public event InputDeviceCreatedEvent InputDeviceCreated;
-        
-		public GameObject quadPrefab;
 
 
-		private void Start() {
+        private void Start() {
             
 
             //get scripts
@@ -58,12 +74,7 @@ namespace VRPen {
 			for(byte x = 0; x < displays.Count; x++) {
 				displays[x].DisplayId = x;
 			}
-
-            //set up input devices
-            localInputDevices = new List<InputDevice>(FindObjectsOfType<InputDevice>());
-
-			//removes old devices (patch) TODO
-			localInputDevices.RemoveAll(x => x.owner != null);
+            
 
             network.localPlayer.inputDevices = new Dictionary<byte, InputDevice>();
             for (byte x = 0; x < localInputDevices.Count; x++) {
@@ -71,7 +82,6 @@ namespace VRPen {
                 network.localPlayer.inputDevices.Add(x, device);
                 device.owner = network.localPlayer;
                 device.deviceIndex = x;
-				InputDeviceCreated?.Invoke(device, device.deviceIndex);
 				
             }
 
@@ -85,22 +95,28 @@ namespace VRPen {
         }
 
         private void OnSceneChange(Scene oldScene, Scene newScene) {
-			#if !UNITY_EDITOR
-	        foreach (VectorCanvas canvas in canvases) {
-		        saveImage(canvas.canvasId);
-	        }
+            #if !UNITY_EDITOR
+            if (autoSaveOnExit) {
+                foreach (VectorCanvas canvas in canvases) {
+                    saveImage(canvas.canvasId);
+                }
+            }
 			#endif
         }
 
-		#if !UNITY_EDITOR
+		
 		private void OnApplicationQuit() {
-			foreach (VectorCanvas canvas in canvases) {
-				saveImage(canvas.canvasId);
-			}
+            #if !UNITY_EDITOR
+            if (autoSaveOnExit) {
+                foreach (VectorCanvas canvas in canvases) {
+                    saveImage(canvas.canvasId);
+                }
+            }
+            #endif
 		}
-		#endif
 
-		void hotkeys() {
+
+            void hotkeys() {
             //hotkeys
             if (Input.GetKeyDown(KeyCode.U)) {
                 undo(network.localPlayer, true);

@@ -25,7 +25,13 @@ namespace VRPen {
         [System.NonSerialized]
         public VectorDrawing vectorMan;
         UIManager UIMan;
-		public bool autoConnect;
+
+        [Space(5)]
+        [Header("Important variables to set")]
+        [Space(5)]
+        [Tooltip("If enabled, this script will attempt to invoke an event for sending a connection packet shortly after start " +
+            "instead of waited for the sendConnect method to be called")]
+        public bool autoConnect;
 
 
         //other players data
@@ -33,6 +39,9 @@ namespace VRPen {
         public NetworkedPlayer localPlayer;
 
         //prefabs
+        [Space(5)]
+        [Header("Variables that don't need to be changed")]
+        [Space(15)]
         public GameObject tabletPrefab;
         public GameObject remoteMarkerPrefab;
         public GameObject mousePrefab;
