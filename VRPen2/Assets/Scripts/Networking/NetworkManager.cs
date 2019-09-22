@@ -32,6 +32,8 @@ namespace VRPen {
         [Tooltip("If enabled, this script will attempt to invoke an event for sending a connection packet shortly after start " +
             "instead of waited for the sendConnect method to be called")]
         public bool autoConnect;
+        //[Tooltip("Should networkMan instantiate remote input device or simple make a data struct")]
+        //public bool instantiateRemoteInputDevices;
 
 
         //other players data
