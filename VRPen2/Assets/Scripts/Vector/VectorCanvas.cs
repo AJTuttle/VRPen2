@@ -47,7 +47,10 @@ namespace VRPen {
         }
 
 
-        public void addToLine(InputDevice device, Mesh currentMesh, Vector3 drawPoint, float pressure) {
+        public void addToLine(InputDevice device, VectorLine currentLine, Vector3 drawPoint, float pressure) {
+
+            //get mesh
+            Mesh currentMesh = currentLine.mesh;
 
             //quad points
             Vector3[] quadPoints = new Vector3[2];

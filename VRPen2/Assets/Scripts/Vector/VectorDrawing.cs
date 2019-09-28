@@ -46,7 +46,14 @@ namespace VRPen {
         [Tooltip("For each new line segment, if its angle to the previous line segment is lower than this then it is a cusp. This means that it will not do slope smoothing.")]
         [Range(0, 90)]
         public float maxCuspAngle;
-        
+
+        [Space(5)]
+        [Header("Optimization Parameters")]
+        [Space(15)]
+        [Tooltip("How many points are allocated for a line at a time (ie. if this is 50 then every 50 points in a line, new space in memory would be allocated for the next 50. " +
+            "This is an alternative to doing it every time a new point is allocated)")]
+        public int lineDataStepSize;
+
 
         [Space(5)]
         [Header("Variables that don't need to be changed")]
@@ -175,7 +182,7 @@ namespace VRPen {
                 bool newLine = false;
 
                 //get or create mesh
-                Mesh currentMesh = getMesh(player, device, color, canvas, ref newLine);
+                VectorLine currentLine = getLine(player, device, color, canvas, ref newLine);
 
                 //got vector pos
                 Vector3 drawPoint = new Vector3(x, 0, y);
@@ -187,15 +194,15 @@ namespace VRPen {
                 if (validInput) {
 
                     //if this is not the first or second point in the line, we need to smooth the slope
-                    if (currentMesh.vertexCount > 2) {
+                    if (currentLine.mesh.vertexCount > 2) {
 
                         //get angle between last line and new line (negative for left turn, positive for right turn)
                         float angle = 180f - Vector3.Angle(device.lastDrawPoint - device.secondLastDrawPoint, drawPoint - device.lastDrawPoint);
                         if (Vector3.Cross(device.lastDrawPoint - device.secondLastDrawPoint, drawPoint - device.lastDrawPoint).y < 0) angle *= -1;
 
-                        slopeSmoothing(canvas, device, currentMesh, pressure, angle, device.lastDrawPoint, drawPoint);
+                        slopeSmoothing(canvas, device, currentLine, pressure, angle, device.lastDrawPoint, drawPoint);
                     }
-                    else canvas.addToLine(device, currentMesh, drawPoint, pressure);
+                    else canvas.addToLine(device, currentLine, drawPoint, pressure);
 
                     if (localInput) network.addToDataOutbox(endLine, color, x, y, pressure, canvasId, deviceIndex);
                 }
@@ -223,7 +230,7 @@ namespace VRPen {
         }
 
         //recursive method that, depending on the angle between the last line and the new line, will split the new line into two new lines to make the slope more gradual
-        void slopeSmoothing(VectorCanvas canvas, InputDevice device, Mesh currentMesh, float pressure, float angle, Vector3 start, Vector3 end) {
+        void slopeSmoothing(VectorCanvas canvas, InputDevice device, VectorLine currentLine, float pressure, float angle, Vector3 start, Vector3 end) {
             
             if (minCurveAngle >= 179.9f) {
                 Debug.LogError("Error: Unresonable/impossible target smoothing angle, please adgust public variable that controls this");
@@ -244,21 +251,21 @@ namespace VRPen {
                 Vector3 middle = start + (end - start).normalized * midPointLength + midpointDisplacment;
 
                 //recursively call for each new line segment now that we split this one
-                slopeSmoothing(canvas, device, currentMesh, pressure, newAngle, start, middle);
-                slopeSmoothing(canvas, device, currentMesh, pressure, newAngle, middle, end);
+                slopeSmoothing(canvas, device, currentLine, pressure, newAngle, start, middle);
+                slopeSmoothing(canvas, device, currentLine, pressure, newAngle, middle, end);
 
             }
 
             //actually add triangles to the mesh
             else {
-                canvas.addToLine(device, currentMesh, end, pressure);
+                canvas.addToLine(device, currentLine, end, pressure);
             }
 
         }
 
-        Mesh getMesh(NetworkedPlayer player, InputDevice device, Color32 color, VectorCanvas canvas, ref bool newLine) {
+        VectorLine getLine(NetworkedPlayer player, InputDevice device, Color32 color, VectorCanvas canvas, ref bool newLine) {
 
-            Mesh currentMesh;
+            VectorLine currentLine;
 
             //if new line needed
             if (device.currentLine == null) {
@@ -273,22 +280,22 @@ namespace VRPen {
                 //add mesh
                 MeshRenderer mr = obj.AddComponent<MeshRenderer>();
                 MeshFilter mf = obj.AddComponent<MeshFilter>();
-                currentMesh = new Mesh();
+                Mesh currentMesh = new Mesh();
                 mf.mesh = currentMesh;
 
                 
 
                 //vector line data struct and player data structs
-                VectorLine vl = new VectorLine();
-                vl.mesh = currentMesh;
-                vl.owner = player.connectionId;
-                vl.obj = obj;
-                vl.mr = mr;
-                device.currentLine = vl;
+                currentLine = new VectorLine();
+                currentLine.mesh = currentMesh;
+                currentLine.owner = player.connectionId;
+                currentLine.obj = obj;
+                currentLine.mr = mr;
+                device.currentLine = currentLine;
                 player.lineIndexer++;
-                vl.index = player.lineIndexer;
-                vl.deviceIndex = device.deviceIndex;
-                player.lines.Add(vl);
+                currentLine.index = player.lineIndexer;
+                currentLine.deviceIndex = device.deviceIndex;
+                player.lines.Add(currentLine);
                 
 
                 //set shader
@@ -306,12 +313,12 @@ namespace VRPen {
             }
             //if addition to existing line
             else {
-                currentMesh = device.currentLine.mesh;
+                currentLine = device.currentLine;
 
                 newLine = false;
             }
 
-            return currentMesh;
+            return currentLine;
 
         }
 
