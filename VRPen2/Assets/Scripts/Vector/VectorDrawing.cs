@@ -238,7 +238,7 @@ namespace VRPen {
             }
 
             //if angle is too large
-            if (Mathf.Abs(angle) < minCurveAngle && Mathf.Abs(angle) > maxCuspAngle) {
+            if (Mathf.Abs(angle) < minCurveAngle && Mathf.Abs(angle) > maxCuspAngle && currentLine.pointCount > 1) {
 
                 //get the new angle that represents both angles in for the 2 new lines
                 float newAngle = (3 * Mathf.Abs(angle) + 360) / 5 * (angle > 0 ? 1: -1);

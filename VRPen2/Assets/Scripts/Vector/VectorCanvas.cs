@@ -49,10 +49,17 @@ namespace VRPen {
 
         public void addToLine(InputDevice device, VectorLine currentLine, Vector3 drawPoint, float pressure) {
 
+
             //get mesh
             Mesh currentMesh = currentLine.mesh;
 
-            //quad points
+            //if start of line then setup up arrays
+            if (currentLine.vertices == null) {
+                currentLine.vertices = new Vector3[drawingMan.lineDataStepSize*2];
+                currentLine.normals = new Vector3[drawingMan.lineDataStepSize*2];
+            }
+
+            //new quad points
             Vector3[] quadPoints = new Vector3[2];
 
 
@@ -76,74 +83,99 @@ namespace VRPen {
 
 
 
-            //normals
+            //new normals
             Vector3[] quadNormals = new Vector3[2];
             for (int i = 0; i < 2; i++) {
                 quadNormals[i] = vectorParent.up;
             }
 
 
+            
 
-            //add vertices and normals to mesh
-            Vector3[] vertices = currentMesh.vertices;
-            Vector3[] normals = currentMesh.normals;
+            //if we need to add more memery space for the data
+            if (currentLine.vertices.Length < currentLine.pointCount * 2 + 2) {
 
-            Vector3[] newVertices = new Vector3[currentMesh.vertexCount + 2];
-            Vector3[] newNormals = new Vector3[currentMesh.vertexCount + 2];
+                Vector3[] newVertices = new Vector3[currentLine.vertices.Length + drawingMan.lineDataStepSize*2];
+                Vector3[] newNormals = new Vector3[currentLine.vertices.Length + drawingMan.lineDataStepSize*2];
 
-            for (int i = 0; i < currentMesh.vertexCount; i++) {
-                newNormals[i] = normals[i];
-                newVertices[i] = vertices[i];
+                for (int i = 0; i < currentLine.vertices.Length; i++) {
+                    newVertices[i] = currentLine.vertices[i];
+                    newNormals[i] = currentLine.normals[i];
+                }
+                for (int i = 0; i < 2; i++) {
+                    newNormals[currentLine.vertices.Length + i] = quadNormals[i];
+                    newVertices[currentLine.vertices.Length + i] = quadPoints[i];
+                }
+
+                currentLine.vertices = newVertices;
+                currentLine.normals = newNormals;
+
+                currentMesh.vertices = newVertices;
+                currentMesh.normals = newNormals;
+
             }
-            for (int i = 0; i < 2; i++) {
-                newNormals[normals.Length + i] = quadNormals[i];
-                newVertices[vertices.Length + i] = quadPoints[i];
+
+            //if we already have open memory space
+            else {
+
+                for (int i = 0; i < 2; i++) {
+                    currentLine.normals[currentLine.pointCount * 2 + i] = quadNormals[i];
+                    currentLine.vertices[currentLine.pointCount*2 + i] = quadPoints[i];
+                }
+
+                currentMesh.vertices = currentLine.vertices;
+                currentMesh.normals = currentLine.normals;
+
             }
 
-            currentMesh.vertices = newVertices;
-            currentMesh.normals = newNormals;
 
-
+            if (currentLine.pointCount == 25) {
+                int x = 0;
+            }
 
 
             //indices
-            List<int> indices = new List<int>();
-            currentMesh.GetIndices(indices, 0);
+            if (currentLine.indices == null) currentLine.indices = new List<int>();
 
-
-
-            if (newVertices.Length > 2) {
+            //if its not the first point, make triangles
+            if (currentLine.pointCount > 0) {
 
                 //check if it is a cusp. This will require slightly different indices so that no tris are facing the wrong way
                 bool cusp = Vector3.Angle(device.lastDrawPoint - device.secondLastDrawPoint, drawPoint - device.lastDrawPoint) > 90f;
 
                 if (cusp) {
-                    indices.Add(newVertices.Length - 4);
-                    indices.Add(newVertices.Length - 3);
-                    indices.Add(newVertices.Length - 1);
-                    indices.Add(newVertices.Length - 2);
-                    indices.Add(newVertices.Length - 1);
-                    indices.Add(newVertices.Length - 3);
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 4);
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 3);
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 1);
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 2);
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 1);
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 3);
+
                 }
                 else {
-                    indices.Add(newVertices.Length - 4);
-                    indices.Add(newVertices.Length - 2);
-                    indices.Add(newVertices.Length - 3);
-                    indices.Add(newVertices.Length - 2);
-                    indices.Add(newVertices.Length - 1);
-                    indices.Add(newVertices.Length - 3);
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 4);
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 2);
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 3);
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 2);
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 1);
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 3);
+
                 }
 
             }
 
 
-
-            currentMesh.SetIndices(indices.ToArray(), MeshTopology.Triangles, 0);
+            //update mesh
+            currentMesh.SetIndices(currentLine.indices.ToArray(), MeshTopology.Triangles, 0);
             //currentMesh.RecalculateNormals();
             currentMesh.RecalculateBounds();
 
+            //set last draw points
             device.secondLastDrawPoint = device.lastDrawPoint;
             device.lastDrawPoint = drawPoint;
+
+            //set point count
+            currentLine.pointCount++;
             
         }
 
