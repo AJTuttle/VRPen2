@@ -212,16 +212,16 @@ namespace VRPen {
         void endLineData(InputDevice device) {
 
             //turn off last mesh for render texture
-            if (device.currentLine != null) {
+            if (device.currentGraphic != null) {
 
                 //reset the renderqueue so that the depth is set when the line is finished drawing (so that it doesnt shift when undos happen for example)
-                VectorCanvas canvas = getCanvas(device.currentLine.canvasId);
-                device.currentLine.obj.GetComponent<Renderer>().material.renderQueue = canvas.renderQueueCounter;
+                VectorCanvas canvas = getCanvas(device.currentGraphic.canvasId);
+                device.currentGraphic.obj.GetComponent<Renderer>().material.renderQueue = canvas.renderQueueCounter;
                 canvas.renderQueueCounter++;
 
                 //turn off and remove from curr
-                device.currentLine.obj.GetComponent<MeshRenderer>().enabled = false;
-                device.currentLine = null;
+                device.currentGraphic.obj.GetComponent<MeshRenderer>().enabled = false;
+                device.currentGraphic = null;
             }
             else {
                 Debug.LogError("Line end event but theres no line to end (this could also be caused by draw calls that have 0 pressure)");
@@ -268,7 +268,7 @@ namespace VRPen {
             VectorLine currentLine;
 
             //if new line needed
-            if (device.currentLine == null) {
+            if (device.currentGraphic == null || !(device.currentGraphic is VectorLine)) {
 
                 //make obj
                 GameObject obj = new GameObject();
@@ -291,11 +291,11 @@ namespace VRPen {
                 currentLine.owner = player.connectionId;
                 currentLine.obj = obj;
                 currentLine.mr = mr;
-                device.currentLine = currentLine;
-                player.lineIndexer++;
-                currentLine.index = player.lineIndexer;
+                device.currentGraphic = currentLine;
+                player.graphicIndexer++;
+                currentLine.index = player.graphicIndexer;
                 currentLine.deviceIndex = device.deviceIndex;
-                player.lines.Add(currentLine);
+                player.graphics.Add(currentLine);
                 
 
                 //set shader
@@ -313,7 +313,8 @@ namespace VRPen {
             }
             //if addition to existing line
             else {
-                currentLine = device.currentLine;
+
+                currentLine = (VectorLine)device.currentGraphic;
 
                 newLine = false;
             }
@@ -333,28 +334,28 @@ namespace VRPen {
 
         public void undo(NetworkedPlayer player, bool localInput) {
 
-			//get line
-			if (player.lines.Count == 0) return;
-            VectorLine undid = player.lines.Last();
+            //get graphic
+            if (player.graphics.Count == 0) return;
+            VectorGraphic undid = player.graphics.Last();
 
             //remove from data
-            player.lines.RemoveAt(player.lines.Count - 1);
+            player.graphics.RemoveAt(player.graphics.Count - 1);
 
             byte deviceIndex = undid.deviceIndex;
 
             //get canvas
             VectorCanvas canvas = getCanvas(undid.canvasId);
 
-            //destroy line
+            //destroy graphic
             Destroy(undid.obj);
 
-            //reset curr line
+            //reset curr graphic
             InputDevice device;
             if ((device = player.inputDevices[deviceIndex]) == null) {
                 Debug.LogError("Failed retreiving input device from undo event");
                 return;
             }
-            device.currentLine = null;
+            device.currentGraphic = null;
 
             //rerender rest
             StartCoroutine(canvas.rerenderCanvas());

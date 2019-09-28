@@ -19,7 +19,7 @@ namespace VRPen {
         [System.NonSerialized]
         public byte deviceIndex;
         [System.NonSerialized]
-        public VectorLine currentLine;
+        public VectorGraphic currentGraphic;
         [System.NonSerialized]
         public Vector3 lastDrawPoint;
         [System.NonSerialized]

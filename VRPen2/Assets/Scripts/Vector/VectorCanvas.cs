@@ -200,10 +200,10 @@ namespace VRPen {
                 index++;
             }
 
-            //turn back on the current lines for each user
+            //turn back on the current Graphics for each user
             foreach (NetworkedPlayer player in network.players) {
                 foreach (KeyValuePair<byte, InputDevice> device in player.inputDevices) {
-                    if (device.Value.currentLine != null) device.Value.currentLine.mr.enabled = true;
+                    if (device.Value.currentGraphic != null) device.Value.currentGraphic.mr.enabled = true;
                 }
             }
 
@@ -214,17 +214,17 @@ namespace VRPen {
             //deal with players data structures
             foreach (NetworkedPlayer player in network.players) {
                 foreach (KeyValuePair<byte,InputDevice> device in player.inputDevices) {
-                    if (device.Value.currentLine != null && device.Value.currentLine.canvasId == canvasId) device.Value.currentLine = null;
+                    if (device.Value.currentGraphic != null && device.Value.currentGraphic.canvasId == canvasId) device.Value.currentGraphic = null;
                 }
-                int length = player.lines.Count;
+                int length = player.graphics.Count;
                 for (int x = 0; x < length; x++) {
-                    if (player.lines[x].canvasId == canvasId) {
-                        player.lines.Remove(player.lines[x]);
+                    if (player.graphics[x].canvasId == canvasId) {
+                        player.graphics.Remove(player.graphics[x]);
                         length--;
                     }
                 }
             }
-            //delete lines
+            //delete Graphics
             int index = 0;
             while (index < vectorParent.childCount) {
                 Destroy(vectorParent.GetChild(index).gameObject);

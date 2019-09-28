@@ -4,16 +4,9 @@ using UnityEngine;
 
 namespace VRPen {
 
-    public class VectorLine {
+    public class VectorLine : VectorGraphic{
 
-        //vars
-        public ulong owner;
-        public byte deviceIndex;
-        public int index;
-        public Mesh mesh;
-        public MeshRenderer mr;
-        public GameObject obj;
-        public byte canvasId;
+        
 
         //drawpoints
         public int pointCount;

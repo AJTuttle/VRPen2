@@ -16,8 +16,8 @@ namespace VRPen {
 
 
         //vector drawing
-        public List<VectorLine> lines = new List<VectorLine>();
-        public int lineIndexer = 0;
+        public List<VectorGraphic> graphics = new List<VectorGraphic>();
+        public int graphicIndexer = 0;
         
 
 
