@@ -107,8 +107,9 @@ MonoBehaviour:
   MAX_CANVAS_COUNT: 6
   renderAreaOrigin: {x: 0, y: -5, z: 0}
   minDistanceDelta: 0.01
-  minCurveAngle: 159.3
+  minCurveAngle: 159.6
   maxCuspAngle: 68.2
+  lineDataStepSize: 50
   quadPrefab: {fileID: 5229868460911306089, guid: 78c7fe814c087254fa5566c0b51e29f3,
     type: 3}
   lineShader: {fileID: 4800000, guid: 0ab7ce2918a837445a6856cd7cc18696, type: 3}

@@ -713,6 +713,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6656644161125225622, guid: 7573795c7992d7d4eb01493fb658bf3c,
         type: 3}
+      propertyPath: displays.Array.size
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6656644161125225622, guid: 7573795c7992d7d4eb01493fb658bf3c,
+        type: 3}
       propertyPath: displays.Array.data[0]
       value: 
       objectReference: {fileID: 1844919923}
@@ -738,13 +743,8 @@ PrefabInstance:
       objectReference: {fileID: 1689188219}
     - target: {fileID: 6656644161125225622, guid: 7573795c7992d7d4eb01493fb658bf3c,
         type: 3}
-      propertyPath: minCurveAngle
-      value: 159.6
-      objectReference: {fileID: 0}
-    - target: {fileID: 6656644161125225622, guid: 7573795c7992d7d4eb01493fb658bf3c,
-        type: 3}
-      propertyPath: lineDataStepSize
-      value: 10
+      propertyPath: displays.Array.data[2]
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7573795c7992d7d4eb01493fb658bf3c, type: 3}
