@@ -62,9 +62,8 @@ namespace VRPen {
         [Header("Variables that don't need to be changed")]
         [Space(15)]
         public GameObject quadPrefab;
-        public Shader lineShader;
+        public Shader depthShader;
         public GameObject canvasPrefab;
-        public Material lineMaterial;
         public Transform canvasParent;
 
 
@@ -280,14 +279,11 @@ namespace VRPen {
 
 
             //set shader
-            //mr.material = lineMaterial;
+            //mr.material = new Material(depthShader);
             //mr.material.color = color;
-
-            //set shader
-            //Material mat = obj.GetComponent<Renderer>().material;
-            //mat.shader = lineShader;
-            //mat.renderQueue = canvas.renderQueueCounter;
+            //mr.material.renderQueue = canvas.renderQueueCounter;
             //canvas.renderQueueCounter++;
+
 
             return currentStamp;
             
@@ -380,16 +376,12 @@ namespace VRPen {
                 currentLine.index = player.graphicIndexer;
                 currentLine.deviceIndex = device.deviceIndex;
                 player.graphics.Add(currentLine);
-                
+
 
                 //set shader
-                mr.material = lineMaterial;
+                mr.material = new Material(depthShader);
                 mr.material.color = color;
-                
-                //set shader
-                Material mat = obj.GetComponent<Renderer>().material;
-                mat.shader = lineShader;
-                mat.renderQueue = canvas.renderQueueCounter;
+                mr.material.renderQueue = canvas.renderQueueCounter;
                 canvas.renderQueueCounter++;
 
                 newLine = true;

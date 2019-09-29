@@ -96,6 +96,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fc54dc0f8c0b2041bc421af44831579, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  stampTest: {fileID: 0}
   displays:
   - {fileID: 0}
   - {fileID: 0}
@@ -112,10 +113,9 @@ MonoBehaviour:
   lineDataStepSize: 50
   quadPrefab: {fileID: 5229868460911306089, guid: 78c7fe814c087254fa5566c0b51e29f3,
     type: 3}
-  lineShader: {fileID: 4800000, guid: 0ab7ce2918a837445a6856cd7cc18696, type: 3}
+  depthShader: {fileID: 4800000, guid: 0ab7ce2918a837445a6856cd7cc18696, type: 3}
   canvasPrefab: {fileID: 4493597344066582299, guid: 5829e2701877af64bad27fca4b6e0e4b,
     type: 3}
-  lineMaterial: {fileID: 2100000, guid: 37f9f4ea955cb7840bf83d23ca7fe751, type: 2}
   canvasParent: {fileID: 6656644162230625143}
 --- !u!114 &6656644161125225619
 MonoBehaviour:

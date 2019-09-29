@@ -791,9 +791,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6656644161125225622, guid: 7573795c7992d7d4eb01493fb658bf3c,
         type: 3}
-      propertyPath: displays.Array.size
-      value: 2
-      objectReference: {fileID: 0}
+      propertyPath: stampTest
+      value: 
+      objectReference: {fileID: 1338093738}
     - target: {fileID: 6656644161125225622, guid: 7573795c7992d7d4eb01493fb658bf3c,
         type: 3}
       propertyPath: displays.Array.data[0]
@@ -819,16 +819,6 @@ PrefabInstance:
       propertyPath: localInputDevices.Array.data[2]
       value: 
       objectReference: {fileID: 1689188219}
-    - target: {fileID: 6656644161125225622, guid: 7573795c7992d7d4eb01493fb658bf3c,
-        type: 3}
-      propertyPath: displays.Array.data[2]
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 6656644161125225622, guid: 7573795c7992d7d4eb01493fb658bf3c,
-        type: 3}
-      propertyPath: stampTest
-      value: 
-      objectReference: {fileID: 1338093738}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7573795c7992d7d4eb01493fb658bf3c, type: 3}
 --- !u!1001 &7338822298008561916
