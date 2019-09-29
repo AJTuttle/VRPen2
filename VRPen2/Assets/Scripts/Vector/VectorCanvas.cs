@@ -209,6 +209,15 @@ namespace VRPen {
 
         }
 
+        public void placeStamp(VectorStamp stamp, InputDevice device, Vector3 pos) {
+
+            stamp.obj.transform.localPosition = pos;
+            StartCoroutine(renderGraphic(stamp, device));
+
+        }
+
+        
+
         public void clear(bool localInput) {
 
             //deal with players data structures
@@ -250,7 +259,20 @@ namespace VRPen {
 
         }
 
-        
+        IEnumerator renderGraphic(VectorGraphic graphic, InputDevice device) {
+
+            //make sure mesh renderer is on
+            graphic.mr.enabled = true;
+
+            //wait
+            yield return null;
+            yield return null;
+
+            //turn off graphic
+            graphic.mr.enabled = false;
+            if (graphic == device.currentGraphic) device.currentGraphic = null;
+
+        }
 
     }
 

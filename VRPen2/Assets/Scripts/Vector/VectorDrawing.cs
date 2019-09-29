@@ -8,6 +8,9 @@ namespace VRPen {
 
     public class VectorDrawing : MonoBehaviour {
 
+
+        public GameObject stampTest;
+
         //scripts
         StarTablet tablet;
         NetworkManager network;
@@ -134,6 +137,9 @@ namespace VRPen {
             else if (Input.GetKeyDown(KeyCode.S)) {
                 saveImage(0);
             }
+            else if (Input.GetKeyDown(KeyCode.V)) {
+                stamp(network.localPlayer, 0, new Color32(0, 0, 0, 255), .5f, .5f, 0, true);
+            }
         }
 
         
@@ -207,6 +213,84 @@ namespace VRPen {
                     if (localInput) network.addToDataOutbox(endLine, color, x, y, pressure, canvasId, deviceIndex);
                 }
             }
+        }
+
+        void stamp(NetworkedPlayer player, byte deviceIndex, Color32 color, float x, float y, byte canvasId, bool localInput) {
+            
+            //get canvas
+            VectorCanvas canvas = getCanvas(canvasId);
+            if (canvas == null) {
+                Debug.LogError("No canvas found for draw input");
+                return;
+            }
+
+            //get device
+            InputDevice device;
+            if ((device = player.inputDevices[deviceIndex]) == null) {
+                Debug.LogError("Failed retreiving input device");
+                return;
+            }
+
+            //make stamp
+            VectorStamp stamp = createStamp(canvas, device, player);
+
+            //got vector pos
+            Vector3 drawPoint = new Vector3(x, 0, y);
+
+            //make sure it renders in
+            canvas.placeStamp(stamp, device, drawPoint);
+
+
+        }
+
+        VectorStamp createStamp(VectorCanvas canvas, InputDevice device, NetworkedPlayer player) {
+
+            //if new line needed
+            if (device.currentGraphic == null || !(device.currentGraphic is VectorLine)) {
+            }
+
+            //make obj
+            GameObject obj = Instantiate(stampTest) ;
+            //GameObject obj = new GameObject();
+            obj.transform.parent = canvas.vectorParent;
+            obj.transform.localPosition = Vector3.zero;
+            obj.transform.localRotation = Quaternion.identity;
+            obj.transform.localScale = Vector3.one * 0.01f;
+
+            //add mesh
+            //MeshRenderer mr = obj.AddComponent<MeshRenderer>();
+            MeshRenderer mr = obj.GetComponent<MeshRenderer>();
+            //MeshFilter mf = obj.AddComponent<MeshFilter>();
+            Mesh currentMesh = new Mesh();
+            //mf.mesh = currentMesh;
+
+
+
+            //vector line data struct and player data structs
+            VectorStamp currentStamp = new VectorStamp();
+            currentStamp.mesh = currentMesh;
+            currentStamp.owner = player.connectionId;
+            currentStamp.obj = obj;
+            currentStamp.mr = mr;
+            device.currentGraphic = currentStamp;
+            player.graphicIndexer++;
+            currentStamp.index = player.graphicIndexer;
+            currentStamp.deviceIndex = device.deviceIndex;
+            player.graphics.Add(currentStamp);
+
+
+            //set shader
+            //mr.material = lineMaterial;
+            //mr.material.color = color;
+
+            //set shader
+            //Material mat = obj.GetComponent<Renderer>().material;
+            //mat.shader = lineShader;
+            //mat.renderQueue = canvas.renderQueueCounter;
+            //canvas.renderQueueCounter++;
+
+            return currentStamp;
+            
         }
 
         void endLineData(InputDevice device) {
