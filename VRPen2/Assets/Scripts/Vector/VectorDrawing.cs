@@ -62,7 +62,8 @@ namespace VRPen {
         [Header("Variables that don't need to be changed")]
         [Space(15)]
         public GameObject quadPrefab;
-        public Shader depthShader;
+        public Shader depthShaderColor;
+        public Shader depthShaderTexture;
         public GameObject canvasPrefab;
         public Transform canvasParent;
 
@@ -379,7 +380,7 @@ namespace VRPen {
 
 
                 //set shader
-                mr.material = new Material(depthShader);
+                mr.material = new Material(depthShaderColor);
                 mr.material.color = color;
                 mr.material.renderQueue = canvas.renderQueueCounter;
                 canvas.renderQueueCounter++;
