@@ -9,7 +9,7 @@ namespace VRPen {
     public class VectorDrawing : MonoBehaviour {
 
 
-        public GameObject stampTest;
+        public Texture stampTest;
 
         //scripts
         StarTablet tablet;
@@ -138,7 +138,7 @@ namespace VRPen {
                 saveImage(0);
             }
             else if (Input.GetKeyDown(KeyCode.V)) {
-                stamp(network.localPlayer, 0, new Color32(0, 0, 0, 255), .5f, .5f, 0, true);
+                stamp(stampTest, network.localPlayer, 0, new Color32(0, 0, 0, 255), .5f, .5f, 0, true);
             }
         }
 
@@ -215,7 +215,7 @@ namespace VRPen {
             }
         }
 
-        void stamp(NetworkedPlayer player, byte deviceIndex, Color32 color, float x, float y, byte canvasId, bool localInput) {
+        void stamp(Texture stampTex, NetworkedPlayer player, byte deviceIndex, Color32 color, float x, float y, byte canvasId, bool localInput) {
             
             //get canvas
             VectorCanvas canvas = getCanvas(canvasId);
@@ -232,7 +232,7 @@ namespace VRPen {
             }
 
             //make stamp
-            VectorStamp stamp = createStamp(canvas, device, player);
+            VectorStamp stamp = createStamp(stampTex, canvas, device, player);
 
             //got vector pos
             Vector3 drawPoint = new Vector3(x, 0, y);
@@ -243,30 +243,30 @@ namespace VRPen {
 
         }
 
-        VectorStamp createStamp(VectorCanvas canvas, InputDevice device, NetworkedPlayer player) {
+        VectorStamp createStamp(Texture stampTex, VectorCanvas canvas, InputDevice device, NetworkedPlayer player) {
 
-            //if new line needed
-            if (device.currentGraphic == null || !(device.currentGraphic is VectorLine)) {
+            //line end check needed
+            if (device.currentGraphic != null && (device.currentGraphic is VectorLine)) {
+				endLineData(device);
             }
 
             //make obj
-            GameObject obj = Instantiate(stampTest) ;
-            //GameObject obj = new GameObject();
+            //GameObject obj = Instantiate(stampTest) ;
+            GameObject obj = new GameObject();
             obj.transform.parent = canvas.vectorParent;
             obj.transform.localPosition = Vector3.zero;
             obj.transform.localRotation = Quaternion.identity;
             obj.transform.localScale = Vector3.one * 0.01f;
 
             //add mesh
-            //MeshRenderer mr = obj.AddComponent<MeshRenderer>();
-            MeshRenderer mr = obj.GetComponent<MeshRenderer>();
-            //MeshFilter mf = obj.AddComponent<MeshFilter>();
-            Mesh currentMesh = new Mesh();
-            //mf.mesh = currentMesh;
+            MeshRenderer mr = obj.AddComponent<MeshRenderer>();
+            MeshFilter mf = obj.AddComponent<MeshFilter>();
+			Mesh currentMesh = generateStampQuad(1, 1);
+            mf.mesh = currentMesh;
 
 
 
-            //vector line data struct and player data structs
+            //stamp data struct and player data structs
             VectorStamp currentStamp = new VectorStamp();
             currentStamp.mesh = currentMesh;
             currentStamp.owner = player.connectionId;
@@ -280,15 +280,49 @@ namespace VRPen {
 
 
             //set shader
-            //mr.material = new Material(depthShader);
-            //mr.material.color = color;
-            //mr.material.renderQueue = canvas.renderQueueCounter;
-            //canvas.renderQueueCounter++;
+            mr.material = new Material(depthShaderTexture);
+			mr.material.mainTexture = stampTex;
+			//mr.material.color = color;
+			mr.material.renderQueue = canvas.renderQueueCounter;
+            canvas.renderQueueCounter++;
 
 
             return currentStamp;
             
         }
+
+		Mesh generateStampQuad(float width, float height) {
+
+			Mesh m = new Mesh();
+
+			m.vertices = new Vector3[4] {
+				new Vector3(0, 0, 0),
+				new Vector3(width, 0, 0),
+				new Vector3(0, height, 0),
+				new Vector3(width, height, 0)
+			};
+			m.triangles = new int[6] {
+				// lower left triangle
+				0, 2, 1,
+				// upper right triangle
+				2, 3, 1
+			};
+			m.normals = new Vector3[4]{
+				-Vector3.forward,
+				-Vector3.forward,
+				-Vector3.forward,
+				-Vector3.forward
+			};
+			m.uv = new Vector2[4] {
+				new Vector2(0,0),
+				new Vector2(1,0),
+				new Vector2(0,1),
+				new Vector2(1,1)
+			};
+
+			return m; 
+
+		}
 
         void endLineData(InputDevice device) {
 
