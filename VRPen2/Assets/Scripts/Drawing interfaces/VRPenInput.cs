@@ -12,6 +12,7 @@ namespace VRPen {
         public float pressure;
         public RaycastHit hit;
         public Display display;
+
     }
 
     public abstract class VRPenInput : MonoBehaviour {
@@ -30,7 +31,10 @@ namespace VRPen {
         float xFloat = 0f;
         float yFloat = 0f;
         Color32 currentColor = new Color32(0, 0, 0, 255);
-        
+
+
+        //stamp data
+        float stampSize=.1f;
 
 
         //hover
@@ -41,11 +45,11 @@ namespace VRPen {
         public HoverState hover = HoverState.NONE;
 
         //state
-        public enum MarkerState {
-            NORMAL, EYEDROPPER, ERASE
+        public enum ToolState {
+            NORMAL, EYEDROPPER, ERASE, STAMP
         }
         [System.NonSerialized]
-        public MarkerState state = MarkerState.NORMAL;
+        public ToolState state = ToolState.NORMAL;
 
 
 
@@ -80,13 +84,17 @@ namespace VRPen {
             
         }
 
+        public void changeStampSize(float size) {
+            stampSize = size;
+        }
+
         protected void idle() {
             hover = HoverState.NONE;
             endLine();
         }
 
 
-        public virtual void switchTool(MarkerState newState) {
+        public virtual void switchTool(ToolState newState) {
             //change state
             state = newState;
         }
@@ -116,6 +124,12 @@ namespace VRPen {
             //get button
             Selectable button = data.hit.collider.GetComponent<Selectable>();
 
+            //add data to passthrough
+            ButtonPassthrough bp;
+            if ((bp = button.GetComponent<ButtonPassthrough>()) != null) {
+                bp.clickedBy = this;
+            }
+
             //slider state
             if (button is Slider) {
 
@@ -135,11 +149,6 @@ namespace VRPen {
                 //select
                 button.Select();
 
-				//add data to passthrough
-				ButtonPassthrough bp;
-                if((bp = button.GetComponent<ButtonPassthrough>()) != null) {
-                    bp.clickedBy = this;
-                }
 
                 //button state
                 if (button is Button) {
@@ -245,13 +254,13 @@ namespace VRPen {
             //do stuff
             switch (state) {
 
-                case MarkerState.NORMAL:
+                case ToolState.NORMAL:
                     
                     vectorMan.draw(network.localPlayer, deviceData.deviceIndex, false, currentColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
                     
                     break;
 
-                case MarkerState.EYEDROPPER:
+                case ToolState.EYEDROPPER:
 
                     if (UIClickDown) {
 
@@ -279,9 +288,15 @@ namespace VRPen {
 
                     break;
 
-                case MarkerState.ERASE:
+                case ToolState.ERASE:
 
                     vectorMan.draw(network.localPlayer, deviceData.deviceIndex, false, data.display.currentLocalCanvas.bgColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
+                    break;
+
+                case ToolState.STAMP:
+                    if (UIClickDown) {
+                        vectorMan.stamp(vectorMan.stampTest, network.localPlayer, deviceData.deviceIndex, new Color32(), xFloat, yFloat, stampSize, data.display.currentLocalCanvas.canvasId, true);
+                    }
                     break;
             }
 

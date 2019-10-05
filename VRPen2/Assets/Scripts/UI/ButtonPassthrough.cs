@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace VRPen {
 
@@ -14,6 +15,12 @@ namespace VRPen {
 
         [System.NonSerialized]
         public VRPenInput clickedBy;
+
+        Selectable selectable;
+
+        private void Start() {
+            selectable = GetComponent<Selectable>();
+        }
 
         public void passThrough(int id) {
 
@@ -31,11 +38,18 @@ namespace VRPen {
                 case 2:
                     UI.erasePassthrough(clickedBy);
                     break;
+                case 3:
+                    UI.stampPassthrough(clickedBy);
+                    break;
                 default:
                     Debug.LogError("Undetected case");
                     break;
             }
 
+        }
+
+        public void stampSliderChange() {
+            UI.stampSliderPassthrough(clickedBy, ((Slider)selectable).value);
         }
 
     }

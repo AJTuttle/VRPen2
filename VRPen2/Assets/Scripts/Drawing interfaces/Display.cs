@@ -40,16 +40,24 @@ namespace VRPen {
 
        
         public void eyedropperPassthrough(VRPenInput input) {
-            if (input.state != VRPenInput.MarkerState.EYEDROPPER) input.switchTool(VRPenInput.MarkerState.EYEDROPPER);
+            if (input.state != VRPenInput.ToolState.EYEDROPPER) input.switchTool(VRPenInput.ToolState.EYEDROPPER);
             
         }
 
         public void erasePassthrough(VRPenInput input) {
-            if (input.state != VRPenInput.MarkerState.ERASE) input.switchTool(VRPenInput.MarkerState.ERASE);
+            if (input.state != VRPenInput.ToolState.ERASE) input.switchTool(VRPenInput.ToolState.ERASE);
         }
 
         public void markerPassthrough(VRPenInput input) {
-            if (input.state != VRPenInput.MarkerState.NORMAL) input.switchTool(VRPenInput.MarkerState.NORMAL);
+            if (input.state != VRPenInput.ToolState.NORMAL) input.switchTool(VRPenInput.ToolState.NORMAL);
+        }
+
+        public void stampPassthrough(VRPenInput input) {
+            if (input.state != VRPenInput.ToolState.STAMP) input.switchTool(VRPenInput.ToolState.STAMP);
+        }
+
+        public void stampSliderPassthrough(VRPenInput input, float size) {
+            input.changeStampSize(size);
         }
 
         public void clearCanvas() {

@@ -72,19 +72,19 @@ namespace VRPen {
 			Destroy(gameObject);
 		}
 
-        public override void switchTool(MarkerState newState) {
+        public override void switchTool(ToolState newState) {
             //if no change return
             if (state == newState) return;
 
             //turn off old tool
             switch (state) {
-                case MarkerState.NORMAL:
+                case ToolState.NORMAL:
                     markerModel.SetActive(false);
                     break;
-                case MarkerState.EYEDROPPER:
+                case ToolState.EYEDROPPER:
                     eyedropperModel.SetActive(false);
                     break;
-                case MarkerState.ERASE:
+                case ToolState.ERASE:
 					eraserModel.SetActive(false);
 					break;
             }
@@ -94,13 +94,13 @@ namespace VRPen {
 
             //turn on new tool
             switch (state) {
-                case MarkerState.NORMAL:
+                case ToolState.NORMAL:
                     markerModel.SetActive(true);
                     break;
-                case MarkerState.EYEDROPPER:
+                case ToolState.EYEDROPPER:
                     eyedropperModel.SetActive(true);
                     break;
-                case MarkerState.ERASE:
+                case ToolState.ERASE:
 					eraserModel.SetActive(true);
 					break;
             }
@@ -126,7 +126,7 @@ namespace VRPen {
             float rawPressure = Mathf.Clamp01(pressureDistanceMultiplier * ((raycastDistance - data.hit.distance) / raycastDistance));
 			pressure = pressureCurve.Evaluate(rawPressure);
             data.pressure = pressure;
-			if (state == MarkerState.ERASE) data.pressure *= 4;
+			if (state == ToolState.ERASE) data.pressure *= 4;
 
             //display
             data.display = snappedDisplay;

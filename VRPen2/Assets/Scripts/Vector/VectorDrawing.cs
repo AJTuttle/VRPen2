@@ -215,7 +215,7 @@ namespace VRPen {
             }
         }
 
-        void stamp(Texture stampTex, NetworkedPlayer player, byte deviceIndex, Color32 color, float x, float y, float pressure, byte canvasId, bool localInput) {
+        public void stamp(Texture stampTex, NetworkedPlayer player, byte deviceIndex, Color32 color, float x, float y, float pressure, byte canvasId, bool localInput) {
             
             //get canvas
             VectorCanvas canvas = getCanvas(canvasId);
