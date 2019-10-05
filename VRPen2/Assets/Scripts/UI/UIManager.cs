@@ -19,7 +19,6 @@ namespace VRPen {
 		public GameObject canvasMenuParent;
 		public GameObject canvasListParent;
 		public GameObject clearMenuParent;
-		public GameObject mapParent;
 		public GameObject menuArrow;
 		public Display display;
 		
@@ -102,7 +101,6 @@ namespace VRPen {
 			calculatorParent.SetActive(!calculatorParent.activeSelf);
 			canvasMenuParent.SetActive(false);
 			clearMenuParent.SetActive(false);
-			mapParent.SetActive(false);
 
 			
 			if (localInput) packState();
@@ -114,7 +112,6 @@ namespace VRPen {
 			canvasMenuParent.SetActive(!canvasMenuParent.activeSelf);
 			calculatorParent.SetActive(false);
 			clearMenuParent.SetActive(false);
-			mapParent.SetActive(false);
 			
 			if (localInput) packState();
 
@@ -123,20 +120,8 @@ namespace VRPen {
 			clearMenuParent.SetActive(!clearMenuParent.activeSelf);
 			calculatorParent.SetActive(false);
 			canvasMenuParent.SetActive(false);
-			mapParent.SetActive(false);
 
 			
-
-			if (localInput) packState();
-
-		}
-		public void mapToggle(bool localInput) {
-
-			mapParent.SetActive(!mapParent.activeSelf);
-			calculatorParent.SetActive(false);
-			canvasMenuParent.SetActive(false);
-			clearMenuParent.SetActive(false);
-
 
 			if (localInput) packState();
 
@@ -212,7 +197,6 @@ namespace VRPen {
 			stateMask += (byte)((calculatorParent.activeSelf ? 1 : 0) << 1);
 			stateMask += (byte)((canvasMenuParent.activeSelf ? 1 : 0) << 2);
 			stateMask += (byte)((clearMenuParent.activeSelf ? 1 : 0) << 3);
-			stateMask += (byte)((mapParent.activeSelf ? 1 : 0) << 4);
 
 			network.sendUIState(display.DisplayId, stateMask);
 
@@ -232,10 +216,42 @@ namespace VRPen {
 			if (calculatorParent.activeSelf ^ ((stateMask & (1 << 1)) > 0)) calculatorToggle(false);
 			if (canvasMenuParent.activeSelf ^ ((stateMask & (1 << 2)) > 0)) canvasMenuToggle(false);
 			if (clearMenuParent.activeSelf ^ ((stateMask & (1 << 3)) > 0)) clearMenuToggle(false);
-			if (mapParent.activeSelf ^ ((stateMask & (1 << 4)) > 0)) mapToggle(false);
 
 
 		}
+
+        #region Passthroughs
+
+        public void addCanvasPassthrough() {
+            display.addCanvasPassthrough();
+        }
+
+        public void undoPassthrough() {
+            display.undoPassthrough();
+        }
+
+        public void savePassthrough() {
+            display.savePassthrough();
+        }
+        
+        public void eyedropperPassthrough(VRPenInput input) {
+            display.eyedropperPassthrough(input);
+
+        }
+
+        public void erasePassthrough(VRPenInput input) {
+            display.erasePassthrough(input);
+        }
+
+        public void markerPassthrough(VRPenInput input) {
+            display.markerPassthrough(input);
+        }
+
+        public void clearCanvasPassThrough() {
+            display.clearCanvas();
+        }
+
+        #endregion
 
     }
 

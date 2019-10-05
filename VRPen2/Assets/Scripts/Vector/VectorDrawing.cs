@@ -138,7 +138,7 @@ namespace VRPen {
                 saveImage(0);
             }
             else if (Input.GetKeyDown(KeyCode.V)) {
-                stamp(stampTest, network.localPlayer, 0, new Color32(0, 0, 0, 255), .5f, .5f, 0, true);
+                stamp(stampTest, network.localPlayer, 0, new Color32(0, 0, 0, 255), .5f, .5f, .25f, 0, true);
             }
         }
 
@@ -215,7 +215,7 @@ namespace VRPen {
             }
         }
 
-        void stamp(Texture stampTex, NetworkedPlayer player, byte deviceIndex, Color32 color, float x, float y, byte canvasId, bool localInput) {
+        void stamp(Texture stampTex, NetworkedPlayer player, byte deviceIndex, Color32 color, float x, float y, float pressure, byte canvasId, bool localInput) {
             
             //get canvas
             VectorCanvas canvas = getCanvas(canvasId);
@@ -232,7 +232,7 @@ namespace VRPen {
             }
 
             //make stamp
-            VectorStamp stamp = createStamp(stampTex, canvas, device, player);
+            VectorStamp stamp = createStamp(stampTex, canvas, device, player, pressure);
 
             //got vector pos
             Vector3 drawPoint = new Vector3(x, 0, y);
@@ -243,7 +243,7 @@ namespace VRPen {
 
         }
 
-        VectorStamp createStamp(Texture stampTex, VectorCanvas canvas, InputDevice device, NetworkedPlayer player) {
+        VectorStamp createStamp(Texture stampTex, VectorCanvas canvas, InputDevice device, NetworkedPlayer player, float size) {
 
             //line end check needed
             if (device.currentGraphic != null && (device.currentGraphic is VectorLine)) {
@@ -256,7 +256,7 @@ namespace VRPen {
             obj.transform.parent = canvas.vectorParent;
             obj.transform.localPosition = Vector3.zero;
             obj.transform.localRotation = Quaternion.identity;
-            obj.transform.localScale = Vector3.one * 0.01f;
+            obj.transform.localScale = obj.transform.localScale * size;
 
             //add mesh
             MeshRenderer mr = obj.AddComponent<MeshRenderer>();
@@ -296,10 +296,10 @@ namespace VRPen {
 			Mesh m = new Mesh();
 
 			m.vertices = new Vector3[4] {
-				new Vector3(0, 0, 0),
-				new Vector3(width, 0, 0),
-				new Vector3(0, height, 0),
-				new Vector3(width, height, 0)
+                new Vector3(-width/2, 0, -height/2),    //bot left
+				new Vector3(width/2, 0, -height/2),     //bot right
+				new Vector3(-width/2, 0, height/2),     //top left
+				new Vector3(width/2, 0, height/2)       //top right
 			};
 			m.triangles = new int[6] {
 				// lower left triangle

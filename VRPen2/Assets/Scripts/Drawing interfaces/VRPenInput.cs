@@ -116,6 +116,18 @@ namespace VRPen {
             //get button
             Selectable button = data.hit.collider.GetComponent<Selectable>();
 
+            //slider state
+            if (button is Slider) {
+
+                //get value [0-1]
+                float value = data.hit.collider.transform.InverseTransformPoint(data.hit.point).x;
+                float scale = ((BoxCollider)data.hit.collider).size.x;
+                value = value / scale + 0.5f;
+
+                //set value
+                ((Slider)button).value = value;
+
+            }
 
             //if click event
             if (UIClickDown) {
@@ -140,6 +152,8 @@ namespace VRPen {
                     ((Toggle)button).isOn = !((Toggle)button).isOn;
 
                 }
+
+                
             }
 
             //still select if no click

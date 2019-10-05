@@ -4,9 +4,13 @@ using UnityEngine;
 
 namespace VRPen {
 
+
+    /// <summary>
+    /// This is attached to buttons that change input device stuff. The purpose of this script is to allow the UI interface to know WHICH inputdevice clicked it.
+    /// </summary>
     public class ButtonPassthrough : MonoBehaviour {
 
-        public Display display;
+        public UIManager UI;
 
         [System.NonSerialized]
         public VRPenInput clickedBy;
@@ -19,13 +23,13 @@ namespace VRPen {
             }
             switch (id) {
                 case 0:
-                    display.markerPassthrough(clickedBy);
+                    UI.markerPassthrough(clickedBy);
                     break;
                 case 1:
-                    display.eyedropperPassthrough(clickedBy);
+                    UI.eyedropperPassthrough(clickedBy);
                     break;
                 case 2:
-                    display.erasePassthrough(clickedBy);
+                    UI.erasePassthrough(clickedBy);
                     break;
                 default:
                     Debug.LogError("Undetected case");
