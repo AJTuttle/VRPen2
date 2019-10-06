@@ -52,10 +52,14 @@ namespace VRPen {
         public ToolState state = ToolState.NORMAL;
 
 
+        public GameObject stampIndicator;
+
 
         //abstract methods
         protected abstract InputData getInputData();
         protected abstract void updateColorIndicator(Color32 color);
+
+        
 
 		
 
@@ -100,6 +104,8 @@ namespace VRPen {
         }
 
         protected void input() {
+
+            stampIndicator.SetActive(false);
 
             //raycast and retrieve data from cast
             InputData data = getInputData();
@@ -294,6 +300,11 @@ namespace VRPen {
                     break;
 
                 case ToolState.STAMP:
+
+                    stampIndicator.SetActive(true);
+                    stampIndicator.transform.position = data.hit.point;
+                    stampIndicator.transform.localScale = Vector3.one * stampSize * 0.6f;
+
                     if (UIClickDown) {
                         vectorMan.stamp(vectorMan.stampTest, network.localPlayer, deviceData.deviceIndex, new Color32(), xFloat, yFloat, stampSize, data.display.currentLocalCanvas.canvasId, true);
                     }

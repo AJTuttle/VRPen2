@@ -148,7 +148,7 @@ namespace VRPen {
             clearMenuParent.SetActive(false);
             calculatorParent.SetActive(false);
             canvasMenuParent.SetActive(false);
-            stampOptionsParent.SetActive(!clearMenuParent.activeSelf);
+            stampOptionsParent.SetActive(!stampOptionsParent.activeSelf);
 
             if (localInput) packState();
         }
