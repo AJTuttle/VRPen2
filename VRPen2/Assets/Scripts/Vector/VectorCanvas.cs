@@ -257,6 +257,10 @@ namespace VRPen {
             yield return null;
             renderCam.clearFlags = CameraClearFlags.Nothing;
 
+
+            //set background
+            if (drawingMan.canvasBackgrounds.Length > canvasId && drawingMan.canvasBackgrounds[canvasId] != null) drawingMan.stamp(drawingMan.canvasBackgrounds[canvasId], network.localPlayer, 0, 0.5f, 0.5f, 1, canvasId, false);
+
         }
 
         IEnumerator renderGraphic(VectorGraphic graphic, InputDevice device) {

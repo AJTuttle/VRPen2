@@ -10,6 +10,7 @@ namespace VRPen {
 
 
         public Texture stampTest;
+        public Texture[] canvasBackgrounds;
 
         //scripts
         StarTablet tablet;
@@ -77,8 +78,7 @@ namespace VRPen {
             tablet = GetComponent<StarTablet>();
             network = GetComponent<NetworkManager>();
 
-            //spawn preset canvases
-            addCanvas(true);
+            
 
 			//set up deisplay ids
 			for(byte x = 0; x < displays.Count; x++) {
@@ -94,6 +94,9 @@ namespace VRPen {
                 device.deviceIndex = x;
 				
             }
+
+            //spawn preset canvases
+            addCanvas(true);
 
             SceneManager.activeSceneChanged += OnSceneChange;
 
@@ -138,7 +141,7 @@ namespace VRPen {
                 saveImage(0);
             }
             else if (Input.GetKeyDown(KeyCode.V)) {
-                stamp(stampTest, network.localPlayer, 0, new Color32(0, 0, 0, 255), .5f, .5f, .25f, 0, true);
+                stamp(stampTest, network.localPlayer, 0, .5f, .5f, .25f, 0, true);
             }
         }
 
@@ -215,7 +218,7 @@ namespace VRPen {
             }
         }
 
-        public void stamp(Texture stampTex, NetworkedPlayer player, byte deviceIndex, Color32 color, float x, float y, float pressure, byte canvasId, bool localInput) {
+        public void stamp(Texture stampTex, NetworkedPlayer player, byte deviceIndex, float x, float y, float pressure, byte canvasId, bool localInput) {
             
             //get canvas
             VectorCanvas canvas = getCanvas(canvasId);
@@ -514,7 +517,7 @@ namespace VRPen {
                 if (canvasId == 0) display.swapCurrentCanvas(0);
 
             }
-            
+
 
             //if local
             if (localInput) {

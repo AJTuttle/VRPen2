@@ -306,7 +306,7 @@ namespace VRPen {
                     stampIndicator.transform.localScale = Vector3.one * stampSize * 0.6f;
 
                     if (UIClickDown) {
-                        vectorMan.stamp(vectorMan.stampTest, network.localPlayer, deviceData.deviceIndex, new Color32(), xFloat, yFloat, stampSize, data.display.currentLocalCanvas.canvasId, true);
+                        vectorMan.stamp(vectorMan.stampTest, network.localPlayer, deviceData.deviceIndex, xFloat, yFloat, stampSize, data.display.currentLocalCanvas.canvasId, true);
                     }
                     break;
             }
