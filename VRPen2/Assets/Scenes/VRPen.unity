@@ -840,12 +840,12 @@ PrefabInstance:
         type: 3}
       propertyPath: localInputDevices.Array.data[1]
       value: 
-      objectReference: {fileID: 466671006}
+      objectReference: {fileID: 1689188219}
     - target: {fileID: 6656644161125225622, guid: 7573795c7992d7d4eb01493fb658bf3c,
         type: 3}
       propertyPath: localInputDevices.Array.data[2]
       value: 
-      objectReference: {fileID: 1689188219}
+      objectReference: {fileID: 466671006}
     - target: {fileID: 6656644161125225622, guid: 7573795c7992d7d4eb01493fb658bf3c,
         type: 3}
       propertyPath: depthShaderTexture

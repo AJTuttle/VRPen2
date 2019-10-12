@@ -265,8 +265,13 @@ namespace VRPen {
 
         IEnumerator renderGraphic(VectorGraphic graphic, InputDevice device) {
 
+
+            //turn off the currentgraphic since we dont want it to be edited while being rendered in
+            if (graphic == device.currentGraphic) device.currentGraphic = null;
+
             //make sure mesh renderer is on
             graphic.mr.enabled = true;
+            
 
             //wait
             yield return null;
@@ -274,7 +279,6 @@ namespace VRPen {
 
             //turn off graphic
             graphic.mr.enabled = false;
-            if (graphic == device.currentGraphic) device.currentGraphic = null;
 
         }
 

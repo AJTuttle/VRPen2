@@ -40,10 +40,11 @@ namespace VRPen {
 
         public void setSize(float value) {
             size = value;
-            image.localScale = new Vector3(1000, 1000, 1000) * size;
+            image.localScale = new Vector3(600, 600, 600) * size;
         }
 
         public void confirmStamp() {
+            Debug.Log(device.deviceData.deviceIndex);
             vectorMan.stamp(imageMat.mainTexture, player, device.deviceData.deviceIndex, .5f, .5f, size, display.DisplayId, true);
         }
 
