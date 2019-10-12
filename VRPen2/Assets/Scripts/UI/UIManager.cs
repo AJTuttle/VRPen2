@@ -18,11 +18,11 @@ namespace VRPen {
 		public GameObject calculatorParent;
 		public GameObject canvasMenuParent;
 		public GameObject canvasListParent;
-        public GameObject stampOptionsParent;
 		public GameObject clearMenuParent;
 		public GameObject menuArrow;
 		public Display display;
 		
+        public Transform stampUIParent;
 
 		public GameObject canvasButtonPrefab;
 
@@ -76,8 +76,6 @@ namespace VRPen {
 				canvasMenuParent.transform.localPosition, canvasMenuParent.transform.localPosition + new Vector3(200f, 0, 0), false, localInput));
 			StartCoroutine(resizeMenu(clearMenuParent, clearMenuParent.transform.localScale, clearMenuParent.transform.localScale,
 				clearMenuParent.transform.localPosition, clearMenuParent.transform.localPosition + new Vector3(200f, 0, 0), false, localInput));
-            StartCoroutine(resizeMenu(stampOptionsParent, stampOptionsParent.transform.localScale, stampOptionsParent.transform.localScale,
-                stampOptionsParent.transform.localPosition, stampOptionsParent.transform.localPosition + new Vector3(200f, 0, 0), false, localInput));
 			sideMenuOpen = true;
 			menuArrow.transform.GetChild(0).gameObject.SetActive(false);
 			menuArrow.transform.GetChild(1).gameObject.SetActive(true);
@@ -101,8 +99,6 @@ namespace VRPen {
 				canvasMenuParent.transform.localPosition, canvasMenuParent.transform.localPosition - new Vector3(200f, 0, 0), false, localInput));
 			StartCoroutine(resizeMenu(clearMenuParent, clearMenuParent.transform.localScale, clearMenuParent.transform.localScale,
 				clearMenuParent.transform.localPosition, clearMenuParent.transform.localPosition - new Vector3(200f, 0, 0), false, localInput));
-            StartCoroutine(resizeMenu(stampOptionsParent, stampOptionsParent.transform.localScale, stampOptionsParent.transform.localScale,
-                stampOptionsParent.transform.localPosition, stampOptionsParent.transform.localPosition - new Vector3(200f, 0, 0), false, localInput));
 			sideMenuOpen = false;
 			menuArrow.transform.GetChild(0).gameObject.SetActive(true);
 			menuArrow.transform.GetChild(1).gameObject.SetActive(false);
@@ -115,7 +111,6 @@ namespace VRPen {
 			calculatorParent.SetActive(!calculatorParent.activeSelf);
 			canvasMenuParent.SetActive(false);
 			clearMenuParent.SetActive(false);
-            stampOptionsParent.SetActive(false);
 
 			
 			if (localInput) packState();
@@ -127,7 +122,6 @@ namespace VRPen {
 			canvasMenuParent.SetActive(!canvasMenuParent.activeSelf);
 			calculatorParent.SetActive(false);
 			clearMenuParent.SetActive(false);
-            stampOptionsParent.SetActive(false);
 			
 			if (localInput) packState();
 
@@ -136,22 +130,13 @@ namespace VRPen {
 			clearMenuParent.SetActive(!clearMenuParent.activeSelf);
 			calculatorParent.SetActive(false);
 			canvasMenuParent.SetActive(false);
-            stampOptionsParent.SetActive(false);
 
 			
 
 			if (localInput) packState();
 
 		}
-        public void stampMenuToggle(bool localInput) {
-
-            clearMenuParent.SetActive(false);
-            calculatorParent.SetActive(false);
-            canvasMenuParent.SetActive(false);
-            stampOptionsParent.SetActive(!stampOptionsParent.activeSelf);
-
-            if (localInput) packState();
-        }
+   
 
         public void highlightTimer(float time) {
             StartCoroutine(turnOffHighlight(time));
@@ -274,12 +259,9 @@ namespace VRPen {
         }
 
         public void stampPassthrough(VRPenInput input) {
-            display.stampPassthrough(input);
+            display.stampPassthrough(input, stampUIParent);
         }
-
-        public void stampSliderPassthrough(VRPenInput input, float size) {
-            display.stampSliderPassthrough(input, size);
-        }
+        
 
         public void clearCanvasPassThrough() {
             display.clearCanvas();

@@ -22,7 +22,7 @@ namespace VRPen {
         //script refs
         VectorDrawing vectorMan;
         NetworkManager network;
-        InputDevice deviceData;
+        public InputDevice deviceData;
 
         //public vars
         public bool UIClickDown = false;
@@ -46,13 +46,16 @@ namespace VRPen {
 
         //state
         public enum ToolState {
-            NORMAL, EYEDROPPER, ERASE, STAMP
+            NORMAL, EYEDROPPER, ERASE
         }
         [System.NonSerialized]
         public ToolState state = ToolState.NORMAL;
 
-
+        //stamp
         public GameObject stampIndicator;
+        public GameObject stampPrefab;
+        public Stamp currentStamp;
+        
 
 
         //abstract methods
@@ -88,10 +91,6 @@ namespace VRPen {
             
         }
 
-        public void changeStampSize(float size) {
-            stampSize = size;
-        }
-
         protected void idle() {
             hover = HoverState.NONE;
             endLine();
@@ -103,9 +102,17 @@ namespace VRPen {
             state = newState;
         }
 
+        public void newStamp(Transform parent, Display display) {
+            if (currentStamp != null) currentStamp.close();
+
+            GameObject obj = Instantiate(stampPrefab, parent);
+            currentStamp = obj.GetComponent<Stamp>();
+            currentStamp.instantiate(this, vectorMan, network.localPlayer, display);
+        }
+
         protected void input() {
 
-            stampIndicator.SetActive(false);
+            //stampIndicator.SetActive(false);
 
             //raycast and retrieve data from cast
             InputData data = getInputData();
@@ -299,16 +306,19 @@ namespace VRPen {
                     vectorMan.draw(network.localPlayer, deviceData.deviceIndex, false, data.display.currentLocalCanvas.bgColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
                     break;
 
-                case ToolState.STAMP:
+                //case ToolState.STAMP:
 
-                    stampIndicator.SetActive(true);
-                    stampIndicator.transform.position = data.hit.point;
-                    stampIndicator.transform.localScale = Vector3.one * stampSize * 0.6f;
+                    
 
-                    if (UIClickDown) {
-                        vectorMan.stamp(vectorMan.stampTest, network.localPlayer, deviceData.deviceIndex, xFloat, yFloat, stampSize, data.display.currentLocalCanvas.canvasId, true);
-                    }
-                    break;
+                //    if (UIClickDown) {
+
+                        
+                //        stampIndicator.SetActive(true);
+                //        stampIndicator.transform.position = data.hit.point;
+                //        stampIndicator.transform.localScale = Vector3.one * stampSize * 0.6f;
+                //        //vectorMan.stamp(vectorMan.stampTest, network.localPlayer, deviceData.deviceIndex, xFloat, yFloat, stampSize, data.display.currentLocalCanvas.canvasId, true);
+                //    }
+                //    break;
             }
 
 

@@ -48,9 +48,5 @@ namespace VRPen {
 
         }
 
-        public void stampSliderChange() {
-            UI.stampSliderPassthrough(clickedBy, ((Slider)selectable).value);
-        }
-
     }
 }

@@ -44,8 +44,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2be2245bd853e4f4b9109ca4e8a8c1d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  detectInput: 0
+  deviceData: {fileID: 0}
   UIClickDown: 0
+  stampIndicator: {fileID: 0}
+  stampPrefab: {fileID: 2441548749050361720, guid: cbb90edd4f2d39f4abac245a76f78a78,
+    type: 3}
+  currentStamp: {fileID: 0}
   cam: {fileID: 0}
   pressure: 0
 --- !u!114 &2447075152336780480
