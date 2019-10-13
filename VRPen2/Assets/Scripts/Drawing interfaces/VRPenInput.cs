@@ -52,10 +52,13 @@ namespace VRPen {
         public ToolState state = ToolState.NORMAL;
 
         //stamp
-        public GameObject stampIndicator;
         public GameObject stampPrefab;
+        [System.NonSerialized]
         public Stamp currentStamp;
-        
+
+
+        //grab
+        UIGrabbable grabbed;
 
 
         //abstract methods
@@ -94,6 +97,11 @@ namespace VRPen {
         protected void idle() {
             hover = HoverState.NONE;
             endLine();
+
+            if (grabbed != null) {
+                grabbed.unGrab();
+                grabbed = null;
+            }
         }
 
 
@@ -118,6 +126,13 @@ namespace VRPen {
             InputData data = getInputData();
             hover = data.hover;
 
+            //if currently grabbing a uigrabbable
+            if (grabbed != null && data.hover != HoverState.NONE) {
+                Vector3 pos = grabbed.parent.parent.InverseTransformPoint(data.hit.point);
+                grabbed.updatePos(pos.x, pos.y);
+                return;
+            }
+
             //use raycast data to do stuff
             if (hover == HoverState.DRAW) canvasHover(data);
             else if (hover == HoverState.NODRAW || hover == HoverState.NONE) noDrawHover(data);
@@ -141,6 +156,13 @@ namespace VRPen {
             ButtonPassthrough bp;
             if ((bp = button.GetComponent<ButtonPassthrough>()) != null) {
                 bp.clickedBy = this;
+            }
+
+            //grabbable if not grabbing something
+            if (grabbed == null && button.GetComponent<UIGrabbable>() != null) {
+                grabbed = button.GetComponent<UIGrabbable>();
+                Vector3 pos = grabbed.parent.parent.InverseTransformPoint(data.hit.point);
+                grabbed.grab(pos.x, pos.y);
             }
 
             //slider state
