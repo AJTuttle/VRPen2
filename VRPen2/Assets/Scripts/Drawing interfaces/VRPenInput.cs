@@ -260,8 +260,8 @@ namespace VRPen {
             //get vars from ray
             Transform canvas = data.hit.collider.transform;
             Vector3 pos = canvas.InverseTransformPoint(data.hit.point);
-            xFloat = (pos.x + 1) / 2f;
-            yFloat = (pos.y + 0.6f) / 1.2f;
+            xFloat = pos.x + 0.5f;
+            yFloat = pos.y + 0.5f;
 
 
             //do stuff

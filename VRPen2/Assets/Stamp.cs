@@ -16,6 +16,7 @@ namespace VRPen {
         Material imageMat;
 
         float size = .1f; //default value (not necesarrlly synced with ui slider on start)
+        float rot = .5f; //default value (not necesarrlly synced with ui slider on start)
 
         public Texture2D defaultTexture;
 
@@ -31,7 +32,8 @@ namespace VRPen {
             imageMat = image.GetComponent<Renderer>().material;
 
             setTexture(defaultTexture);
-            setSize(.1f);
+            setSize(size);
+            setRot(rot);
         }
 
         void setTexture(Texture2D tex) {
@@ -40,12 +42,22 @@ namespace VRPen {
 
         public void setSize(float value) {
             size = value;
-            image.localScale = new Vector3(600, 600, 600) * size;
+            image.localScale = new Vector3(600, 600, 600) * value;
+            
+        }
+
+        public void setRot(float value) {
+            //convert from [0,1] to [-180,180]
+            value *= 360;
+            value -= 180;
+
+            rot = value;
+            image.localRotation = Quaternion.Euler(0, 0, -rot);
         }
 
         public void confirmStamp() {
-            Debug.Log(device.deviceData.deviceIndex);
-            vectorMan.stamp(imageMat.mainTexture, player, device.deviceData.deviceIndex, .5f, .5f, size, display.DisplayId, true);
+            vectorMan.stamp(imageMat.mainTexture, player, device.deviceData.deviceIndex, .5f, .5f, size, rot, display.DisplayId, true);
+            close();
         }
 
         public void close() {

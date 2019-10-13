@@ -259,14 +259,14 @@ namespace VRPen {
 
 
             //set background
-            if (drawingMan.canvasBackgrounds.Length > canvasId && drawingMan.canvasBackgrounds[canvasId] != null) drawingMan.stamp(drawingMan.canvasBackgrounds[canvasId], network.localPlayer, 0, 0.5f, 0.5f, 1, canvasId, false);
+            if (drawingMan.canvasBackgrounds.Length > canvasId && drawingMan.canvasBackgrounds[canvasId] != null) drawingMan.stamp(drawingMan.canvasBackgrounds[canvasId], network.localPlayer, 0, 0.5f, 0.5f, 1, 0, canvasId, false);
 
         }
 
         IEnumerator renderGraphic(VectorGraphic graphic, InputDevice device) {
 
 
-            //turn off the currentgraphic since we dont want it to be edited while being rendered in
+            //turn off the currentgraphic before since we dont want it to be edited while being rendered in
             if (graphic == device.currentGraphic) device.currentGraphic = null;
 
             //make sure mesh renderer is on

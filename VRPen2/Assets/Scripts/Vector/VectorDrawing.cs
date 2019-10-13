@@ -141,7 +141,7 @@ namespace VRPen {
                 saveImage(0);
             }
             else if (Input.GetKeyDown(KeyCode.V)) {
-                stamp(stampTest, network.localPlayer, 0, .5f, .5f, .25f, 0, true);
+                stamp(stampTest, network.localPlayer, 0, .5f, .5f, .25f, 0, 0, true);
             }
         }
 
@@ -218,7 +218,7 @@ namespace VRPen {
             }
         }
 
-        public void stamp(Texture stampTex, NetworkedPlayer player, byte deviceIndex, float x, float y, float pressure, byte canvasId, bool localInput) {
+        public void stamp(Texture stampTex, NetworkedPlayer player, byte deviceIndex, float x, float y, float pressure, float rotation, byte canvasId, bool localInput) {
             
             //get canvas
             VectorCanvas canvas = getCanvas(canvasId);
@@ -235,7 +235,7 @@ namespace VRPen {
             }
 
             //make stamp
-            VectorStamp stamp = createStamp(stampTex, canvas, device, player, pressure);
+            VectorStamp stamp = createStamp(stampTex, canvas, device, player, pressure, rotation);
 
             //got vector pos
             Vector3 drawPoint = new Vector3(x, 0, y);
@@ -246,7 +246,7 @@ namespace VRPen {
 
         }
 
-        VectorStamp createStamp(Texture stampTex, VectorCanvas canvas, InputDevice device, NetworkedPlayer player, float size) {
+        VectorStamp createStamp(Texture stampTex, VectorCanvas canvas, InputDevice device, NetworkedPlayer player, float size, float rotation) {
 
             //line end check needed
             if (device.currentGraphic != null && (device.currentGraphic is VectorLine)) {
@@ -258,7 +258,7 @@ namespace VRPen {
             GameObject obj = new GameObject();
             obj.transform.parent = canvas.vectorParent;
             obj.transform.localPosition = Vector3.zero;
-            obj.transform.localRotation = Quaternion.identity;
+            obj.transform.localRotation = Quaternion.Euler(0,rotation,0);
             obj.transform.localScale = obj.transform.localScale * size;
 
             //add mesh
