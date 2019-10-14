@@ -259,7 +259,7 @@ namespace VRPen {
 
 
             //set background
-            if (drawingMan.canvasBackgrounds.Length > canvasId && drawingMan.canvasBackgrounds[canvasId] != null) drawingMan.stamp(drawingMan.canvasBackgrounds[canvasId], network.localPlayer, 0, 0.5f, 0.5f, 1, 0, canvasId, false);
+            if (drawingMan.canvasBackgrounds.Length > canvasId && drawingMan.canvasBackgrounds[canvasId] != null) drawingMan.stamp(drawingMan.canvasBackgrounds[canvasId], network.localPlayer, 0, 0.5f, 0.5f, 1, 0.5f, canvasId, false);
 
         }
 

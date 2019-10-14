@@ -13,7 +13,6 @@ namespace VRPen {
 
         public void updatePos(float x, float y) {
 
-            Debug.Log(x + "  " + y);
 
             parent.transform.localPosition += new Vector3(x-this.x,y-this.y,0);
             this.x = x;

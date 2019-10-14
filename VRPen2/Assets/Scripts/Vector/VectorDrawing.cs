@@ -258,7 +258,12 @@ namespace VRPen {
             GameObject obj = new GameObject();
             obj.transform.parent = canvas.vectorParent;
             obj.transform.localPosition = Vector3.zero;
-            obj.transform.localRotation = Quaternion.Euler(0,rotation,0);
+
+			//convert from [0,1] to [-180,180]
+			float rotValue = rotation* 360;
+			rotValue -= 180;
+
+			obj.transform.localRotation = Quaternion.Euler(0,rotValue,0);
             obj.transform.localScale = obj.transform.localScale * size;
 
             //add mesh

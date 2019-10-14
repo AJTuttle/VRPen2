@@ -47,12 +47,14 @@ namespace VRPen {
         }
 
         public void setRot(float value) {
-            //convert from [0,1] to [-180,180]
-            value *= 360;
+
+			rot = value;
+			
+			//convert from [0,1] to [-180,180]
+			value *= 360;
             value -= 180;
 
-            rot = value;
-            image.localRotation = Quaternion.Euler(0, 0, -rot);
+            image.localRotation = Quaternion.Euler(0, 0, -value);
         }
 
         public void confirmStamp() {
