@@ -136,6 +136,16 @@ namespace VRPen {
 			if (localInput) packState();
 
 		}
+
+		public void closeMenus(bool localInput) {
+			clearMenuParent.SetActive(false);
+			calculatorParent.SetActive(false);
+			canvasMenuParent.SetActive(false);
+
+
+
+			if (localInput) packState();
+		}
    
 
         public void highlightTimer(float time) {
