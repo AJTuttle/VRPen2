@@ -86,17 +86,28 @@ namespace VRPen {
 			}
             
 
+			//setup input devices
             network.localPlayer.inputDevices = new Dictionary<byte, InputDevice>();
-            for (byte x = 0; x < localInputDevices.Count; x++) {
-                InputDevice device = localInputDevices[x];
-                network.localPlayer.inputDevices.Add(x, device);
+			byte deviceIndex = 0;
+			//set usable input devices (markers, tablets, raycasting)
+			for (; deviceIndex < localInputDevices.Count; deviceIndex++) {
+                InputDevice device = localInputDevices[deviceIndex];
+                network.localPlayer.inputDevices.Add(deviceIndex, device);
                 device.owner = network.localPlayer;
-                device.deviceIndex = x;
-				
+                device.deviceIndex = deviceIndex;	
             }
+			//set up input device for fascilitative inputs that shouldnt be editable (import background etc.)
+			InputDevice fascilitativeDevice = gameObject.AddComponent<InputDevice>();
+			network.localPlayer.inputDevices.Add(deviceIndex, fascilitativeDevice);
+			fascilitativeDevice.owner = network.localPlayer;
+			fascilitativeDevice.deviceIndex = deviceIndex;
+			network.localPlayer.fascilitativeDeviceIndex = deviceIndex;
 
-            //spawn preset canvases
-            addCanvas(true);
+
+
+
+			//spawn preset canvases
+			addCanvas(true);
 
             SceneManager.activeSceneChanged += OnSceneChange;
 

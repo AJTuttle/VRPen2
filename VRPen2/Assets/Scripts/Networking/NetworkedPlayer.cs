@@ -10,6 +10,7 @@ namespace VRPen {
 
         //input devices
         public Dictionary<byte, InputDevice> inputDevices;
+		public byte fascilitativeDeviceIndex; //also included in the dictionary
         
         //used for cursor
         public GameObject cursor;

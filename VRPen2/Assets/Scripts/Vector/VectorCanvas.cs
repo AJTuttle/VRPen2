@@ -127,13 +127,7 @@ namespace VRPen {
                 currentMesh.normals = currentLine.normals;
 
             }
-
-
-            if (currentLine.pointCount == 25) {
-                int x = 0;
-            }
-
-
+			
             //indices
             if (currentLine.indices == null) currentLine.indices = new List<int>();
 
@@ -243,8 +237,8 @@ namespace VRPen {
             renderQueueCounter = 1;
 
             //network
-            if (localInput) network.sendClear(canvasId);
-
+            if (localInput) network.sendClear(canvasId); 
+				
             StartCoroutine(fillboard());
 
         }
@@ -258,8 +252,11 @@ namespace VRPen {
             renderCam.clearFlags = CameraClearFlags.Nothing;
 
 
-            //set background
-            if (drawingMan.canvasBackgrounds.Length > canvasId && drawingMan.canvasBackgrounds[canvasId] != null) drawingMan.stamp(drawingMan.canvasBackgrounds[canvasId], network.localPlayer, 0, 0.5f, 0.5f, 1, 0.5f, canvasId, false);
+			//set background
+			if (drawingMan.canvasBackgrounds.Length > canvasId && drawingMan.canvasBackgrounds[canvasId] != null) {
+				Debug.Log(network.localPlayer.fascilitativeDeviceIndex);
+				drawingMan.stamp(drawingMan.canvasBackgrounds[canvasId], network.localPlayer, network.localPlayer.fascilitativeDeviceIndex, 0.5f, 0.5f, 1, 0.5f, canvasId, false);
+			}
 
         }
 
