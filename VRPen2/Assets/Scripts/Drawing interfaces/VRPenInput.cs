@@ -54,7 +54,7 @@ namespace VRPen {
         //stamp
         public GameObject stampPrefab;
         [System.NonSerialized]
-        public Stamp currentStamp;
+        public StampGenerator currentStamp;
 
 
         //grab
@@ -114,7 +114,7 @@ namespace VRPen {
             if (currentStamp != null) currentStamp.close();
 
             GameObject obj = Instantiate(stampPrefab, parent);
-            currentStamp = obj.GetComponent<Stamp>();
+            currentStamp = obj.GetComponent<StampGenerator>();
             currentStamp.instantiate(this, vectorMan, network.localPlayer, display);
         }
 

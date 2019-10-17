@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace VRPen {
 
-    public class Stamp : MonoBehaviour {
+    public class StampGenerator : MonoBehaviour {
 
         VectorDrawing vectorMan;
         VRPenInput device;
