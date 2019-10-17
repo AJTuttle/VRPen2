@@ -254,8 +254,7 @@ namespace VRPen {
 
 			//set background
 			if (drawingMan.canvasBackgrounds.Length > canvasId && drawingMan.canvasBackgrounds[canvasId] != null) {
-				Debug.Log(network.localPlayer.fascilitativeDeviceIndex);
-				drawingMan.stamp(drawingMan.canvasBackgrounds[canvasId], network.localPlayer, network.localPlayer.fascilitativeDeviceIndex, 0.5f, 0.5f, 1, 0.5f, canvasId, false);
+				drawingMan.stamp(drawingMan.canvasBackgrounds[canvasId], drawingMan.facilitativeDevice.owner, drawingMan.facilitativeDevice.deviceIndex, 0.5f, 0.5f, 1, 0.5f, canvasId, false);
 			}
 
         }

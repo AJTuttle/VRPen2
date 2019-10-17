@@ -68,10 +68,13 @@ namespace VRPen {
         public GameObject canvasPrefab;
         public Transform canvasParent;
 
+		[System.NonSerialized]
+		public InputDevice facilitativeDevice;
 
 
 
-        private void Start() {
+
+		private void Start() {
             
 
             //get scripts
@@ -88,20 +91,18 @@ namespace VRPen {
 
 			//setup input devices
             network.localPlayer.inputDevices = new Dictionary<byte, InputDevice>();
-			byte deviceIndex = 0;
 			//set usable input devices (markers, tablets, raycasting)
-			for (; deviceIndex < localInputDevices.Count; deviceIndex++) {
+			for (byte deviceIndex = 0; deviceIndex < localInputDevices.Count; deviceIndex++) {
                 InputDevice device = localInputDevices[deviceIndex];
                 network.localPlayer.inputDevices.Add(deviceIndex, device);
                 device.owner = network.localPlayer;
                 device.deviceIndex = deviceIndex;	
             }
 			//set up input device for fascilitative inputs that shouldnt be editable (import background etc.)
-			InputDevice fascilitativeDevice = gameObject.AddComponent<InputDevice>();
-			network.localPlayer.inputDevices.Add(deviceIndex, fascilitativeDevice);
-			fascilitativeDevice.owner = network.localPlayer;
-			fascilitativeDevice.deviceIndex = deviceIndex;
-			network.localPlayer.fascilitativeDeviceIndex = deviceIndex;
+			facilitativeDevice = gameObject.AddComponent<InputDevice>();
+			facilitativeDevice.type = InputDevice.InputDeviceType.Facilitative;
+			facilitativeDevice.owner = null;
+			facilitativeDevice.deviceIndex = 255;
 
 
 
@@ -184,7 +185,10 @@ namespace VRPen {
 
             //get device
             InputDevice device;
-            if ((device = player.inputDevices[deviceIndex]) == null) {
+			if (player == null && deviceIndex == facilitativeDevice.deviceIndex) {
+				device = facilitativeDevice;
+			}
+			else if ((device = player.inputDevices[deviceIndex]) == null) {
                 Debug.LogError("Failed retreiving input device");
                 return;
             }
@@ -240,7 +244,10 @@ namespace VRPen {
 
             //get device
             InputDevice device;
-            if ((device = player.inputDevices[deviceIndex]) == null) {
+			if (player == null && deviceIndex == facilitativeDevice.deviceIndex) {
+				device = facilitativeDevice;
+			}
+            else if ((device = player.inputDevices[deviceIndex]) == null) {
                 Debug.LogError("Failed retreiving input device");
                 return;
             }
@@ -288,14 +295,17 @@ namespace VRPen {
             //stamp data struct and player data structs
             VectorStamp currentStamp = new VectorStamp();
             currentStamp.mesh = currentMesh;
-            currentStamp.owner = player.connectionId;
-            currentStamp.obj = obj;
+			if (player != null) {
+				currentStamp.owner = player.connectionId;
+				player.graphicIndexer++;
+				currentStamp.index = player.graphicIndexer;
+				player.graphics.Add(currentStamp);
+			}
+			currentStamp.obj = obj;
             currentStamp.mr = mr;
             device.currentGraphic = currentStamp;
-            player.graphicIndexer++;
-            currentStamp.index = player.graphicIndexer;
+            
             currentStamp.deviceIndex = device.deviceIndex;
-            player.graphics.Add(currentStamp);
 
 
             //set shader

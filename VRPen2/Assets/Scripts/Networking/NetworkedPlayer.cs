@@ -9,8 +9,7 @@ namespace VRPen {
         public ulong connectionId;
 
         //input devices
-        public Dictionary<byte, InputDevice> inputDevices;
-		public byte fascilitativeDeviceIndex; //also included in the dictionary
+        public Dictionary<byte, InputDevice> inputDevices; 
         
         //used for cursor
         public GameObject cursor;

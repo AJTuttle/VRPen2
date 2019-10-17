@@ -9,8 +9,9 @@ namespace VRPen {
         public enum InputDeviceType : byte {
             Marker,
             Tablet,
-            Mouse
-        }
+            Mouse,
+			Facilitative
+		}
 
         public InputDeviceType type;
 
