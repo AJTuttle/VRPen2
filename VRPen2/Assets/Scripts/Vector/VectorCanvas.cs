@@ -39,6 +39,7 @@ namespace VRPen {
             Material mat = GetComponent<Renderer>().material;
 			renderTexture = new RenderTexture(renderTexturePresets);
             mat.mainTexture = renderTexture;
+            mat.SetColor("BG_Color", bgColor);
             renderCam.targetTexture = renderTexture;
             vectorParent = renderArea.GetChild(1);
 
