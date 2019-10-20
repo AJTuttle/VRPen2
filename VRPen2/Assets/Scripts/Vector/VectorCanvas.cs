@@ -35,7 +35,7 @@ namespace VRPen {
             Material mat = GetComponent<Renderer>().material;
 
             //set up the render texture stuff
-            renderArea = GameObject.Instantiate(renderAreaPrefab, drawingMan.renderAreaOrigin + new Vector3(0,0,canvasId), Quaternion.identity).GetComponent<RenderArea>();
+            renderArea = GameObject.Instantiate(renderAreaPrefab, drawingMan.renderAreaOrigin + new Vector3(canvasId*2,0,0), Quaternion.identity).GetComponent<RenderArea>();
             mainRenderCam = renderArea.instantiate(mat, bgColor);
             currentLocalLayerIndex = 0;
 
