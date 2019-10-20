@@ -20,7 +20,7 @@ namespace VRPen {
 
         Color bgColor;
 
-        public void instantiate(Material mat, Color bgColor) {
+        public Camera instantiate(Material mat, Color bgColor) {
 
             //layer creat
             GameObject layer = Instantiate(renderLayerPrefab, mainRenderParent);
@@ -40,6 +40,8 @@ namespace VRPen {
 
             //instantiate default layer(s)
             addLayer();
+
+            return mainCamera;
 
         }
         public void addLayer() {

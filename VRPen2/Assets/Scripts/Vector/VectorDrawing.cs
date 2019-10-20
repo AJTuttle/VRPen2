@@ -565,7 +565,7 @@ namespace VRPen {
         }
 
 		public void saveImage(byte canvasId) {
-			//TextureSaver.export(getCanvas(canvasId).renderTexture);
+			TextureSaver.export(getCanvas(canvasId).mainRenderTexture);
 		}
 
 

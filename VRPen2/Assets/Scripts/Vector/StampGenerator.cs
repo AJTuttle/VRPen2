@@ -59,7 +59,7 @@ namespace VRPen {
 
         public void confirmStamp() {
             Vector3 pos = display.canvasParent.InverseTransformPoint(transform.position);
-            vectorMan.stamp(imageMat.mainTexture, player, device.deviceData.deviceIndex, -(5f/3*pos.x)+0.5f, -pos.y+0.5f, size, rot, display.currentLocalCanvas.canvasId, display.currentLocalCanvas.currentLocalLayerIndex, true);
+            vectorMan.stamp(imageMat.mainTexture, player, device.deviceData.deviceIndex, (5f/3*pos.x)+0.5f, pos.y+0.5f, size, rot, display.currentLocalCanvas.canvasId, display.currentLocalCanvas.currentLocalLayerIndex, true);
             close();
         }
 

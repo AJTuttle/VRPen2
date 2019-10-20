@@ -16,10 +16,11 @@ namespace VRPen {
 
         //render texture stuff
         public GameObject renderAreaPrefab;
-        Camera renderCam;
+        Camera mainRenderCam;
         public Color32 bgColor;
         [System.NonSerialized]
         public RenderArea renderArea;
+        public Texture2D mainRenderTexture;
 
 
 
@@ -35,8 +36,20 @@ namespace VRPen {
 
             //set up the render texture stuff
             renderArea = GameObject.Instantiate(renderAreaPrefab, drawingMan.renderAreaOrigin + new Vector3(0,0,canvasId), Quaternion.identity).GetComponent<RenderArea>();
-            renderArea.instantiate(mat, bgColor);
+            mainRenderCam = renderArea.instantiate(mat, bgColor);
             currentLocalLayerIndex = 0;
+
+            //if theres a background have the beckgorund be on its own layer (ie add another layer and use layer 1 for drawing)
+            if (drawingMan.canvasBackgrounds.Length > canvasId && drawingMan.canvasBackgrounds[canvasId] != null) {
+                renderArea.addLayer();
+                currentLocalLayerIndex = 1;
+            }
+            else {
+                currentLocalLayerIndex = 0;
+            }
+
+            //get render texture (i think just for saving)
+            mainRenderTexture = mat.mainTexture as Texture2D;
 
 
             //fill canvas bg color
@@ -172,11 +185,11 @@ namespace VRPen {
         }
 
         public IEnumerator rerenderCanvas() {
-            
+
 
             //turn on objs
-            renderCam.clearFlags = CameraClearFlags.SolidColor;
-            renderCam.backgroundColor = bgColor;
+            mainRenderCam.clearFlags = CameraClearFlags.SolidColor;
+            mainRenderCam.backgroundColor = bgColor;
 
             for (byte x = 0; x < renderArea.layerCount; x++) {
 
@@ -194,7 +207,7 @@ namespace VRPen {
             yield return null;
 
             //turn off objs
-            renderCam.clearFlags = CameraClearFlags.Nothing;
+            mainRenderCam.clearFlags = CameraClearFlags.Nothing;
 
             for (byte x = 0; x < renderArea.layerCount; x++) {
 
@@ -266,11 +279,11 @@ namespace VRPen {
 
         IEnumerator fillboard() {
 
-            renderCam.clearFlags = CameraClearFlags.SolidColor;
-            renderCam.backgroundColor = bgColor;
+            mainRenderCam.clearFlags = CameraClearFlags.SolidColor;
+            mainRenderCam.backgroundColor = bgColor;
             yield return null;
             yield return null;
-            renderCam.clearFlags = CameraClearFlags.Nothing;
+            mainRenderCam.clearFlags = CameraClearFlags.Nothing;
 
 
 			//set background
