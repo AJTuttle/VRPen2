@@ -66,7 +66,7 @@ namespace VRPen {
                 localCursor.SetActive(true);
 
                 //aspect rat
-                float aspectRatio = (float)localDisplay.currentLocalCanvas.renderTexturePresets.width / localDisplay.currentLocalCanvas.renderTexturePresets.height;
+                float aspectRatio = (float)localDisplay.currentLocalCanvas.renderArea.renderTexturePresets.width / localDisplay.currentLocalCanvas.renderArea.renderTexturePresets.height;
 
                 //get x and y
                 float x = .5f * aspectRatio - aspectRatio * currentSample.point.x;

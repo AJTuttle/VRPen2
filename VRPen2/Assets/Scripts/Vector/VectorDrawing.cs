@@ -271,10 +271,12 @@ namespace VRPen {
 				endLineData(device);
             }
 
+            //get vector parent
+            Transform vectorParent = canvas.renderArea.getVectorParent(canvas.currentLayerIndex);
+
             //make obj
-            //GameObject obj = Instantiate(stampTest) ;
             GameObject obj = new GameObject();
-            obj.transform.parent = canvas.vectorParent;
+            obj.transform.parent = vectorParent;
             obj.transform.localPosition = Vector3.zero;
 
 			//convert from [0,1] to [-180,180]
@@ -414,9 +416,12 @@ namespace VRPen {
             //if new line needed
             if (device.currentGraphic == null || !(device.currentGraphic is VectorLine)) {
 
+                //get vector parent
+                Transform vectorParent = canvas.renderArea.getVectorParent(canvas.currentLayerIndex);
+
                 //make obj
                 GameObject obj = new GameObject();
-                obj.transform.parent = canvas.vectorParent;
+                obj.transform.parent = vectorParent;
                 obj.transform.localPosition = Vector3.zero;
                 obj.transform.localRotation = Quaternion.identity;
                 obj.transform.localScale = Vector3.one;
@@ -555,7 +560,7 @@ namespace VRPen {
         }
 
 		public void saveImage(byte canvasId) {
-			TextureSaver.export(getCanvas(canvasId).renderTexture);
+			//TextureSaver.export(getCanvas(canvasId).renderTexture);
 		}
 
 

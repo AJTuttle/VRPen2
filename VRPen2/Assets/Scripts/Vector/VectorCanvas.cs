@@ -12,36 +12,32 @@ namespace VRPen {
         public byte canvasId;
         public int renderQueueCounter = 1;
         
-
+        public byte currentLayerIndex;
 
         //render texture stuff
-        public RenderTexture renderTexturePresets;
-        public GameObject renderingPrefab;
+        public GameObject renderAreaPrefab;
         Camera renderCam;
         public Color32 bgColor;
-        public Transform vectorParent;
-		public RenderTexture renderTexture;
+        [System.NonSerialized]
+        public RenderArea renderArea;
 
 
 
-		public void instantiate(VectorDrawing man, NetworkManager net, byte id) {
+        public void instantiate(VectorDrawing man, NetworkManager net, byte id) {
 
             //set vars
             network = net;
             drawingMan = man;
             canvasId = id;
 
-            //set up the render texture stuff
-            Transform renderArea = GameObject.Instantiate(renderingPrefab, drawingMan.renderAreaOrigin + new Vector3(0,0,canvasId), Quaternion.identity).transform;
-            renderCam = renderArea.GetChild(0).GetComponent<Camera>();
-
-            //instance material and make the render texture pipe to it
+            //get mat
             Material mat = GetComponent<Renderer>().material;
-			renderTexture = new RenderTexture(renderTexturePresets);
-            mat.mainTexture = renderTexture;
-            mat.SetColor("BG_Color", bgColor);
-            renderCam.targetTexture = renderTexture;
-            vectorParent = renderArea.GetChild(1);
+
+            //set up the render texture stuff
+            renderArea = GameObject.Instantiate(renderAreaPrefab, drawingMan.renderAreaOrigin + new Vector3(0,0,canvasId), Quaternion.identity).GetComponent<RenderArea>();
+            renderArea.instantiate(mat, bgColor);
+            currentLayerIndex = 0;
+
 
             //fill canvas bg color
             StartCoroutine(fillboard());
@@ -51,8 +47,9 @@ namespace VRPen {
         public void addToLine(InputDevice device, VectorLine currentLine, Vector3 drawPoint, float pressure) {
 
 
-            //get mesh
+            //get mesh and vectorParent
             Mesh currentMesh = currentLine.mesh;
+            Transform vectorParent = renderArea.getVectorParent(currentLayerIndex);
 
             //if start of line then setup up arrays
             if (currentLine.vertices == null) {
@@ -176,6 +173,9 @@ namespace VRPen {
 
         public IEnumerator rerenderCanvas() {
 
+            //get vector parent
+            Transform vectorParent = renderArea.getVectorParent(currentLayerIndex);
+
             //turn on objs
             renderCam.clearFlags = CameraClearFlags.SolidColor;
             renderCam.backgroundColor = bgColor;
@@ -214,6 +214,9 @@ namespace VRPen {
         
 
         public void clear(bool localInput) {
+
+            //get vector parent
+            Transform vectorParent = renderArea.getVectorParent(currentLayerIndex);
 
             //deal with players data structures
             foreach (NetworkedPlayer player in network.players) {

@@ -93,12 +93,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canvasId: 0
   renderQueueCounter: 1
-  renderTexturePresets: {fileID: 8400000, guid: 5afa91ab867bb7c4e8527f305d2a3bd1,
-    type: 2}
-  renderingPrefab: {fileID: 7193115763290960740, guid: 15c05c9d1fd6ce14ca78f9572977b0f6,
+  renderAreaPrefab: {fileID: 7193115763290960740, guid: 15c05c9d1fd6ce14ca78f9572977b0f6,
     type: 3}
   bgColor:
     serializedVersion: 2
     rgba: 4294967295
-  vectorParent: {fileID: 0}
-  renderTexture: {fileID: 0}
