@@ -12,7 +12,7 @@ namespace VRPen {
         public byte canvasId;
         public int renderQueueCounter = 1;
         
-        public byte currentLayerIndex;
+        public byte currentLocalLayerIndex;
 
         //render texture stuff
         public GameObject renderAreaPrefab;
@@ -36,7 +36,7 @@ namespace VRPen {
             //set up the render texture stuff
             renderArea = GameObject.Instantiate(renderAreaPrefab, drawingMan.renderAreaOrigin + new Vector3(0,0,canvasId), Quaternion.identity).GetComponent<RenderArea>();
             renderArea.instantiate(mat, bgColor);
-            currentLayerIndex = 0;
+            currentLocalLayerIndex = 0;
 
 
             //fill canvas bg color
@@ -44,12 +44,12 @@ namespace VRPen {
         }
 
 
-        public void addToLine(InputDevice device, VectorLine currentLine, Vector3 drawPoint, float pressure) {
+        public void addToLine(InputDevice device, VectorLine currentLine, Vector3 drawPoint, float pressure, byte layerIndex) {
 
 
             //get mesh and vectorParent
             Mesh currentMesh = currentLine.mesh;
-            Transform vectorParent = renderArea.getVectorParent(currentLayerIndex);
+            Transform vectorParent = renderArea.getVectorParent(layerIndex);
 
             //if start of line then setup up arrays
             if (currentLine.vertices == null) {
@@ -172,27 +172,40 @@ namespace VRPen {
         }
 
         public IEnumerator rerenderCanvas() {
-
-            //get vector parent
-            Transform vectorParent = renderArea.getVectorParent(currentLayerIndex);
+            
 
             //turn on objs
             renderCam.clearFlags = CameraClearFlags.SolidColor;
             renderCam.backgroundColor = bgColor;
-            int index = 0;
-            while (index < vectorParent.childCount) {
-                vectorParent.GetChild(index).gameObject.GetComponent<MeshRenderer>().enabled = true;
-                index++;
+
+            for (byte x = 0; x < renderArea.layerCount; x++) {
+
+                //get vector parent
+                Transform vectorParent = renderArea.getVectorParent(x);
+
+                int index = 0;
+                while (index < vectorParent.childCount) {
+                    vectorParent.GetChild(index).gameObject.GetComponent<MeshRenderer>().enabled = true;
+                    index++;
+                }
+
             }
 
             yield return null;
 
             //turn off objs
             renderCam.clearFlags = CameraClearFlags.Nothing;
-            index = 0;
-            while (index < vectorParent.childCount) {
-                vectorParent.GetChild(index).gameObject.GetComponent<MeshRenderer>().enabled = false;
-                index++;
+
+            for (byte x = 0; x < renderArea.layerCount; x++) {
+
+                //get vector parent
+                Transform vectorParent = renderArea.getVectorParent(x);
+
+                int index = 0;
+                while (index < vectorParent.childCount) {
+                    vectorParent.GetChild(index).gameObject.GetComponent<MeshRenderer>().enabled = false;
+                    index++;
+                }
             }
 
             //turn back on the current Graphics for each user
@@ -215,8 +228,6 @@ namespace VRPen {
 
         public void clear(bool localInput) {
 
-            //get vector parent
-            Transform vectorParent = renderArea.getVectorParent(currentLayerIndex);
 
             //deal with players data structures
             foreach (NetworkedPlayer player in network.players) {
@@ -232,10 +243,16 @@ namespace VRPen {
                 }
             }
             //delete Graphics
-            int index = 0;
-            while (index < vectorParent.childCount) {
-                Destroy(vectorParent.GetChild(index).gameObject);
-                index++;
+            for (byte x = 0; x < renderArea.layerCount; x++) {
+
+                //get vector parent
+                Transform vectorParent = renderArea.getVectorParent(x);
+
+                int index = 0;
+                while (index < vectorParent.childCount) {
+                    Destroy(vectorParent.GetChild(index).gameObject);
+                    index++;
+                }
             }
 
             renderQueueCounter = 1;
@@ -258,7 +275,7 @@ namespace VRPen {
 
 			//set background
 			if (drawingMan.canvasBackgrounds.Length > canvasId && drawingMan.canvasBackgrounds[canvasId] != null) {
-				drawingMan.stamp(drawingMan.canvasBackgrounds[canvasId], drawingMan.facilitativeDevice.owner, drawingMan.facilitativeDevice.deviceIndex, 0.5f, 0.5f, 1, 0.5f, canvasId, false);
+				drawingMan.stamp(drawingMan.canvasBackgrounds[canvasId], drawingMan.facilitativeDevice.owner, drawingMan.facilitativeDevice.deviceIndex, 0.5f, 0.5f, 1, 0.5f, canvasId, 0, false);
 			}
 
         }

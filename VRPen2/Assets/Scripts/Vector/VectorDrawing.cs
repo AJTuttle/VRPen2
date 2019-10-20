@@ -141,7 +141,7 @@ namespace VRPen {
 		}
 
 
-            void hotkeys() {
+        void hotkeys() {
             //hotkeys
             if (Input.GetKeyDown(KeyCode.U)) {
                 undo(network.localPlayer, true);
@@ -153,7 +153,7 @@ namespace VRPen {
                 saveImage(0);
             }
             else if (Input.GetKeyDown(KeyCode.V)) {
-                stamp(stampTest, network.localPlayer, 0, .5f, .5f, .25f, 0, 0, true);
+                stamp(stampTest, network.localPlayer, 0, .5f, .5f, .25f, 0, 0, 0, true);
             }
         }
 
@@ -169,11 +169,11 @@ namespace VRPen {
             return canvases.Count;
         }
 
-        public void endLineEvent(NetworkedPlayer player, byte deviceIndex, bool localInput) {
-            draw(player, deviceIndex, true, Color.black, 0, 0, 0, 0, localInput);
+        public void endLineEvent(NetworkedPlayer player, byte deviceIndex, byte layerIndex, bool localInput) {
+            draw(player, deviceIndex, true, Color.black, 0, 0, 0, 0, layerIndex, localInput);
         }
 
-        public void draw(NetworkedPlayer player, byte deviceIndex, bool endLine, Color32 color, float x, float y, float pressure, byte canvasId, bool localInput) {
+        public void draw(NetworkedPlayer player, byte deviceIndex, bool endLine, Color32 color, float x, float y, float pressure, byte canvasId, byte layerIndex, bool localInput) {
 
            
             //get canvas
@@ -206,7 +206,7 @@ namespace VRPen {
                 bool newLine = false;
 
                 //get or create mesh
-                VectorLine currentLine = getLine(player, device, color, canvas, ref newLine);
+                VectorLine currentLine = getLine(player, device, color, canvas, ref newLine, layerIndex);
 
                 //got vector pos
                 Vector3 drawPoint = new Vector3(x, 0, y);
@@ -224,16 +224,16 @@ namespace VRPen {
                         float angle = 180f - Vector3.Angle(device.lastDrawPoint - device.secondLastDrawPoint, drawPoint - device.lastDrawPoint);
                         if (Vector3.Cross(device.lastDrawPoint - device.secondLastDrawPoint, drawPoint - device.lastDrawPoint).y < 0) angle *= -1;
 
-                        slopeSmoothing(canvas, device, currentLine, pressure, angle, device.lastDrawPoint, drawPoint);
+                        slopeSmoothing(canvas, device, currentLine, pressure, angle, device.lastDrawPoint, drawPoint, layerIndex);
                     }
-                    else canvas.addToLine(device, currentLine, drawPoint, pressure);
+                    else canvas.addToLine(device, currentLine, drawPoint, pressure, layerIndex);
 
                     if (localInput) network.addToDataOutbox(endLine, color, x, y, pressure, canvasId, deviceIndex);
                 }
             }
         }
 
-        public void stamp(Texture stampTex, NetworkedPlayer player, byte deviceIndex, float x, float y, float pressure, float rotation, byte canvasId, bool localInput) {
+        public void stamp(Texture stampTex, NetworkedPlayer player, byte deviceIndex, float x, float y, float pressure, float rotation, byte canvasId, byte layerIndex, bool localInput) {
             
             //get canvas
             VectorCanvas canvas = getCanvas(canvasId);
@@ -253,7 +253,7 @@ namespace VRPen {
             }
 
             //make stamp
-            VectorStamp stamp = createStamp(stampTex, canvas, device, player, pressure, rotation);
+            VectorStamp stamp = createStamp(stampTex, canvas, device, player, pressure, rotation, layerIndex);
 
             //got vector pos
             Vector3 drawPoint = new Vector3(x, 0, y);
@@ -264,7 +264,7 @@ namespace VRPen {
 
         }
 
-        VectorStamp createStamp(Texture stampTex, VectorCanvas canvas, InputDevice device, NetworkedPlayer player, float size, float rotation) {
+        VectorStamp createStamp(Texture stampTex, VectorCanvas canvas, InputDevice device, NetworkedPlayer player, float size, float rotation, byte layerIndex) {
 
             //line end check needed
             if (device.currentGraphic != null && (device.currentGraphic is VectorLine)) {
@@ -272,7 +272,7 @@ namespace VRPen {
             }
 
             //get vector parent
-            Transform vectorParent = canvas.renderArea.getVectorParent(canvas.currentLayerIndex);
+            Transform vectorParent = canvas.renderArea.getVectorParent(layerIndex);
 
             //make obj
             GameObject obj = new GameObject();
@@ -306,6 +306,8 @@ namespace VRPen {
 			currentStamp.obj = obj;
             currentStamp.mr = mr;
             device.currentGraphic = currentStamp;
+            currentStamp.canvasId = canvas.canvasId;
+            currentStamp.layerId = layerIndex;
             
             currentStamp.deviceIndex = device.deviceIndex;
 
@@ -376,7 +378,7 @@ namespace VRPen {
         }
 
         //recursive method that, depending on the angle between the last line and the new line, will split the new line into two new lines to make the slope more gradual
-        void slopeSmoothing(VectorCanvas canvas, InputDevice device, VectorLine currentLine, float pressure, float angle, Vector3 start, Vector3 end) {
+        void slopeSmoothing(VectorCanvas canvas, InputDevice device, VectorLine currentLine, float pressure, float angle, Vector3 start, Vector3 end, byte layerIndex) {
             
             if (minCurveAngle >= 179.9f) {
                 Debug.LogError("Error: Unresonable/impossible target smoothing angle, please adgust public variable that controls this");
@@ -397,19 +399,19 @@ namespace VRPen {
                 Vector3 middle = start + (end - start).normalized * midPointLength + midpointDisplacment;
 
                 //recursively call for each new line segment now that we split this one
-                slopeSmoothing(canvas, device, currentLine, pressure, newAngle, start, middle);
-                slopeSmoothing(canvas, device, currentLine, pressure, newAngle, middle, end);
+                slopeSmoothing(canvas, device, currentLine, pressure, newAngle, start, middle, layerIndex);
+                slopeSmoothing(canvas, device, currentLine, pressure, newAngle, middle, end, layerIndex);
 
             }
 
             //actually add triangles to the mesh
             else {
-                canvas.addToLine(device, currentLine, end, pressure);
+                canvas.addToLine(device, currentLine, end, pressure, layerIndex);
             }
 
         }
 
-        VectorLine getLine(NetworkedPlayer player, InputDevice device, Color32 color, VectorCanvas canvas, ref bool newLine) {
+        VectorLine getLine(NetworkedPlayer player, InputDevice device, Color32 color, VectorCanvas canvas, ref bool newLine, byte layerIndex) {
 
             VectorLine currentLine;
 
@@ -417,7 +419,7 @@ namespace VRPen {
             if (device.currentGraphic == null || !(device.currentGraphic is VectorLine)) {
 
                 //get vector parent
-                Transform vectorParent = canvas.renderArea.getVectorParent(canvas.currentLayerIndex);
+                Transform vectorParent = canvas.renderArea.getVectorParent(layerIndex);
 
                 //make obj
                 GameObject obj = new GameObject();
@@ -444,6 +446,9 @@ namespace VRPen {
                 player.graphicIndexer++;
                 currentLine.index = player.graphicIndexer;
                 currentLine.deviceIndex = device.deviceIndex;
+                currentLine.canvasId = canvas.canvasId;
+                currentLine.layerId = layerIndex;
+
                 player.graphics.Add(currentLine);
 
 

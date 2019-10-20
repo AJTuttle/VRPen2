@@ -291,7 +291,7 @@ namespace VRPen {
 
                 case ToolState.NORMAL:
                     
-                    vectorMan.draw(network.localPlayer, deviceData.deviceIndex, false, currentColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
+                    vectorMan.draw(network.localPlayer, deviceData.deviceIndex, false, currentColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, data.display.currentLocalCanvas.currentLocalLayerIndex, true);
                     
                     break;
 
@@ -325,7 +325,7 @@ namespace VRPen {
 
                 case ToolState.ERASE:
 
-                    vectorMan.draw(network.localPlayer, deviceData.deviceIndex, false, data.display.currentLocalCanvas.bgColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
+                    vectorMan.draw(network.localPlayer, deviceData.deviceIndex, false, data.display.currentLocalCanvas.bgColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, data.display.currentLocalCanvas.currentLocalLayerIndex, true);
                     break;
 
                 //case ToolState.STAMP:
@@ -352,7 +352,7 @@ namespace VRPen {
         }
 
         void endLine() {
-            if (deviceData.currentGraphic != null) vectorMan.endLineEvent(network.localPlayer, deviceData.deviceIndex, true);
+            if (deviceData.currentGraphic != null) vectorMan.endLineEvent(network.localPlayer, deviceData.deviceIndex, deviceData.currentGraphic.layerId, true);
         }
         
 

@@ -15,6 +15,7 @@ namespace VRPen {
         public MeshRenderer mr;
         public GameObject obj;
         public byte canvasId;
+        public byte layerId;
 
     
 

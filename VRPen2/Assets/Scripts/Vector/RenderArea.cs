@@ -12,6 +12,9 @@ namespace VRPen {
         public GameObject renderLayerPrefab;
         public Shader canvasShader;
 
+        [System.NonSerialized]
+        public byte layerCount = 0;
+
         List<Camera> layerCameras = new List<Camera>();
         Camera mainCamera;
 
@@ -73,6 +76,9 @@ namespace VRPen {
             mat.mainTexture = renderTexture;
             mat.SetColor("BG_Color", bgColor);
             cam.targetTexture = renderTexture;
+
+            //iterate layer count
+            layerCount++;
             
         }
 

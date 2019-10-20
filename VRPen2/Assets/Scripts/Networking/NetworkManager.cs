@@ -393,12 +393,12 @@ namespace VRPen {
 
                 //end line or draw
                 if (endLine == 1) {
-                    vectorMan.endLineEvent(player, deviceIndex, false);
+                    vectorMan.endLineEvent(player, deviceIndex, 0, false);
                 }
                 else {
 
                     if (pressure > 0) {
-                        vectorMan.draw(player, deviceIndex, (endLine == 1) ? true : false, color, xFloat, yFloat, pressure, canvasId, false);
+                        vectorMan.draw(player, deviceIndex, (endLine == 1) ? true : false, color, xFloat, yFloat, pressure, canvasId, 0, false);
                     }
 
                     //update cursor at the last input
