@@ -15,7 +15,8 @@ namespace VRPen {
         [System.NonSerialized]
         public byte layerCount = 0;
 
-        List<Camera> layerCameras = new List<Camera>();
+        [System.NonSerialized]
+        public List<Camera> layerCameras = new List<Camera>();
         Camera mainCamera;
 
         Color bgColor;
@@ -30,6 +31,8 @@ namespace VRPen {
 
             //get camera
             mainCamera = layer.transform.GetChild(0).GetComponent<Camera>();
+			mainCamera.clearFlags = CameraClearFlags.Color;
+			mainCamera.backgroundColor = bgColor;
 
             //set up mat/camera
             RenderTexture renderTexture = new RenderTexture(renderTexturePresets);
@@ -64,7 +67,7 @@ namespace VRPen {
             LayerRendered.name = "Layer " + index;
             LayerRendered.transform.parent = mainRenderParent.GetChild(0).GetChild(1);
             LayerRendered.transform.rotation = Quaternion.Euler(90,0,0);
-            LayerRendered.transform.localPosition = new Vector3(0, 0, -0.001f * index); //make sure layer are layer in the correct order
+            LayerRendered.transform.localPosition = new Vector3(0, 0.001f * index, 0); //make sure layer are layer in the correct order
             LayerRendered.transform.localScale = new Vector3(renderTexturePresets.width/(float)renderTexturePresets.height,1, 1);
             Destroy(LayerRendered.GetComponent<Collider>());
 

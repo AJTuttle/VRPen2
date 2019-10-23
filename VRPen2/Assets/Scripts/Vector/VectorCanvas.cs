@@ -187,9 +187,11 @@ namespace VRPen {
         public IEnumerator rerenderCanvas() {
 
 
-            //turn on objs
-            mainRenderCam.clearFlags = CameraClearFlags.SolidColor;
-            mainRenderCam.backgroundColor = bgColor;
+			//turn on objs
+			foreach (Camera cam in renderArea.layerCameras) {
+				cam.clearFlags = CameraClearFlags.SolidColor;
+				cam.backgroundColor = bgColor;
+			}
 
             for (byte x = 0; x < renderArea.layerCount; x++) {
 
@@ -206,8 +208,11 @@ namespace VRPen {
 
             yield return null;
 
-            //turn off objs
-            mainRenderCam.clearFlags = CameraClearFlags.Nothing;
+			//turn off objs
+
+			foreach (Camera cam in renderArea.layerCameras) {
+				cam.clearFlags = CameraClearFlags.Nothing;
+			}
 
             for (byte x = 0; x < renderArea.layerCount; x++) {
 
@@ -279,11 +284,17 @@ namespace VRPen {
 
         IEnumerator fillboard() {
 
-            mainRenderCam.clearFlags = CameraClearFlags.SolidColor;
-            mainRenderCam.backgroundColor = bgColor;
+			foreach (Camera cam in renderArea.layerCameras) {
+				cam.clearFlags = CameraClearFlags.SolidColor;
+				cam.backgroundColor = bgColor;
+			}
             yield return null;
             yield return null;
-            mainRenderCam.clearFlags = CameraClearFlags.Nothing;
+
+
+			foreach (Camera cam in renderArea.layerCameras) {
+				cam.clearFlags = CameraClearFlags.Nothing;
+			}
 
 
 			//set background

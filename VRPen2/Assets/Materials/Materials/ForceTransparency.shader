@@ -7,7 +7,7 @@
 
 	SubShader{
 		Blend SrcAlpha OneMinusSrcAlpha
-
+		 Tags { "Queue" = "Transparent" "RenderType" = "Transparent" }
 		Pass {
 			CGPROGRAM
 			#pragma vertex vert_img
@@ -23,7 +23,7 @@
 			fixed4 frag(v2f_img i) : SV_Target {
 				fixed4 r = tex2D(_MainTex, i.uv);
 
-				half3 diff = r.xyz - BG_Color.xyz;
+				half3 diff = r.xyz - BG_Color.xyz; 
 				half diff_squared = dot(diff, diff);
 
 				if (diff_squared < 0.01f)
@@ -31,6 +31,7 @@
 					r.a = 0;
 				}
 				return r;
+
 			}
 			ENDCG
 		}
