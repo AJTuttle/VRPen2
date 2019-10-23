@@ -20,7 +20,7 @@ namespace VRPen {
         public Color32 bgColor;
         [System.NonSerialized]
         public RenderArea renderArea;
-        public Texture2D mainRenderTexture;
+        public RenderTexture mainRenderTexture;
 
 
 
@@ -49,7 +49,7 @@ namespace VRPen {
             }
 
             //get render texture (i think just for saving)
-            mainRenderTexture = mat.mainTexture as Texture2D;
+            mainRenderTexture = mat.mainTexture as RenderTexture;
 
 
             //fill canvas bg color
