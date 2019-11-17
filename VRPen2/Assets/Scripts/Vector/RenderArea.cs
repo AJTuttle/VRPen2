@@ -21,9 +21,9 @@ namespace VRPen {
 
         Color bgColor;
 
-        public Camera instantiate(Material mat, Color bgColor) {
+        public void instantiate(out Material mat, Color bgColor) {
 
-            //layer creat
+            //main render layer
             GameObject layer = Instantiate(renderLayerPrefab, mainRenderParent);
             layer.transform.localPosition = new Vector3(0, 0, 0);
             layer.transform.localRotation = Quaternion.identity;
@@ -36,6 +36,7 @@ namespace VRPen {
 
             //set up mat/camera
             RenderTexture renderTexture = new RenderTexture(renderTexturePresets);
+            mat = new Material(Shader.Find("Unlit/Texture"));
             mat.mainTexture = renderTexture;
             this.bgColor = bgColor;
             mat.SetColor("BG_Color", bgColor);
@@ -43,8 +44,7 @@ namespace VRPen {
 
             //instantiate default layer(s)
             addLayer();
-
-            return mainCamera;
+            addLayer();
 
         }
         public void addLayer() {
@@ -78,6 +78,7 @@ namespace VRPen {
             Material mat = LayerRendered.GetComponent<Renderer>().material;
             mat.shader = canvasShader;
             RenderTexture renderTexture = new RenderTexture(renderTexturePresets);
+            renderTexture.filterMode = FilterMode.Point;
             mat.mainTexture = renderTexture;
             mat.SetColor("BG_Color", bgColor);
             cam.targetTexture = renderTexture;
@@ -87,8 +88,8 @@ namespace VRPen {
             
         }
 
-        public Transform getVectorParent(byte index) {
-            return layerRenderParent.GetChild(index).GetChild(1);
+        public Transform getVectorParent(byte layerIndex, byte canvasIndex) {
+            return layerRenderParent.GetChild(layerIndex).GetChild(1);
         }
 
     }

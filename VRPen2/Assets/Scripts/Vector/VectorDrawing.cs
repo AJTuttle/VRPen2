@@ -34,6 +34,8 @@ namespace VRPen {
         public int MAX_CANVAS_COUNT;
         [Tooltip("The render area is where the meshs for the drawing is constructed and rendered, this var sets its location in the scene")]
         public Vector3 renderAreaOrigin;
+        [Tooltip("Default canvas background color")]
+        public Color bgColor;
         
 
 
@@ -73,8 +75,15 @@ namespace VRPen {
 
 
 
+        //NEW STUFF YET to be sorted
+        //render texture stuff
+        public GameObject renderAreaPrefab;
+        Material displayMat;
+        [System.NonSerialized]
+        public RenderArea renderArea;
+        
 
-		private void Start() {
+        private void Start() {
             
 
             //get scripts
@@ -107,7 +116,8 @@ namespace VRPen {
 
 
 
-			//spawn preset canvases
+            //spawn preset canvases and render area
+            createRenderArea();
 			addCanvas(true);
 
             SceneManager.activeSceneChanged += OnSceneChange;
@@ -272,7 +282,7 @@ namespace VRPen {
             }
 
             //get vector parent
-            Transform vectorParent = canvas.renderArea.getVectorParent(layerIndex);
+            Transform vectorParent = renderArea.getVectorParent(layerIndex, canvas.canvasId);
 
             //make obj
             GameObject obj = new GameObject();
@@ -419,7 +429,7 @@ namespace VRPen {
             if (device.currentGraphic == null || !(device.currentGraphic is VectorLine)) {
 
                 //get vector parent
-                Transform vectorParent = canvas.renderArea.getVectorParent(layerIndex);
+                Transform vectorParent = renderArea.getVectorParent(layerIndex, canvas.canvasId);
 
                 //make obj
                 GameObject obj = new GameObject();
@@ -514,6 +524,13 @@ namespace VRPen {
             if (localInput) network.sendUndo();
         }
 
+        void createRenderArea() {
+
+            //set up the render texture stuff
+            renderArea = GameObject.Instantiate(renderAreaPrefab, renderAreaOrigin, Quaternion.identity).GetComponent<RenderArea>();
+            renderArea.instantiate(out displayMat, bgColor);
+        }
+
         public void addCanvas(bool localInput) {
 
             if (getCanvasListCount() >= MAX_CANVAS_COUNT) {
@@ -534,17 +551,21 @@ namespace VRPen {
             //make copys of texture
             foreach (Display display in displays) {
 
-	            GameObject quad = Instantiate(quadPrefab);
-				Destroy(quad.GetComponent<Collider>());
-                quad.transform.parent = display.canvasParent;
-                quad.transform.localPosition = Vector3.zero;
-                quad.transform.localRotation = Quaternion.identity;
-                quad.transform.localScale = Vector3.one;
-                quad.name = "" + canvasId;
-                quad.GetComponent<Renderer>().material = temp.GetComponent<Renderer>().material;
+                if (canvasId == 0) {
 
-                //turn off renderer
-                quad.GetComponent<Renderer>().enabled = false;
+                    GameObject quad = Instantiate(quadPrefab);
+                    Destroy(quad.GetComponent<Collider>());
+                    quad.transform.parent = display.canvasParent;
+                    quad.transform.localPosition = Vector3.zero;
+                    quad.transform.localRotation = Quaternion.identity;
+                    quad.transform.localScale = Vector3.one;
+                    quad.name = "" + canvasId;
+                    quad.GetComponent<Renderer>().material = displayMat;
+
+                    //turn off renderer
+                    quad.GetComponent<Renderer>().enabled = false;
+
+                }
 
                 //update ui
                 display.UIMan.addCanvas(canvasId);
@@ -565,7 +586,7 @@ namespace VRPen {
         }
 
 		public void saveImage(byte canvasId) {
-			TextureSaver.export(getCanvas(canvasId).mainRenderTexture);
+			TextureSaver.export(displayMat.mainTexture as Texture2D);
 		}
 
 

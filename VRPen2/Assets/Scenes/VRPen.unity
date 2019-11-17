@@ -607,7 +607,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 5693301584404231736}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 122c43d698894ee49b0ea84319bd72d8, type: 3}
   m_Name: 
@@ -660,6 +660,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: VectorWhiteboardManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 6656644161125225619, guid: 7573795c7992d7d4eb01493fb658bf3c,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6656644161125225617, guid: 7573795c7992d7d4eb01493fb658bf3c,
         type: 3}
@@ -771,6 +776,12 @@ PrefabInstance:
       propertyPath: canvasBackgrounds.Array.data[3]
       value: 
       objectReference: {fileID: 2800000, guid: b66c08fb97815864f9da35e71880d80d, type: 3}
+    - target: {fileID: 6656644161125225622, guid: 7573795c7992d7d4eb01493fb658bf3c,
+        type: 3}
+      propertyPath: renderAreaPrefab
+      value: 
+      objectReference: {fileID: 7193115763290960740, guid: 15c05c9d1fd6ce14ca78f9572977b0f6,
+        type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7573795c7992d7d4eb01493fb658bf3c, type: 3}
 --- !u!1001 &7338822298008561916

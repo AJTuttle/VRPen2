@@ -20,7 +20,7 @@ namespace VRPen {
 
 
         //script refs
-        VectorDrawing vectorMan;
+        protected VectorDrawing vectorMan;
         NetworkManager network;
         public InputDevice deviceData;
 
@@ -325,7 +325,7 @@ namespace VRPen {
 
                 case ToolState.ERASE:
 
-                    vectorMan.draw(network.localPlayer, deviceData.deviceIndex, false, data.display.currentLocalCanvas.bgColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, data.display.currentLocalCanvas.currentLocalLayerIndex, true);
+                    vectorMan.draw(network.localPlayer, deviceData.deviceIndex, false, vectorMan.bgColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, data.display.currentLocalCanvas.currentLocalLayerIndex, true);
                     break;
 
                 //case ToolState.STAMP:

@@ -14,15 +14,6 @@ namespace VRPen {
         
         public byte currentLocalLayerIndex;
 
-        //render texture stuff
-        public GameObject renderAreaPrefab;
-        Camera mainRenderCam;
-        public Color32 bgColor;
-        [System.NonSerialized]
-        public RenderArea renderArea;
-        public RenderTexture mainRenderTexture;
-
-
 
         public void instantiate(VectorDrawing man, NetworkManager net, byte id) {
 
@@ -31,9 +22,19 @@ namespace VRPen {
             drawingMan = man;
             canvasId = id;
 
+            //if theres a background have the beckgorund be on its own layer (ie add another layer and use layer 1 for drawing)
+            if (drawingMan.canvasBackgrounds.Length > canvasId && drawingMan.canvasBackgrounds[canvasId] != null) {
+                currentLocalLayerIndex = 1;
+            }
+            else {
+                currentLocalLayerIndex = 0;
+            }
+
+
+            /*
             //get mat
             Material mat = GetComponent<Renderer>().material;
-
+            
             //set up the render texture stuff
             renderArea = GameObject.Instantiate(renderAreaPrefab, drawingMan.renderAreaOrigin + new Vector3(canvasId*2,0,0), Quaternion.identity).GetComponent<RenderArea>();
             mainRenderCam = renderArea.instantiate(mat, bgColor);
@@ -51,6 +52,8 @@ namespace VRPen {
             //get render texture (i think just for saving)
             mainRenderTexture = mat.mainTexture as RenderTexture;
 
+            */
+
 
             //fill canvas bg color
             StartCoroutine(fillboard());
@@ -62,7 +65,7 @@ namespace VRPen {
 
             //get mesh and vectorParent
             Mesh currentMesh = currentLine.mesh;
-            Transform vectorParent = renderArea.getVectorParent(layerIndex);
+            Transform vectorParent = drawingMan.renderArea.getVectorParent(layerIndex, canvasId);
 
             //if start of line then setup up arrays
             if (currentLine.vertices == null) {
@@ -188,15 +191,15 @@ namespace VRPen {
 
 
 			//turn on objs
-			foreach (Camera cam in renderArea.layerCameras) {
+			foreach (Camera cam in drawingMan.renderArea.layerCameras) {
 				cam.clearFlags = CameraClearFlags.SolidColor;
-				cam.backgroundColor = bgColor;
+				cam.backgroundColor = drawingMan.bgColor;
 			}
 
-            for (byte x = 0; x < renderArea.layerCount; x++) {
+            for (byte x = 0; x < drawingMan.renderArea.layerCount; x++) {
 
                 //get vector parent
-                Transform vectorParent = renderArea.getVectorParent(x);
+                Transform vectorParent = drawingMan.renderArea.getVectorParent(x, canvasId);
 
                 int index = 0;
                 while (index < vectorParent.childCount) {
@@ -210,14 +213,14 @@ namespace VRPen {
 
 			//turn off objs
 
-			foreach (Camera cam in renderArea.layerCameras) {
+			foreach (Camera cam in drawingMan.renderArea.layerCameras) {
 				cam.clearFlags = CameraClearFlags.Nothing;
 			}
 
-            for (byte x = 0; x < renderArea.layerCount; x++) {
+            for (byte x = 0; x < drawingMan.renderArea.layerCount; x++) {
 
                 //get vector parent
-                Transform vectorParent = renderArea.getVectorParent(x);
+                Transform vectorParent = drawingMan.renderArea.getVectorParent(x, canvasId);
 
                 int index = 0;
                 while (index < vectorParent.childCount) {
@@ -261,10 +264,10 @@ namespace VRPen {
                 }
             }
             //delete Graphics
-            for (byte x = 0; x < renderArea.layerCount; x++) {
+            for (byte x = 0; x < drawingMan.renderArea.layerCount; x++) {
 
                 //get vector parent
-                Transform vectorParent = renderArea.getVectorParent(x);
+                Transform vectorParent = drawingMan.renderArea.getVectorParent(x, canvasId);
 
                 int index = 0;
                 while (index < vectorParent.childCount) {
@@ -284,15 +287,15 @@ namespace VRPen {
 
         IEnumerator fillboard() {
 
-			foreach (Camera cam in renderArea.layerCameras) {
+			foreach (Camera cam in drawingMan.renderArea.layerCameras) {
 				cam.clearFlags = CameraClearFlags.SolidColor;
-				cam.backgroundColor = bgColor;
+				cam.backgroundColor = drawingMan.bgColor;
 			}
             yield return null;
             yield return null;
 
 
-			foreach (Camera cam in renderArea.layerCameras) {
+			foreach (Camera cam in drawingMan.renderArea.layerCameras) {
 				cam.clearFlags = CameraClearFlags.Nothing;
 			}
 
