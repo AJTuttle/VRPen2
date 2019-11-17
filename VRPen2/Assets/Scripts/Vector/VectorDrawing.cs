@@ -32,6 +32,8 @@ namespace VRPen {
         public bool autoSaveOnExit;
         [Tooltip("Max number of unique canvases stored")]
         public int MAX_CANVAS_COUNT;
+        [Tooltip("Max number of unique layers stored")]
+        public int MAX_LAYER_COUNT;
         [Tooltip("The render area is where the meshs for the drawing is constructed and rendered, this var sets its location in the scene")]
         public Vector3 renderAreaOrigin;
         [Tooltip("Default canvas background color")]
@@ -528,7 +530,7 @@ namespace VRPen {
 
             //set up the render texture stuff
             renderArea = GameObject.Instantiate(renderAreaPrefab, renderAreaOrigin, Quaternion.identity).GetComponent<RenderArea>();
-            renderArea.instantiate(out displayMat, bgColor);
+            renderArea.instantiate(this, out displayMat, bgColor);
         }
 
         public void addCanvas(bool localInput) {
@@ -586,7 +588,7 @@ namespace VRPen {
         }
 
 		public void saveImage(byte canvasId) {
-			TextureSaver.export(displayMat.mainTexture as Texture2D);
+			TextureSaver.export(displayMat.mainTexture as RenderTexture);
 		}
 
 

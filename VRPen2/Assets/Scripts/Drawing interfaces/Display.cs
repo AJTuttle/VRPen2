@@ -64,9 +64,9 @@ namespace VRPen {
 
             
 
-            if(currentLocalCanvas != null) canvasParent.GetChild(currentLocalCanvas.canvasId).GetComponent<Renderer>().enabled = false;
-            currentLocalCanvas = vectorMan.getCanvas(canvasId);
-            canvasParent.GetChild(canvasId).GetComponent<Renderer>().enabled = true;
+            //if(currentLocalCanvas != null) canvasParent.GetChild(currentLocalCanvas.canvasId).GetComponent<Renderer>().enabled = false;
+            //currentLocalCanvas = vectorMan.getCanvas(canvasId);
+            //canvasParent.GetChild(canvasId).GetComponent<Renderer>().enabled = true;
             
         }
 

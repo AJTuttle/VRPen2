@@ -196,7 +196,7 @@ namespace VRPen {
 				cam.backgroundColor = drawingMan.bgColor;
 			}
 
-            for (byte x = 0; x < drawingMan.renderArea.layerCount; x++) {
+            for (byte x = 0; x < drawingMan.renderArea.getLayerCount(canvasId); x++) {
 
                 //get vector parent
                 Transform vectorParent = drawingMan.renderArea.getVectorParent(x, canvasId);
@@ -217,7 +217,7 @@ namespace VRPen {
 				cam.clearFlags = CameraClearFlags.Nothing;
 			}
 
-            for (byte x = 0; x < drawingMan.renderArea.layerCount; x++) {
+            for (byte x = 0; x < drawingMan.renderArea.getLayerCount(canvasId); x++) {
 
                 //get vector parent
                 Transform vectorParent = drawingMan.renderArea.getVectorParent(x, canvasId);
@@ -264,7 +264,7 @@ namespace VRPen {
                 }
             }
             //delete Graphics
-            for (byte x = 0; x < drawingMan.renderArea.layerCount; x++) {
+            for (byte x = 0; x < drawingMan.renderArea.getLayerCount(canvasId); x++) {
 
                 //get vector parent
                 Transform vectorParent = drawingMan.renderArea.getVectorParent(x, canvasId);
