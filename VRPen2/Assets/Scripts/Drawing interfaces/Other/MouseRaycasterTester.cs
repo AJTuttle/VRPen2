@@ -12,6 +12,8 @@ namespace VRPen {
         public Camera cam;
         public float pressure = 0;
 
+        public Renderer colorMat;
+
         void Start() {
             
             base.Start();
@@ -80,7 +82,7 @@ namespace VRPen {
         }
 
         protected override void updateColorIndicator(Color32 color) {
-
+            colorMat.material.color = color;
         }
 
     }

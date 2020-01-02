@@ -34,7 +34,11 @@ namespace VRPen {
         public int MAX_CANVAS_COUNT;
         [Tooltip("The render area is where the meshs for the drawing is constructed and rendered, this var sets its location in the scene")]
         public Vector3 renderAreaOrigin;
-        
+        [Tooltip("Width of canvas")]
+        public int pixelWidth;
+        [Tooltip("Height of canvas")]
+        public int pixelHeight;
+
 
 
         [Space(5)]
@@ -515,7 +519,7 @@ namespace VRPen {
 
             //make canvas
             VectorCanvas temp = GameObject.Instantiate(canvasPrefab, canvasParent).GetComponent<VectorCanvas>();
-            temp.instantiate(this, network, canvasId);
+            temp.instantiate(this, network, canvasId, pixelWidth, pixelHeight);
             temp.GetComponent<Renderer>().enabled = false;
             
             //add to list

@@ -219,11 +219,13 @@ namespace VRPen {
 				
 
 				//get vars from raycast
-				Vector3 pos = data.hit.collider.transform.InverseTransformPoint(data.hit.point);
-                float xCoord = (pos.x + 0.5f) / 1f;
-                float yCoord = (pos.y + 0.5f) / 1f;
+                Transform canvas = data.hit.transform;
+                Vector3 pos = canvas.InverseTransformPoint(data.hit.point);
+                float xCoord = pos.x + 0.5f;
+                float yCoord = pos.y + 0.5f;
                 Texture2D palette = data.hit.collider.GetComponent<Renderer>().material.mainTexture as Texture2D;
                 Color32 paletteColor = palette.GetPixel((int)(xCoord * palette.width), (int)(yCoord * palette.height));
+
 
                 //set            
                 currentColor = paletteColor;
@@ -280,11 +282,11 @@ namespace VRPen {
 
 
             //get vars from ray
-            Transform canvas = data.hit.collider.transform;
+            Transform canvas = data.hit.transform;
             Vector3 pos = canvas.InverseTransformPoint(data.hit.point);
-            xFloat = pos.x + 0.5f;
-            yFloat = pos.y + 0.5f;
-
+            xFloat = pos.x * canvas.parent.parent.localScale.x/canvas.parent.parent.localScale.y;
+            yFloat = pos.y;
+            
 
             //do stuff
             switch (state) {
@@ -301,8 +303,8 @@ namespace VRPen {
 
                         //make copy of rendertexture to texture2d to get pixel
                         RenderTexture tex = (RenderTexture)data.display.currentLocalCanvas.GetComponent<Renderer>().material.mainTexture;
-                        int xPos = tex.width - (int)(xFloat * tex.width);
-                        int yPos = (int)(yFloat * tex.height);
+                        int xPos = tex.width - (int)((pos.x + .5f) * tex.width);
+                        int yPos = (int)((pos.y + .5f) * tex.height);
                         Texture2D tempTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
                         RenderTexture.active = tex;
                         tempTexture.ReadPixels(new Rect(xPos - 1, yPos - 1, tex.width, tex.height), 0, 0);

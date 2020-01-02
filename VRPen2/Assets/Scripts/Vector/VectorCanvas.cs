@@ -24,7 +24,7 @@ namespace VRPen {
 
 
 
-		public void instantiate(VectorDrawing man, NetworkManager net, byte id) {
+		public void instantiate(VectorDrawing man, NetworkManager net, byte id, int width, int height) {
 
             //set vars
             network = net;
@@ -38,6 +38,8 @@ namespace VRPen {
             //instance material and make the render texture pipe to it
             Material mat = GetComponent<Renderer>().material;
 			renderTexture = new RenderTexture(renderTexturePresets);
+            renderTexture.width = width;
+            renderTexture.height = height;
             mat.mainTexture = renderTexture;
             renderCam.targetTexture = renderTexture;
             vectorParent = renderArea.GetChild(1);
@@ -254,7 +256,7 @@ namespace VRPen {
 
 			//set background
 			if (drawingMan.canvasBackgrounds.Length > canvasId && drawingMan.canvasBackgrounds[canvasId] != null) {
-				drawingMan.stamp(drawingMan.canvasBackgrounds[canvasId], drawingMan.facilitativeDevice.owner, drawingMan.facilitativeDevice.deviceIndex, 0.5f, 0.5f, 1, 0.5f, canvasId, false);
+				drawingMan.stamp(drawingMan.canvasBackgrounds[canvasId], drawingMan.facilitativeDevice.owner, drawingMan.facilitativeDevice.deviceIndex, 0, 0, 1, 0.5f, canvasId, false);
 			}
 
         }
