@@ -144,6 +144,11 @@ namespace VRPen {
             return player;
         }
 
+        public Dictionary<byte, InputDevice> getPlayerDevices(ulong connectionId) {
+            NetworkedPlayer player = players.Find(p => p.connectionId == connectionId);
+            return player.inputDevices;
+        }
+
         /// <summary>
         /// Packe pen data take all data accumulted since the last time it was called and returns it in a packet
         /// </summary>
