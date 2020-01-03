@@ -115,7 +115,7 @@ namespace VRPen {
             Vector3 origin = transform.position - snappedTo.forward * raycastDistance;
             RaycastHit[] hits;
             hits = Physics.RaycastAll(origin, snappedTo.forward, 1f);
-            Debug.DrawRay(origin, snappedTo.forward, Color.red, Time.deltaTime);
+            UnityEngine.Debug.DrawRay(origin, snappedTo.forward, Color.red, Time.deltaTime);
 
 
             //detect hit based off priority

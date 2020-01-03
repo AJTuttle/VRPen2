@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 6656644161125225623}
   - component: {fileID: 6656644161125225622}
   - component: {fileID: 6656644161125225619}
+  - component: {fileID: 8524224495831895956}
   m_Layer: 0
   m_Name: VRPenManager
   m_TagString: Untagged
@@ -161,6 +162,18 @@ MonoBehaviour:
   tabletTrackerTransforms: []
   tabletPoints: []
   calibrationPointPrefab: {fileID: 0}
+--- !u!114 &8524224495831895956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6656644161125225621}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2eb01471bc3b88247a6e3b5446995cf4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6656644162230625142
 GameObject:
   m_ObjectHideFlags: 0

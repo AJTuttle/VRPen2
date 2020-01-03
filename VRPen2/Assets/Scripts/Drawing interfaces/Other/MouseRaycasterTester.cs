@@ -43,7 +43,7 @@ namespace VRPen {
             RaycastHit[] hits;
 			Ray ray = cam.ScreenPointToRay(Input.mousePosition);
             hits = Physics.RaycastAll(ray, 10);
-            Debug.DrawRay(ray.origin, ray.direction, Color.blue);
+            UnityEngine.Debug.DrawRay(ray.origin, ray.direction, Color.blue);
             
             //detect hit based off priority
             raycastPriorityDetection(ref data, hits);

@@ -84,9 +84,7 @@ namespace VRPen {
 
 
         }
-
-
-
+        
         /// <summary>
         /// A method that input scripts can access to add the drawing data necesarry to be sent to other clients.
         /// </summary>
