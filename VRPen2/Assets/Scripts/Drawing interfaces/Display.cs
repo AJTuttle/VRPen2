@@ -52,8 +52,8 @@ namespace VRPen {
             if (input.state != VRPenInput.ToolState.NORMAL) input.switchTool(VRPenInput.ToolState.NORMAL);
         }
 
-        public void stampPassthrough(VRPenInput input, Transform parent) {
-            input.newStamp(parent, this);
+        public void stampPassthrough(VRPenInput input, Transform parent, int stampIndex) {
+            input.newStamp(parent, this, stampIndex);
         }
         
         public void clearCanvas() {

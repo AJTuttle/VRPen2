@@ -16,10 +16,11 @@ namespace VRPen {
         [System.NonSerialized]
         public VRPenInput clickedBy;
 
-        Selectable selectable;
+        //used only for the stamp buttons in the stamp explorer
+        [System.NonSerialized]
+        public int stampIndex;
 
         private void Start() {
-            selectable = GetComponent<Selectable>();
         }
 
         public void passThrough(int id) {
@@ -39,7 +40,7 @@ namespace VRPen {
                     UI.erasePassthrough(clickedBy);
                     break;
                 case 3:
-                    UI.stampPassthrough(clickedBy);
+                    UI.stampPassthrough(clickedBy, stampIndex);
                     break;
                 default:
                     Debug.LogError("Undetected case");

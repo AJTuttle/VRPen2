@@ -17,12 +17,11 @@ namespace VRPen {
 
         float size = .1f; //default value (not necesarrlly synced with ui slider on start)
         float rot = .5f; //default value (not necesarrlly synced with ui slider on start)
-
-        public Texture2D defaultTexture;
+        
 
         
 
-        public void instantiate(VRPenInput device, VectorDrawing man, NetworkedPlayer player, Display display) {
+        public void instantiate(VRPenInput device, VectorDrawing man, NetworkedPlayer player, Display display, int stampIndex) {
 
             vectorMan = man;
             this.device = device;
@@ -31,7 +30,15 @@ namespace VRPen {
 
             imageMat = image.GetComponent<Renderer>().material;
 
-            setTexture(defaultTexture);
+
+            string str = PlayerPrefs.GetString("Stamp#" + stampIndex);
+            Debug.Log(str);
+
+            Texture2D text = Resources.Load<Texture2D>(str);
+
+            Debug.Log((text == null).ToString());
+
+            setTexture(text);
             setSize(size);
             setRot(rot);
         }

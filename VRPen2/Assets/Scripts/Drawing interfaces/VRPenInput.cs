@@ -110,12 +110,12 @@ namespace VRPen {
             state = newState;
         }
 
-        public void newStamp(Transform parent, Display display) {
+        public void newStamp(Transform parent, Display display, int stampIndex) {
             if (currentStamp != null) currentStamp.close();
 
             GameObject obj = Instantiate(stampPrefab, parent);
             currentStamp = obj.GetComponent<StampGenerator>();
-            currentStamp.instantiate(this, vectorMan, network.localPlayer, display);
+            currentStamp.instantiate(this, vectorMan, network.localPlayer, display, stampIndex);
         }
 
         protected void input() {
