@@ -30,15 +30,11 @@ namespace VRPen {
 
             imageMat = image.GetComponent<Renderer>().material;
 
-
+            //get texture
             string str = PlayerPrefs.GetString("Stamp#" + stampIndex);
-            Debug.Log(str);
-
-            Texture2D text = Resources.Load<Texture2D>(str);
-
-            Debug.Log((text == null).ToString());
-
-            setTexture(text);
+            Texture2D texture = Resources.Load<Texture2D>(str);
+            
+            setTexture(texture);
             setSize(size);
             setRot(rot);
         }
