@@ -291,7 +291,7 @@ namespace VRPen {
             //add mesh
             MeshRenderer mr = obj.AddComponent<MeshRenderer>();
             MeshFilter mf = obj.AddComponent<MeshFilter>();
-			Mesh currentMesh = generateStampQuad(1, 1);
+			Mesh currentMesh = generateStampQuad((float)stampTex.width/stampTex.height, 1);
             mf.mesh = currentMesh;
 
 

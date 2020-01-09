@@ -596,7 +596,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   image: {fileID: 974441119309336473}
-  defaultTexture: {fileID: 2800000, guid: b7542b2f1ee8437448568392538526b1, type: 3}
 --- !u!1 &2455896733682744543
 GameObject:
   m_ObjectHideFlags: 0

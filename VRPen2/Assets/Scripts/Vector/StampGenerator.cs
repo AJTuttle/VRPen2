@@ -17,7 +17,7 @@ namespace VRPen {
 
         float size = .1f; //default value (not necesarrlly synced with ui slider on start)
         float rot = .5f; //default value (not necesarrlly synced with ui slider on start)
-        
+		float aspectRatio;
 
         
 
@@ -33,7 +33,8 @@ namespace VRPen {
             //get texture
             string str = PlayerPrefs.GetString("Stamp#" + stampIndex);
             Texture2D texture = Resources.Load<Texture2D>(str);
-            
+			aspectRatio = (float)texture.width / texture.height;
+
             setTexture(texture);
             setSize(size);
             setRot(rot);
@@ -45,7 +46,7 @@ namespace VRPen {
 
         public void setSize(float value) {
             size = value;
-            image.localScale = new Vector3(600, 600, 600) * value;
+            image.localScale = new Vector3(600*aspectRatio, 600, 600) * value;
             
         }
 
