@@ -52,7 +52,7 @@ namespace VRPen {
 		public GameObject grayPanel;
 
 
-		private void Awake() {
+		private void Start() {
             
             
             //grab scripts if not in prefab
@@ -316,57 +316,34 @@ namespace VRPen {
         
         #endregion
 
-        [MenuItem("VRPen/AddStamps")]
-        public static void openStampResources() {
-
-            //clear prefs
-            int count = PlayerPrefs.GetInt("StampCount");
-            PlayerPrefs.DeleteKey("StampCount");
-            for (int x = 0; x < count; x++) {
-                PlayerPrefs.DeleteKey("Stamp#" + x);
-            }
-            
-            //check resources folder
-            string[] StampPaths = Directory.GetFiles(Application.dataPath + "/Resources");
-            Debug.Log("Updated stamp file resources");
-
-            //add to prefs
-            int countToCheck = StampPaths.Length;
-            int newCount = 0;
-            for (int x = 0; x < countToCheck; x++) {
-                string str = StampPaths[x].Substring(Application.dataPath.Length + "/Resources".Length + 1);
-                if (str.Substring(str.Length - 4).Equals(".png") || str.Substring(str.Length - 4).Equals(".jpg")) {
-                    str = str.Substring(0, str.Length - 4);
-                    PlayerPrefs.SetString("Stamp#" + newCount, str);
-                    newCount++;
-                }
-            }
-            PlayerPrefs.SetInt("StampCount", newCount);
-
-
-        }
+       
 
         void addFilesToStampExplorer() {
 
-            if (!PlayerPrefs.HasKey("StampCount")) {
-                Debug.LogWarning("Files in resources not imported");
-                return;
-            }
-            int count = PlayerPrefs.GetInt("StampCount");
-            Debug.Log(count + " file(s) added to stamp explorer.");
+            
+            int count = PersistantData.getStampFileNameCount();
 
-            for (int x = 0; x < count; x++) {
-                string str = PlayerPrefs.GetString("Stamp#" + x);
+			if (count == -1) {
+				Debug.Log("Couldnt get stamp files due to persistant data not being instantiated");
+			}
+			else {
+				Debug.Log(count + " file(s) added to stamp explorer.");
 
-                GameObject obj = GameObject.Instantiate(stampResourcePrefab, stampResourceParent);
-                obj.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = str;
+				for (int x = 0; x < count; x++) {
 
-                obj.transform.GetChild(0).GetComponent<ButtonPassthrough>().UI = this;
-                obj.transform.GetChild(0).GetComponent<ButtonPassthrough>().stampIndex = x;
-                obj.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(() => highlightTimer(0.2f));
-                obj.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(() => closeMenus(true));
-                
-            }
+					string str = PersistantData.getStampFileName(x);
+
+					GameObject obj = Instantiate(stampResourcePrefab, stampResourceParent);
+					obj.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = str;
+
+					obj.transform.GetChild(0).GetComponent<ButtonPassthrough>().UI = this;
+					obj.transform.GetChild(0).GetComponent<ButtonPassthrough>().stampIndex = x;
+					obj.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(() => highlightTimer(0.2f));
+					obj.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(() => closeMenus(true));
+
+				}
+
+			}
 
         }
 

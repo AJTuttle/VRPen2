@@ -76,7 +76,11 @@ namespace VRPen {
 		public InputDevice facilitativeDevice;
 
 
+		private void Awake() {
 
+			//instantiate persistant data
+			PersistantData.instantiate();
+		}
 
 		private void Start() {
             
@@ -85,7 +89,6 @@ namespace VRPen {
             tablet = GetComponent<StarTablet>();
             network = GetComponent<NetworkManager>();
 
-            
 
 			//set up deisplay ids
 			for(byte x = 0; x < displays.Count; x++) {

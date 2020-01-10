@@ -30,8 +30,9 @@ namespace VRPen {
 
             imageMat = image.GetComponent<Renderer>().material;
 
-            //get texture
-            string str = PlayerPrefs.GetString("Stamp#" + stampIndex);
+			//get texture
+			string str = PersistantData.getStampFileName(stampIndex);
+			Debug.Log(str);
             Texture2D texture = Resources.Load<Texture2D>(str);
 			aspectRatio = (float)texture.width / texture.height;
 

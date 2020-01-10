@@ -269,6 +269,7 @@ namespace VRPen {
             vrpenEvent?.Invoke(sendBuffer);
 
         }
+		
 
         public void sendConnect() {
             sendConnect(true);
