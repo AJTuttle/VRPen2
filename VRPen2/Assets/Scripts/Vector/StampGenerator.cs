@@ -18,6 +18,7 @@ namespace VRPen {
         float size = .1f; //default value (not necesarrlly synced with ui slider on start)
         float rot = .5f; //default value (not necesarrlly synced with ui slider on start)
 		float aspectRatio;
+        int stampIndex;
 
         
 
@@ -27,6 +28,7 @@ namespace VRPen {
             this.device = device;
             this.player = player;
             this.display = display;
+            this.stampIndex = stampIndex;
 
             imageMat = image.GetComponent<Renderer>().material;
 
@@ -64,7 +66,7 @@ namespace VRPen {
 
         public void confirmStamp() {
             Vector3 pos = display.canvasParent.InverseTransformPoint(transform.position);
-            vectorMan.stamp(imageMat.mainTexture, player, device.deviceData.deviceIndex, -pos.x*display.canvasParent.transform.parent.localScale.x/display.canvasParent.transform.parent.localScale.y, -pos.y, size, rot, display.currentLocalCanvas.canvasId, true);
+            vectorMan.stamp(imageMat.mainTexture, stampIndex, player, device.deviceData.deviceIndex, -pos.x*display.canvasParent.transform.parent.localScale.x/display.canvasParent.transform.parent.localScale.y, -pos.y, size, rot, display.currentLocalCanvas.canvasId, true);
             close();
         }
 

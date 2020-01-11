@@ -160,7 +160,7 @@ namespace VRPen {
                 saveImage(0);
             }
             else if (Input.GetKeyDown(KeyCode.V)) {
-                stamp(stampTest, network.localPlayer, 0, .5f, .5f, .25f, 0, 0, true);
+                stamp(stampTest, 0, network.localPlayer, 0, .5f, .5f, .25f, 0, 0, true);
             }
         }
 
@@ -240,7 +240,8 @@ namespace VRPen {
             }
         }
 
-        public void stamp(Texture stampTex, NetworkedPlayer player, byte deviceIndex, float x, float y, float pressure, float rotation, byte canvasId, bool localInput) {
+        //non networked stamps use a stamp index of -1 (for example when stamping is used for the background)
+        public void stamp(Texture stampTex, int stampIndex, NetworkedPlayer player, byte deviceIndex, float x, float y, float size, float rotation, byte canvasId, bool localInput) {
             
             //get canvas
             VectorCanvas canvas = getCanvas(canvasId);
@@ -260,7 +261,7 @@ namespace VRPen {
             }
 
             //make stamp
-            VectorStamp stamp = createStamp(stampTex, canvas, device, player, pressure, rotation);
+            VectorStamp stamp = createStamp(stampTex, canvas, device, player, size, rotation);
 
             //got vector pos
             Vector3 drawPoint = new Vector3(x, 0, y);
@@ -268,6 +269,11 @@ namespace VRPen {
             //make sure it renders in
             canvas.placeStamp(stamp, device, drawPoint);
 
+            //network
+            if (localInput) {
+                if (stampIndex == -1) Debug.LogError("Tried to network a non-networkable stamp (stamp index == -1)");
+                else network.sendStamp(stampIndex, x, y, size, rotation, canvasId, deviceIndex);
+            }
 
         }
 

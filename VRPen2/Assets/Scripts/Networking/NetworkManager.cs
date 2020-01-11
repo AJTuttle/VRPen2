@@ -15,6 +15,7 @@ namespace VRPen {
         Connect,
         AddCanvas,
         Undo,
+        Stamp,
 		UIState
     }
 
@@ -269,6 +270,29 @@ namespace VRPen {
             vrpenEvent?.Invoke(sendBuffer);
 
         }
+
+        public void sendStamp(int stampIndex, float x, float y, float size, float rot, byte canvasId, byte deviceIndex) {
+
+            //mmake buffer list
+            List<byte> sendBufferList = new List<byte>();
+
+            // header
+            sendBufferList.Add((byte)PacketType.Stamp);
+            sendBufferList.AddRange(BitConverter.GetBytes(stampIndex));
+            sendBufferList.AddRange(BitConverter.GetBytes(x));
+            sendBufferList.AddRange(BitConverter.GetBytes(y));
+            sendBufferList.AddRange(BitConverter.GetBytes(size));
+            sendBufferList.AddRange(BitConverter.GetBytes(rot));
+            sendBufferList.Add(canvasId);
+            sendBufferList.Add(deviceIndex);
+            
+            // convert to an array
+            byte[] sendBuffer = sendBufferList.ToArray();
+
+            //send
+            vrpenEvent?.Invoke(sendBuffer);
+
+        }
 		
 
         public void sendConnect() {
@@ -365,6 +389,10 @@ namespace VRPen {
                 unpackUIState(packet);
             }
 
+            else if (header == PacketType.Stamp) {
+                unpackStamp(player, packet);
+            }
+
         }
 
 
@@ -446,6 +474,28 @@ namespace VRPen {
             //add board
             vectorMan.addCanvas(false);
 
+        }
+
+        void unpackStamp(NetworkedPlayer player, byte[] packet) {
+
+            //skip header
+            int offset = 1;
+
+            //data
+            int stampIndex = ReadInt(packet, ref offset);
+            float x = ReadFloat(packet, ref offset);
+            float y = ReadFloat(packet, ref offset);
+            float size = ReadFloat(packet, ref offset);
+            float rot = ReadFloat(packet, ref offset);
+            byte canvasId = ReadByte(packet, ref offset);
+            byte deviceIndex = ReadByte(packet, ref offset);
+
+            //get stamptexture
+            Texture2D text = Resources.Load<Texture2D>(PersistantData.getStampFileName(stampIndex));
+
+            //add stamp
+            vectorMan.stamp(text, stampIndex, player, deviceIndex, x, y, size, rot, canvasId, false);
+            
         }
 
         void unpackUndo(NetworkedPlayer player) {
