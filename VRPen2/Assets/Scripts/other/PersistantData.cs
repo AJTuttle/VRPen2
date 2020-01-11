@@ -11,8 +11,9 @@ namespace VRPen {
 
 		private static string[] stampFileNames;
 
+        #if UNITY_EDITOR
 
-		[MenuItem("VRPen/UpdateStampPaths")]
+        [MenuItem("VRPen/UpdateStampPaths")]
 		public static void openStampResources() {
 
 			//clear file 
@@ -39,7 +40,9 @@ namespace VRPen {
 
 		}
 
-		public static void instantiate() {
+        #endif
+
+        public static void instantiate() {
 
 			//stamp files
 			TextAsset stampFile = Resources.Load<TextAsset>("StampData");
