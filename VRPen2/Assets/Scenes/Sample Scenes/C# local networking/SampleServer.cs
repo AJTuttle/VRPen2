@@ -4,16 +4,22 @@ using UnityEngine;
 using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Collections;
+using System.Threading;
+using System.Threading.Tasks;
 
 public class SampleServer : MonoBehaviour
 {
+
+    List<TcpClient> clients = new List<TcpClient>();
+    TcpListener server;
+
     // Start is called before the first frame update
     void Start()
     {
-        IPAddress ip = Dns.GetHostEntry("localhost").AddressList[0];
-        TcpListener server = new TcpListener(6745);
-        TcpClient client = default(TcpClient);
 
+        server = new TcpListener(6745);
+        
         try {
             server.Start();
             Debug.Log("server started");
@@ -22,36 +28,51 @@ public class SampleServer : MonoBehaviour
             Debug.Log(ex.ToString());
         }
 
-        StartCoroutine(readRoutine(client, server));
-
     }
 
-    IEnumerator readRoutine(TcpClient client, TcpListener server) {
-        while (true) {
+    private void Update() {
+        
+        //check for client connections
+        if (server.Pending()) {
+            Debug.Log("Added user: " + clients.Count);
+            TcpClient client = server.AcceptTcpClient();
+            clients.Add(client);
+        }
 
-            client = server.AcceptTcpClient();
+        //packets
+        foreach(TcpClient client in clients) {
+            if (client.ReceiveBufferSize > 0) {
+                
+                //get buffer
+                byte[] buffer = new byte[client.ReceiveBufferSize];
+                int bytesRead = client.GetStream().Read(buffer, 0, buffer.Length);
+                //Debug.Log("Read buffer of size: " + bytesRead);
 
-            Debug.Log(client);
+                //count
+                if (BitConverter.ToInt32(buffer, 0) == buffer.Length) {
+                    
+                    //remove buffer counter
+                    byte[] cutBuffer = new byte[buffer.Length - 4];
+                    for(int x = 0; x < cutBuffer.Length; x++) {
+                        cutBuffer[x] = buffer[x + 4];
+                    }
 
-            if (client != null) {
+                    //pass through to other clients
+                    foreach(TcpClient otherClient in clients) {
+                        //make sure the packet isnt sent to the origin user
+                        if (otherClient != client) {
+                            otherClient.GetStream().Write(cutBuffer, 0, cutBuffer.Length);
+                        }
+                    }
 
-                byte[] receivedBuffer = new byte[100];
-                NetworkStream stream = client.GetStream();
-
-                stream.Read(receivedBuffer, 0, receivedBuffer.Length);
-
-                Debug.Log(receivedBuffer[0]);
+                }
+                else {
+                    Debug.LogError("Recieved buffer contains more than one packet, they have been ignore (TO-DO split up the packets and use them)");
+                }
 
             }
-
-            yield return null;
-
         }
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
         
     }
+
 }

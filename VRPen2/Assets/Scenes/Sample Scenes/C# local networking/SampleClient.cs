@@ -8,11 +8,15 @@ public class SampleClient : MonoBehaviour
 {
 
     TcpClient client;
+    NetworkStream stream;
 
     // Start is called before the first frame update
     void Start()
     {
+        //Screen.fullScreen = false;
+        Screen.SetResolution(500, 500, false);
         client = new TcpClient("localhost", 6745);
+        stream = client.GetStream();
     }
 
     // Update is called once per frame
@@ -28,11 +32,10 @@ public class SampleClient : MonoBehaviour
         byte[] sendData = new byte[100];
         sendData[0] = 23;
 
-        NetworkStream stream = client.GetStream();
+        
 
         stream.Write(sendData, 0, 100);
-
-        stream.Close();
+        
 
 
     }
