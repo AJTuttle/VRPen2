@@ -6,9 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 0
-    path: Assets/Scenes/Sample Scenes/C# local networking/SampleServer.unity
-    guid: 0681ca9533421f1468b478e9ea7dca4c
+    path: Assets/Photon/PhotonUnityNetworking/Demos/DemoAsteroids/Scenes/DemoAsteroids-LobbyScene.unity
+    guid: c8a9d1312a49dc8488a9b32d83d659c7
   - enabled: 1
-    path: Assets/Scenes/Sample Scenes/C# local networking/SampleClient.unity
-    guid: 2d4f1a0f685dcd24182ce3cf64bf56fd
+    path: Assets/Scenes/Sample Scenes/Photon sample scene/SamplePhoton.unity
+    guid: 873684842eaf25f48b04e55e5c539ad0
   m_configObjects: {}

@@ -115,7 +115,7 @@ namespace VRPen {
 
             GameObject obj = Instantiate(stampPrefab, parent);
             currentStamp = obj.GetComponent<StampGenerator>();
-            currentStamp.instantiate(this, vectorMan, network.localPlayer, display, stampIndex);
+            currentStamp.instantiate(this, vectorMan, network.getLocalPlayer(), display, stampIndex);
         }
 
         protected void input() {
@@ -293,7 +293,7 @@ namespace VRPen {
 
                 case ToolState.NORMAL:
                     
-                    vectorMan.draw(network.localPlayer, deviceData.deviceIndex, false, currentColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
+                    vectorMan.draw(network.getLocalPlayer(), deviceData.deviceIndex, false, currentColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
                     
                     break;
 
@@ -327,7 +327,7 @@ namespace VRPen {
 
                 case ToolState.ERASE:
 
-                    vectorMan.draw(network.localPlayer, deviceData.deviceIndex, false, data.display.currentLocalCanvas.bgColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
+                    vectorMan.draw(network.getLocalPlayer(), deviceData.deviceIndex, false, data.display.currentLocalCanvas.bgColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
                     break;
 
                 //case ToolState.STAMP:
@@ -354,7 +354,7 @@ namespace VRPen {
         }
 
         void endLine() {
-            if (deviceData.currentGraphic != null) vectorMan.endLineEvent(network.localPlayer, deviceData.deviceIndex, true);
+            if (deviceData.currentGraphic != null) vectorMan.endLineEvent(network.getLocalPlayer(), deviceData.deviceIndex, true);
         }
         
 

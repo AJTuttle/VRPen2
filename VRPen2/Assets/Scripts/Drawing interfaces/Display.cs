@@ -31,7 +31,7 @@ namespace VRPen {
         }
 
         public void undoPassthrough() {
-            vectorMan.undo(network.localPlayer, true);
+            vectorMan.undo(network.getLocalPlayer(), true);
         }
 
 		public void savePassthrough() {

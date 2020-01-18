@@ -39,7 +39,7 @@ namespace VRPen {
 
         //other players data
         public List<NetworkedPlayer> players = new List<NetworkedPlayer>();
-        public NetworkedPlayer localPlayer;
+        private NetworkedPlayer localPlayer;
 
         //prefabs
         [Space(5)]
@@ -77,15 +77,14 @@ namespace VRPen {
             UIMan = FindObjectOfType<UIManager>();
             vectorMan = GetComponent<VectorDrawing>();
 
-            localPlayer = new NetworkedPlayer();
-            localPlayer.connectionId = 0;
-            players.Add(localPlayer);
+            //instantiate local player if it doesnt already exist
+            getLocalPlayer();
 
             if(autoConnect) Invoke(nameof(sendConnect), 0.05f);
 
 
         }
-        
+
         /// <summary>
         /// A method that input scripts can access to add the drawing data necesarry to be sent to other clients.
         /// </summary>
@@ -141,6 +140,15 @@ namespace VRPen {
         public NetworkedPlayer getNetworkedPlayer(ulong connectionId) {
             NetworkedPlayer player = players.Find(p => p.connectionId == connectionId);
             return player;
+        }
+
+        public NetworkedPlayer getLocalPlayer() {
+            if (localPlayer == null) {
+                localPlayer = new NetworkedPlayer();
+                localPlayer.connectionId = 0;
+                players.Add(localPlayer);
+            }
+            return localPlayer;
         }
 
         public Dictionary<byte, InputDevice> getPlayerDevices(ulong connectionId) {
@@ -527,7 +535,7 @@ namespace VRPen {
             }
 
             if (player != null) {
-                Debug.LogError("Player should be null before connection packet... maybe this is thrown if a third person connects due to sending connection packets to everyone?");
+                Debug.Log("Player already initialized, this connect packet is ignored");
                 return;
             }
             

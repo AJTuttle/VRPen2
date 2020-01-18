@@ -97,12 +97,12 @@ namespace VRPen {
             
 
 			//setup input devices
-            network.localPlayer.inputDevices = new Dictionary<byte, InputDevice>();
+            network.getLocalPlayer().inputDevices = new Dictionary<byte, InputDevice>();
 			//set usable input devices (markers, tablets, raycasting)
 			for (byte deviceIndex = 0; deviceIndex < localInputDevices.Count; deviceIndex++) {
                 InputDevice device = localInputDevices[deviceIndex];
-                network.localPlayer.inputDevices.Add(deviceIndex, device);
-                device.owner = network.localPlayer;
+                network.getLocalPlayer().inputDevices.Add(deviceIndex, device);
+                device.owner = network.getLocalPlayer();
                 device.deviceIndex = deviceIndex;	
             }
 			//set up input device for fascilitative inputs that shouldnt be editable (import background etc.)
@@ -151,7 +151,7 @@ namespace VRPen {
             void hotkeys() {
             //hotkeys
             if (Input.GetKeyDown(KeyCode.U)) {
-                undo(network.localPlayer, true);
+                undo(network.getLocalPlayer(), true);
             }
             else if (Input.GetKeyDown(KeyCode.C)) {
                 canvases[0].clear(true);
@@ -160,7 +160,7 @@ namespace VRPen {
                 saveImage(0);
             }
             else if (Input.GetKeyDown(KeyCode.V)) {
-                stamp(stampTest, 0, network.localPlayer, 0, .5f, .5f, .25f, 0, 0, true);
+                stamp(stampTest, 0, network.getLocalPlayer(), 0, .5f, .5f, .25f, 0, 0, true);
             }
         }
 

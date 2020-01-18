@@ -42,7 +42,6 @@ GameObject:
   - component: {fileID: 6656644161125225617}
   - component: {fileID: 6656644161125225623}
   - component: {fileID: 6656644161125225622}
-  - component: {fileID: 6656644161125225619}
   - component: {fileID: 8524224495831895956}
   m_Layer: 0
   m_Name: VRPenManager
@@ -126,42 +125,6 @@ MonoBehaviour:
   canvasPrefab: {fileID: 4493597344066582299, guid: 5829e2701877af64bad27fca4b6e0e4b,
     type: 3}
   canvasParent: {fileID: 6656644162230625143}
---- !u!114 &6656644161125225619
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6656644161125225621}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 122c43d698894ee49b0ea84319bd72d8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  penTracker: {fileID: 0}
-  tabletTracker: {fileID: 0}
-  tipOffset: {x: 0, y: 0, z: -0.15}
-  tabletTransform:
-    e00: 0
-    e01: 0
-    e02: 0
-    e03: 0
-    e10: 0
-    e11: 0
-    e12: 0
-    e13: 0
-    e20: 0
-    e21: 0
-    e22: 0
-    e23: 0
-    e30: 0
-    e31: 0
-    e32: 0
-    e33: 0
-  penTrackerTransforms: []
-  tabletTrackerTransforms: []
-  tabletPoints: []
-  calibrationPointPrefab: {fileID: 0}
 --- !u!114 &8524224495831895956
 MonoBehaviour:
   m_ObjectHideFlags: 0
