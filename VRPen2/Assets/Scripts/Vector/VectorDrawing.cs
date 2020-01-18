@@ -376,9 +376,9 @@ namespace VRPen {
                 device.currentGraphic.obj.GetComponent<Renderer>().material.renderQueue = canvas.renderQueueCounter;
                 canvas.renderQueueCounter++;
 
-                //turn off and remove from curr
-                device.currentGraphic.obj.GetComponent<MeshRenderer>().enabled = false;
-                device.currentGraphic = null;
+                //turn off and remove from curr after a frame
+                StartCoroutine(canvas.renderGraphic(device.currentGraphic, device));
+
             }
             else {
                 Debug.LogError("Line end event but theres no line to end (this could also be caused by draw calls that have 0 pressure)");

@@ -261,7 +261,7 @@ namespace VRPen {
 
         }
 
-        IEnumerator renderGraphic(VectorGraphic graphic, InputDevice device) {
+        public IEnumerator renderGraphic(VectorGraphic graphic, InputDevice device) {
 
 
             //turn off the currentgraphic before since we dont want it to be edited while being rendered in
