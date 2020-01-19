@@ -10,6 +10,7 @@ namespace VRPen {
 
 	public class UIManager : MonoBehaviour {
 
+        public bool networkUI;
         
 
 		[Header("Will autofill")]
@@ -248,6 +249,8 @@ namespace VRPen {
         }
 
 		public void packState() {
+
+            if (!networkUI) return;
 
 			byte stateMask = 0;
 
