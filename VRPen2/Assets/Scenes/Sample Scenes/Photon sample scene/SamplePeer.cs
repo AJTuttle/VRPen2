@@ -30,6 +30,7 @@ public class SamplePeer : MonoBehaviourPunCallbacks, IOnEventCallback {
         roomOptions.MaxPlayers = 4;
         connectedToRoom = PhotonNetwork.JoinOrCreateRoom("room", roomOptions, TypedLobby.Default);
         Debug.Log("Joined Room: " + connectedToRoom.ToString());
+        pipe.setLocalID((ulong)PhotonNetwork.LocalPlayer.ActorNumber);
 
     }
 
@@ -43,7 +44,7 @@ public class SamplePeer : MonoBehaviourPunCallbacks, IOnEventCallback {
         ulong id = (ulong)photonEvent.Sender;
 
         if (eventCode == drawPacket || eventCode == drawEvent) {
-            Debug.Log("event");
+            Debug.Log("event by " +id);
             pipe.recievePacket(id, (byte[])photonEvent.CustomData);
         }
     }

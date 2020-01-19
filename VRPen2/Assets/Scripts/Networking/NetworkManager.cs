@@ -40,6 +40,10 @@ namespace VRPen {
         //other players data
         public List<NetworkedPlayer> players = new List<NetworkedPlayer>();
         private NetworkedPlayer localPlayer;
+        bool localPlayerHasID = false;
+
+        //other vars
+        long instanceStartTime; //used to differentiate catchup packets and current instance packets
 
         //prefabs
         [Space(5)]
@@ -73,7 +77,11 @@ namespace VRPen {
 		/// Start gets relevant scripts and also inits the local player's data
 		/// </summary>
 		private void Start() {
-            
+
+            //set the start time
+            instanceStartTime = DateTime.Now.Ticks;
+
+            //scripts
             UIMan = FindObjectOfType<UIManager>();
             vectorMan = GetComponent<VectorDrawing>();
 
@@ -83,6 +91,10 @@ namespace VRPen {
             if(autoConnect) Invoke(nameof(sendConnect), 0.05f);
 
 
+        }
+
+        private void Update() {
+            Debug.Log(localPlayer.connectionId.ToString());
         }
 
         /// <summary>
@@ -151,6 +163,15 @@ namespace VRPen {
             return localPlayer;
         }
 
+        public void setLocalId(ulong ID) {
+            if (localPlayer == null) {
+                Debug.Log("Local player needs to be setup before adding the ID");
+                return;
+            }
+            localPlayer.connectionId = ID;
+            localPlayerHasID = true;
+        }
+
         public Dictionary<byte, InputDevice> getPlayerDevices(ulong connectionId) {
             NetworkedPlayer player = players.Find(p => p.connectionId == connectionId);
             return player.inputDevices;
@@ -172,6 +193,7 @@ namespace VRPen {
 
             //header
             sendBufferList.Add((byte)PacketType.PenData);
+            sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
 
             //laser state                                                                TO-DO
             sendBufferList.Add(0);
@@ -232,6 +254,7 @@ namespace VRPen {
 
             // header
             sendBufferList.Add((byte)PacketType.Clear);
+            sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
 
             //canvas id
             sendBufferList.Add(canvasId);
@@ -252,6 +275,7 @@ namespace VRPen {
 
             // header
             sendBufferList.Add((byte)PacketType.Undo);
+            sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
 
 
             // convert to an array
@@ -269,7 +293,8 @@ namespace VRPen {
 
             // header
             sendBufferList.Add((byte)PacketType.AddCanvas);
-            
+            sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
+
 
             // convert to an array
             byte[] sendBuffer = sendBufferList.ToArray();
@@ -283,6 +308,7 @@ namespace VRPen {
 
             //mmake buffer list
             List<byte> sendBufferList = new List<byte>();
+            sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
 
             // header
             sendBufferList.Add((byte)PacketType.Stamp);
@@ -311,6 +337,7 @@ namespace VRPen {
 
             //mmake buffer list
             List<byte> sendBufferList = new List<byte>();
+            sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
 
             // header
             sendBufferList.Add((byte)PacketType.Connect);
@@ -337,6 +364,7 @@ namespace VRPen {
 
             //mmake buffer list
             List<byte> sendBufferList = new List<byte>();
+            sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
 
             // header
             sendBufferList.Add((byte)PacketType.UIState);
@@ -364,6 +392,22 @@ namespace VRPen {
             int offset = 0;
 
             PacketType header = (PacketType)ReadByte(packet, ref offset);
+            long timeSent = ReadLong(packet, ref offset);
+
+            //if local player has no id, send out warning
+            if (!localPlayerHasID) {
+                Debug.LogWarning("Packets are being recieved before the local player was assigned an ID, this could cause errors.");
+            }
+
+            //if the packet is from the local player
+            if (connectionId == localPlayer.connectionId) {
+                if (timeSent < instanceStartTime) {
+                    Debug.Log("A local catchup packet has been recieved, allowing it through.");
+                }
+                else {
+                    Debug.Log("A local NON-catchup packet has been recieved, NOT allowing it through.");
+                }
+            }
 
             //manage connection id                                        
             NetworkedPlayer player = players.Find(p => p.connectionId == connectionId);
@@ -373,20 +417,20 @@ namespace VRPen {
 
 
             if (header == PacketType.PenData) {
-                unpackPenData(player, packet);
+                unpackPenData(player, packet, ref offset);
             }
 
             else if (header == PacketType.Clear) {
-                unpackClear(packet);
+                unpackClear(packet, ref offset);
             }
 
             else if (header == PacketType.AddCanvas) {
-                unpackCanvasAddition(packet);
+                unpackCanvasAddition(packet, ref offset);
 				AddedCanvas.Invoke();
             }
 
             else if (header == PacketType.Connect) {
-                unpackConnect(player, packet, connectionId);
+                unpackConnect(player, packet, connectionId, ref offset);
             }
             
             else if (header == PacketType.Undo) {
@@ -394,11 +438,11 @@ namespace VRPen {
             }
 
 			else if (header == PacketType.UIState) {
-                unpackUIState(packet);
+                unpackUIState(packet, ref offset);
             }
 
             else if (header == PacketType.Stamp) {
-                unpackStamp(player, packet);
+                unpackStamp(player, packet, ref offset);
             }
 
         }
@@ -409,12 +453,9 @@ namespace VRPen {
         /// </summary>
         /// <param name="player">netowrked player who sent data</param>
         /// <param name="packet">data</param>
-        void unpackPenData(NetworkedPlayer player, byte[] packet) {
+        void unpackPenData(NetworkedPlayer player, byte[] packet, ref int offset) {
 
            
-            //skip header
-            int offset = 1;
-
             //data
             bool laserState = ReadByte(packet, ref offset) != 0;
 
@@ -456,11 +497,8 @@ namespace VRPen {
         /// If the packet was a clear event, this method unpacks it and clears the correct board
         /// </summary>
         /// <param name="packet">data</param>
-        void unpackClear(byte[] packet) {
+        void unpackClear(byte[] packet, ref int offset) {
      
-            //skip header
-            int offset = 1;
-
             //get canvas
             byte canvasId = ReadByte(packet, ref offset);
 
@@ -473,21 +511,16 @@ namespace VRPen {
         /// If the packet was a add canvas, this method accually does it
         /// </summary>
         /// <param name="packet">data</param>
-        void unpackCanvasAddition(byte[] packet) {
-
-            //skip header
-            int offset = 1;
-
-
+        void unpackCanvasAddition(byte[] packet, ref int offset) {
+            
+            
             //add board
             vectorMan.addCanvas(false);
 
         }
 
-        void unpackStamp(NetworkedPlayer player, byte[] packet) {
-
-            //skip header
-            int offset = 1;
+        void unpackStamp(NetworkedPlayer player, byte[] packet, ref int offset) {
+            
 
             //data
             int stampIndex = ReadInt(packet, ref offset);
@@ -510,10 +543,8 @@ namespace VRPen {
             vectorMan.undo(player, false);
         }
 
-        void unpackUIState(byte[] packet) {
-
-			//skip header
-			int offset = 1;
+        void unpackUIState(byte[] packet, ref int offset) {
+            
 
 			//data
 			byte displayId = ReadByte(packet, ref offset);
@@ -525,10 +556,8 @@ namespace VRPen {
 
         }
 
-        void unpackConnect(NetworkedPlayer player, byte[] packet, ulong connectionId) {
-
-            //skip header
-            int offset = 1;
+        void unpackConnect(NetworkedPlayer player, byte[] packet, ulong connectionId, ref int offset) {
+            
 
             if (ReadByte(packet, ref offset) == 1) {
                 sendConnect(false);
@@ -621,6 +650,12 @@ namespace VRPen {
         ulong ReadULong(byte[] buf, ref int offset) {
             ulong val = BitConverter.ToUInt64(buf, offset);
             offset += sizeof(ulong);
+            return val;
+        }
+
+        long ReadLong(byte[] buf, ref int offset) {
+            long val = BitConverter.ToInt64(buf, offset);
+            offset += sizeof(long);
             return val;
         }
 

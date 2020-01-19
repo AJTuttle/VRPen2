@@ -41,8 +41,8 @@ public class VRPenNetworkPiping : MonoBehaviour {
 
 		RaiseEventOptions raiseEventOptions = new RaiseEventOptions {
 			CachingOption = EventCaching.AddToRoomCache,
-			Receivers = ReceiverGroup.Others
-		};
+			Receivers = ReceiverGroup.All
+        };
 
 		SendOptions sendOptions = new SendOptions {
 			Reliability = true,
@@ -51,12 +51,15 @@ public class VRPenNetworkPiping : MonoBehaviour {
 		PhotonNetwork.RaiseEvent(SamplePeer.drawPacket, packet, raiseEventOptions, sendOptions);
 	}
 
+    public void setLocalID(ulong id) {
+        pen.setLocalId(id);
+    }
 
 	public void eventListener(byte[] packet) {
 		//pass
 		RaiseEventOptions raiseEventOptions = new RaiseEventOptions {
 			CachingOption = EventCaching.AddToRoomCache,
-			Receivers = ReceiverGroup.Others
+			Receivers = ReceiverGroup.All
 		};
 
 		SendOptions sendOptions = new SendOptions {
