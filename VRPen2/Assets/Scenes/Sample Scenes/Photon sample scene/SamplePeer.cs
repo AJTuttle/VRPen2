@@ -29,13 +29,14 @@ public class SamplePeer : MonoBehaviourPunCallbacks, IOnEventCallback {
         roomOptions.IsVisible = false;
         roomOptions.MaxPlayers = 4;
         connectedToRoom = PhotonNetwork.JoinOrCreateRoom("room", roomOptions, TypedLobby.Default);
-        Debug.Log("Joined Room: " + connectedToRoom.ToString());
-        pipe.setLocalID((ulong)PhotonNetwork.LocalPlayer.ActorNumber);
+
 
     }
 
     public override void OnJoinedRoom() {
         FindObjectOfType<VRPen.NetworkManager>().sendConnect();
+        Debug.Log("Joined Room: " + connectedToRoom.ToString());
+        pipe.setLocalID((ulong)PhotonNetwork.LocalPlayer.ActorNumber);
     }
 
     public void OnEvent(EventData photonEvent) {

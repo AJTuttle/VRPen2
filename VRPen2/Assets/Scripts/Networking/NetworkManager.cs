@@ -308,10 +308,10 @@ namespace VRPen {
 
             //mmake buffer list
             List<byte> sendBufferList = new List<byte>();
-            sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
 
             // header
             sendBufferList.Add((byte)PacketType.Stamp);
+            sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
             sendBufferList.AddRange(BitConverter.GetBytes(stampIndex));
             sendBufferList.AddRange(BitConverter.GetBytes(x));
             sendBufferList.AddRange(BitConverter.GetBytes(y));
@@ -337,10 +337,10 @@ namespace VRPen {
 
             //mmake buffer list
             List<byte> sendBufferList = new List<byte>();
-            sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
 
             // header
             sendBufferList.Add((byte)PacketType.Connect);
+            sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
 
             //add data
             sendBufferList.Add(requestReply ? (byte)1 : (byte)0); //request reply?
@@ -364,13 +364,13 @@ namespace VRPen {
 
             //mmake buffer list
             List<byte> sendBufferList = new List<byte>();
-            sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
 
             // header
             sendBufferList.Add((byte)PacketType.UIState);
+            sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
 
-			//add data
-			sendBufferList.Add(displayId);
+            //add data
+            sendBufferList.Add(displayId);
 			sendBufferList.Add(state);
 
             // convert to an array
@@ -406,6 +406,7 @@ namespace VRPen {
                 }
                 else {
                     Debug.Log("A local NON-catchup packet has been recieved, NOT allowing it through.");
+                    return;
                 }
             }
 
@@ -443,6 +444,10 @@ namespace VRPen {
 
             else if (header == PacketType.Stamp) {
                 unpackStamp(player, packet, ref offset);
+            }
+
+            else {
+                Debug.LogError("Packet type not recognized, ID = " + header);
             }
 
         }

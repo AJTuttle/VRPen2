@@ -40,7 +40,7 @@ public class VRPenNetworkPiping : MonoBehaviour {
 		//PhotonMan.instance?.photonView.RPC("SendArbitraryPacket", RpcTarget.Others, PhotonNetwork.LocalPlayer.ActorNumber, PhotonMan.MessageType.DrawingUpdate, packet);
 
 		RaiseEventOptions raiseEventOptions = new RaiseEventOptions {
-			CachingOption = EventCaching.AddToRoomCache,
+			CachingOption = EventCaching.AddToRoomCacheGlobal,
 			Receivers = ReceiverGroup.All
         };
 
@@ -58,7 +58,7 @@ public class VRPenNetworkPiping : MonoBehaviour {
 	public void eventListener(byte[] packet) {
 		//pass
 		RaiseEventOptions raiseEventOptions = new RaiseEventOptions {
-			CachingOption = EventCaching.AddToRoomCache,
+			CachingOption = EventCaching.AddToRoomCacheGlobal,
 			Receivers = ReceiverGroup.All
 		};
 
