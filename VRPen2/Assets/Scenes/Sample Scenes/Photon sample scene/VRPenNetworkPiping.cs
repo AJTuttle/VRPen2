@@ -1,6 +1,8 @@
 ﻿using ExitGames.Client.Photon;
 using Photon.Pun;
+using Photon;
 using Photon.Realtime;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +14,7 @@ public class VRPenNetworkPiping : MonoBehaviour {
 
 	//timer
 	const float PACKET_SEND_TIMER = 0.1f;
+    
 
 	void Start() {
 
@@ -31,13 +34,19 @@ public class VRPenNetworkPiping : MonoBehaviour {
 	void sendPacket() {
 
 		//get packet
-		byte[] packet = pen.packPenData();
+		byte[] vrpenPacket = pen.packPenData();
 
-		//check if there was data to send
-		if (packet == null) return;
 
-		//pass through 
-		//PhotonMan.instance?.photonView.RPC("SendArbitraryPacket", RpcTarget.Others, PhotonNetwork.LocalPlayer.ActorNumber, PhotonMan.MessageType.DrawingUpdate, packet);
+        //check if there was data to send
+        if (vrpenPacket == null) return;
+
+        //make full packet with id (have to do this since photon global cache doesnt save the actornumbet)
+        List<byte> packetList = new List<byte>();
+        packetList.AddRange(BitConverter.GetBytes(PhotonNetwork.LocalPlayer.ActorNumber));
+        packetList.AddRange(vrpenPacket);
+        byte[] packet = packetList.ToArray();
+
+        
 
 		RaiseEventOptions raiseEventOptions = new RaiseEventOptions {
 			CachingOption = EventCaching.AddToRoomCacheGlobal,
@@ -55,9 +64,16 @@ public class VRPenNetworkPiping : MonoBehaviour {
         pen.setLocalId(id);
     }
 
-	public void eventListener(byte[] packet) {
-		//pass
-		RaiseEventOptions raiseEventOptions = new RaiseEventOptions {
+	public void eventListener(byte[] vrpenPacket) {
+
+        //make full packet with id (have to do this since photon global cache doesnt save the actornumbet)
+        List<byte> packetList = new List<byte>();
+        packetList.AddRange(BitConverter.GetBytes(PhotonNetwork.LocalPlayer.ActorNumber));
+        packetList.AddRange(vrpenPacket);
+        byte[] packet = packetList.ToArray();
+
+        //pass
+        RaiseEventOptions raiseEventOptions = new RaiseEventOptions {
 			CachingOption = EventCaching.AddToRoomCacheGlobal,
 			Receivers = ReceiverGroup.All
 		};
@@ -71,11 +87,30 @@ public class VRPenNetworkPiping : MonoBehaviour {
 
 
 
-	public void recievePacket(ulong connectionId, byte[] packet) {
+	public void recievePacket(byte[] packet) {
 
-		//move to unpacking
-		pen.unpackPacket(connectionId, packet);
+        //get sender actornumber
+        int index = 0;
+        ulong actorNumber = (ulong)ReadInt(packet, ref index);
+
+        //trimm packet
+        byte[] trimmedPacket = new byte[packet.Length - 4];
+        for (int x = 0; x < trimmedPacket.Length; x++) {
+            trimmedPacket[x] = packet[x + 4];
+        }
+
+        Debug.Log("Packet recieved from AN = " + actorNumber);
+
+        //move to unpacking
+        pen.unpackPacket(actorNumber, trimmedPacket);
 
 	}
+
+
+    int ReadInt(byte[] buf, ref int offset) {
+        int val = BitConverter.ToInt32(buf, offset);
+        offset += sizeof(Int32);
+        return val;
+    }
 
 }

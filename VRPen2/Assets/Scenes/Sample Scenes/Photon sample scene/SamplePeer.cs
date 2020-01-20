@@ -34,9 +34,10 @@ public class SamplePeer : MonoBehaviourPunCallbacks, IOnEventCallback {
     }
 
     public override void OnJoinedRoom() {
-        FindObjectOfType<VRPen.NetworkManager>().sendConnect();
+
         Debug.Log("Joined Room: " + connectedToRoom.ToString());
         pipe.setLocalID((ulong)PhotonNetwork.LocalPlayer.ActorNumber);
+        FindObjectOfType<VRPen.NetworkManager>().sendConnect();
     }
 
     public void OnEvent(EventData photonEvent) {
@@ -45,10 +46,10 @@ public class SamplePeer : MonoBehaviourPunCallbacks, IOnEventCallback {
         ulong id = (ulong)photonEvent.Sender;
 
         if (eventCode == drawPacket || eventCode == drawEvent) {
-            Debug.Log("event by " +id);
-            pipe.recievePacket(id, (byte[])photonEvent.CustomData);
+            Debug.Log("event by " + id + "  - (if it is 0 then this is a catchup packet)");
+            pipe.recievePacket((byte[])photonEvent.CustomData);
         }
     }
-    
+
 
 }
