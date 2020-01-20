@@ -44,6 +44,7 @@ namespace VRPen {
 
         //other vars
         long instanceStartTime; //used to differentiate catchup packets and current instance packets
+        bool sentConnect = false;
 
         //prefabs
         [Space(5)]
@@ -92,10 +93,7 @@ namespace VRPen {
 
 
         }
-
-        private void Update() {
-            Debug.Log(localPlayer.connectionId.ToString());
-        }
+        
 
         /// <summary>
         /// A method that input scripts can access to add the drawing data necesarry to be sent to other clients.
@@ -183,6 +181,12 @@ namespace VRPen {
         /// <returns>a byte array packet</returns>
         public byte[] packPenData() {
 
+            //dont send if you havent connected to the other users yet
+            if (!sentConnect) {
+                Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
+                return null;
+            }
+
             //checks for data
             if (xFloats.Length <= 1) {
                 return null;
@@ -247,7 +251,12 @@ namespace VRPen {
         /// </summary>
         /// <param name="canvasId">The id of the canvas to clear</param>
         public void sendClear(byte canvasId) {
-            
+
+            //dont send if you havent connected to the other users yet
+            if (!sentConnect) {
+                Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
+                return;
+            }
 
             //mmake buffer list
             List<byte> sendBufferList = new List<byte>();
@@ -270,6 +279,12 @@ namespace VRPen {
 
         public void sendUndo() {
 
+            //dont send if you havent connected to the other users yet
+            if (!sentConnect) {
+                Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
+                return;
+            }
+
             //mmake buffer list
             List<byte> sendBufferList = new List<byte>();
 
@@ -288,6 +303,12 @@ namespace VRPen {
 
         public void sendCanvasAddition() {
 
+            //dont send if you havent connected to the other users yet
+            if (!sentConnect) {
+                Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
+                return;
+            }
+
             //mmake buffer list
             List<byte> sendBufferList = new List<byte>();
 
@@ -305,6 +326,12 @@ namespace VRPen {
         }
 
         public void sendStamp(int stampIndex, float x, float y, float size, float rot, byte canvasId, byte deviceIndex) {
+
+            //dont send if you havent connected to the other users yet
+            if (!sentConnect) {
+                Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
+                return;
+            }
 
             //mmake buffer list
             List<byte> sendBufferList = new List<byte>();
@@ -334,7 +361,7 @@ namespace VRPen {
         }
 
         public void sendConnect(bool requestReply) {
-
+            
             //mmake buffer list
             List<byte> sendBufferList = new List<byte>();
 
@@ -356,11 +383,18 @@ namespace VRPen {
             byte[] sendBuffer = sendBufferList.ToArray();
 
             //send
+            sentConnect = true;
             vrpenEvent?.Invoke(sendBuffer);
 
         }
 
 		public void sendUIState(byte displayId, byte state) {
+
+            //dont send if you havent connected to the other users yet
+            if (!sentConnect) {
+                Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
+                return;
+            }
 
             //mmake buffer list
             List<byte> sendBufferList = new List<byte>();

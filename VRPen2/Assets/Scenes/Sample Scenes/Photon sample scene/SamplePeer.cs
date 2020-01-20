@@ -38,6 +38,7 @@ public class SamplePeer : MonoBehaviourPunCallbacks, IOnEventCallback {
         Debug.Log("Joined Room: " + connectedToRoom.ToString());
         pipe.setLocalID((ulong)PhotonNetwork.LocalPlayer.ActorNumber);
         FindObjectOfType<VRPen.NetworkManager>().sendConnect();
+        pipe.beginPipingData();
     }
 
     public void OnEvent(EventData photonEvent) {

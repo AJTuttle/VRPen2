@@ -82,6 +82,7 @@ namespace VRPen {
         }
 
         protected override void updateColorIndicator(Color32 color) {
+            if (colorMat == null) return;
             colorMat.material.color = color;
         }
 

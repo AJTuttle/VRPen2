@@ -21,13 +21,17 @@ public class VRPenNetworkPiping : MonoBehaviour {
 		//get scripts
 		pen = FindObjectOfType<VRPen.NetworkManager>();
 
-		//listen for events
-		pen.vrpenEvent += eventListener;
 
-		//start send timer
-		InvokeRepeating("sendPacket", 1.0f, PACKET_SEND_TIMER);
+        //listen for events
+        pen.vrpenEvent += eventListener;
 
-	}
+    }
+
+    public void beginPipingData() {
+
+        //start send timer
+        InvokeRepeating("sendPacket", 1.0f, PACKET_SEND_TIMER);
+    }
 
 
 
@@ -45,9 +49,7 @@ public class VRPenNetworkPiping : MonoBehaviour {
         packetList.AddRange(BitConverter.GetBytes(PhotonNetwork.LocalPlayer.ActorNumber));
         packetList.AddRange(vrpenPacket);
         byte[] packet = packetList.ToArray();
-
         
-
 		RaiseEventOptions raiseEventOptions = new RaiseEventOptions {
 			CachingOption = EventCaching.AddToRoomCacheGlobal,
 			Receivers = ReceiverGroup.All
