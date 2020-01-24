@@ -15,14 +15,17 @@ namespace VRPen {
 
     }
 
-    public abstract class VRPenInput : MonoBehaviour {
-
+    public abstract class VRPenInput : InputVisuals {
+		
 
 
         //script refs
         VectorDrawing vectorMan;
         NetworkManager network;
-        public InputDevice deviceData;
+
+		[System.NonSerialized]
+		public InputDevice deviceData;
+		public InputDevice.InputDeviceType deviceType;
 
         //public vars
         public bool UIClickDown = false;
@@ -63,7 +66,6 @@ namespace VRPen {
 
         //abstract methods
         protected abstract InputData getInputData();
-        protected abstract void updateColorIndicator(Color32 color);
 
         
 
@@ -74,11 +76,10 @@ namespace VRPen {
             //get script vars
             vectorMan = FindObjectOfType<VectorDrawing>();
             network = FindObjectOfType<NetworkManager>();
-            deviceData = GetComponent<InputDevice>();
             SceneManager.activeSceneChanged += grabReferences;
 
 			//set colors
-			updateColorIndicator(currentColor);
+			updateColorIndicators(currentColor);
 
         }
 
@@ -89,9 +90,6 @@ namespace VRPen {
                 vectorMan = FindObjectOfType<VectorDrawing>();
             if (network == null)
                 network = FindObjectOfType<NetworkManager>();
-            if (deviceData == null)
-                deviceData = GetComponent<InputDevice>();
-            
         }
 
         protected void idle() {
@@ -105,12 +103,15 @@ namespace VRPen {
         }
 
 
-        public virtual void switchTool(ToolState newState) {
+        public void switchTool(ToolState newState) {
             //change state
             state = newState;
-        }
 
-        public void newStamp(Transform parent, Display display, int stampIndex) {
+			updateModel(newState);
+        }
+		
+
+		public void newStamp(Transform parent, Display display, int stampIndex) {
             if (currentStamp != null) currentStamp.close();
 
             GameObject obj = Instantiate(stampPrefab, parent);
@@ -231,7 +232,7 @@ namespace VRPen {
                 currentColor = paletteColor;
 
 				//indicator
-				updateColorIndicator(currentColor);
+				updateColorIndicators(currentColor);
 
             }
 
@@ -317,7 +318,7 @@ namespace VRPen {
                         currentColor.a = 255;
 
                         //update indicator
-                        updateColorIndicator(currentColor);
+                        updateColorIndicators(currentColor);
 
                     }
 

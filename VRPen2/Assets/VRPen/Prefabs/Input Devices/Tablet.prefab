@@ -7879,7 +7879,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4162737611858156918}
   - component: {fileID: 680105190234456749}
-  - component: {fileID: 7278280619097926590}
   - component: {fileID: 2496159444085833350}
   m_Layer: 0
   m_Name: Tablet
@@ -7919,19 +7918,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UIMan: {fileID: 8729166166796025166}
   canvasParent: {fileID: 4162737612900379280}
---- !u!114 &7278280619097926590
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4162737611858156914}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e87ae7f66a221214598d18b83e58bb67, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 1
 --- !u!114 &2496159444085833350
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7944,12 +7930,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf150446e588aad488ceea2dee29a0e3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deviceData: {fileID: 0}
+  colorIndicatorRenderers: []
+  colorIndicatorRenderersIndex: 
+  deviceType: 1
   UIClickDown: 0
-  stampIndicator: {fileID: 0}
   stampPrefab: {fileID: 2441548749050361720, guid: cbb90edd4f2d39f4abac245a76f78a78,
     type: 3}
-  currentStamp: {fileID: 0}
   tablet: {fileID: 0}
   localCursor: {fileID: 3235478784702896914}
   localDisplay: {fileID: 680105190234456749}
@@ -11730,12 +11716,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc06493e3e3fe624382f71f94172e96d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  networkUI: 0
   vectorMan: {fileID: 0}
   network: {fileID: 0}
   SideMenuParent: {fileID: 4374588486783869366}
   calculatorParent: {fileID: 1713486586508643397}
   canvasMenuParent: {fileID: 8575893552603313553}
   canvasListParent: {fileID: 6568374079184499899}
+  stampExplorerParent: {fileID: 0}
   clearMenuParent: {fileID: 3927849152947149404}
   menuArrow: {fileID: 6480239768517532395}
   display: {fileID: 0}
@@ -11743,6 +11731,8 @@ MonoBehaviour:
   canvasButtonPrefab: {fileID: 2879086817462599524, guid: bf3e6f2c784a9c84c9a7bbe69cd1474a,
     type: 3}
   sideMenuOpen: 0
+  stampResourceParent: {fileID: 0}
+  stampResourcePrefab: {fileID: 0}
   invisButton: {fileID: 8035417803136321175}
   colorPanel: {fileID: 4247959497788816996}
   grayPanel: {fileID: 7547466236048824160}

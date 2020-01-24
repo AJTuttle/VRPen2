@@ -109,10 +109,6 @@ namespace VRPen {
             return data;
         }
 
-        protected override void updateColorIndicator(Color32 color) {
-            if (colorIndicator != null) colorIndicator.color = color;
-        }
-
 
     }
 

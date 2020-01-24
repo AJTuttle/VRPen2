@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace VRPen {
-	public class RemoteMarker : MonoBehaviour {
-		private InputData data = new InputData();
+	public class RemoteMarker : InputVisuals {
+
 		protected Transform snappedTo;
 		protected float raycastDistance = 0.2f;
 		public Transform modelParent;

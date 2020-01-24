@@ -88,7 +88,6 @@ GameObject:
   - component: {fileID: 8127586437058180712}
   - component: {fileID: 8217082110612787810}
   - component: {fileID: 8217082110612787740}
-  - component: {fileID: 4171087101487389530}
   m_Layer: 0
   m_Name: Remote Marker
   m_TagString: Untagged
@@ -153,19 +152,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tag: Ray-Ignore
---- !u!114 &4171087101487389530
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8217082110612787815}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e87ae7f66a221214598d18b83e58bb67, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 0
 --- !u!1 &8217082110764964032
 GameObject:
   m_ObjectHideFlags: 0
@@ -206,6 +192,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8217082110764964033}
     m_Modifications:
+    - target: {fileID: 100000, guid: cd5b00ab6baa6e04daeed7e028d8dfbe, type: 3}
+      propertyPath: m_Name
+      value: ear_ayser
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: cd5b00ab6baa6e04daeed7e028d8dfbe, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: cd5b00ab6baa6e04daeed7e028d8dfbe, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0
@@ -261,14 +255,6 @@ PrefabInstance:
     - target: {fileID: 400000, guid: cd5b00ab6baa6e04daeed7e028d8dfbe, type: 3}
       propertyPath: m_LocalScale.z
       value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 100000, guid: cd5b00ab6baa6e04daeed7e028d8dfbe, type: 3}
-      propertyPath: m_Name
-      value: ear_ayser
-      objectReference: {fileID: 0}
-    - target: {fileID: 100000, guid: cd5b00ab6baa6e04daeed7e028d8dfbe, type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd5b00ab6baa6e04daeed7e028d8dfbe, type: 3}
@@ -364,6 +350,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8217082110764964033}
     m_Modifications:
+    - target: {fileID: 100000, guid: d307260758d85c54b98ca02a9be194a9, type: 3}
+      propertyPath: m_Name
+      value: model
+      objectReference: {fileID: 0}
     - target: {fileID: 400000, guid: d307260758d85c54b98ca02a9be194a9, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -419,10 +409,6 @@ PrefabInstance:
     - target: {fileID: 400000, guid: d307260758d85c54b98ca02a9be194a9, type: 3}
       propertyPath: m_LocalScale.z
       value: 20
-      objectReference: {fileID: 0}
-    - target: {fileID: 100000, guid: d307260758d85c54b98ca02a9be194a9, type: 3}
-      propertyPath: m_Name
-      value: model
       objectReference: {fileID: 0}
     - target: {fileID: 2300000, guid: d307260758d85c54b98ca02a9be194a9, type: 3}
       propertyPath: m_Materials.Array.size

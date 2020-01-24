@@ -19,12 +19,12 @@ public class SamplePeer : MonoBehaviourPunCallbacks, IOnEventCallback {
         pipe = GetComponent<VRPenNetworkPiping>();
 
         bool connected = PhotonNetwork.ConnectUsingSettings();
-        Debug.Log("Connected to photon: " + connected.ToString());
 
     }
 
     public override void OnConnectedToMaster() {
 
+		Debug.Log("Connected to Master");
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.IsVisible = false;
         roomOptions.MaxPlayers = 4;
@@ -35,7 +35,7 @@ public class SamplePeer : MonoBehaviourPunCallbacks, IOnEventCallback {
 
     public override void OnJoinedRoom() {
 
-        Debug.Log("Joined Room: " + connectedToRoom.ToString());
+        Debug.Log("Joined Room");
         pipe.setLocalID((ulong)PhotonNetwork.LocalPlayer.ActorNumber);
         FindObjectOfType<VRPen.NetworkManager>().sendConnect();
         pipe.beginPipingData();

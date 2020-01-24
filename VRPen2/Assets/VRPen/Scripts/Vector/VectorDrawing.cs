@@ -27,7 +27,7 @@ namespace VRPen {
         [Tooltip("Make sure to add any displays in the scene here")]
         public List<Display> displays = new List<Display>();
         [Tooltip("Make sure to add any input devices in the scene here")]
-        public List<InputDevice> localInputDevices = new List<InputDevice>();
+        public List<VRPenInput> localInputDevices = new List<VRPenInput>();
         [Tooltip("In build, canvases will autosave on applicationQuit and scenchange event.")]
         public bool autoSaveOnExit;
         [Tooltip("Max number of unique canvases stored")]
@@ -100,13 +100,15 @@ namespace VRPen {
             network.getLocalPlayer().inputDevices = new Dictionary<byte, InputDevice>();
 			//set usable input devices (markers, tablets, raycasting)
 			for (byte deviceIndex = 0; deviceIndex < localInputDevices.Count; deviceIndex++) {
-                InputDevice device = localInputDevices[deviceIndex];
+				InputDevice device = new InputDevice();
+				localInputDevices[deviceIndex].deviceData = device;
+				device.type = localInputDevices[deviceIndex].deviceType;
                 network.getLocalPlayer().inputDevices.Add(deviceIndex, device);
                 device.owner = network.getLocalPlayer();
                 device.deviceIndex = deviceIndex;	
             }
 			//set up input device for fascilitative inputs that shouldnt be editable (import background etc.)
-			facilitativeDevice = gameObject.AddComponent<InputDevice>();
+			facilitativeDevice = new InputDevice();
 			facilitativeDevice.type = InputDevice.InputDeviceType.Facilitative;
 			facilitativeDevice.owner = null;
 			facilitativeDevice.deviceIndex = 255;

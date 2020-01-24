@@ -14,8 +14,6 @@ namespace VRPen {
         public GameObject markerModel;
         public GameObject eyedropperModel;
         public GameObject eraserModel;
-        public MeshRenderer markerColorIndicator;
-        public MeshRenderer eyedropperColorIndicator;
         public Transform followTarget;
         
         public AnimationCurve pressureCurve;
@@ -30,7 +28,7 @@ namespace VRPen {
 		bool snappedToChecker = false;
 
 
-		void Start() {
+		new void Start() {
             base.Start();
 			SceneManager.activeSceneChanged += SceneChanged;
         }
@@ -72,38 +70,12 @@ namespace VRPen {
 			Destroy(gameObject);
 		}
 
-        public override void switchTool(ToolState newState) {
-            //if no change return
-            if (state == newState) return;
+        protected override void updateModel(ToolState newState) {
 
-            //turn off old tool
-            switch (state) {
-                case ToolState.NORMAL:
-                    markerModel.SetActive(false);
-                    break;
-                case ToolState.EYEDROPPER:
-                    eyedropperModel.SetActive(false);
-                    break;
-                case ToolState.ERASE:
-					eraserModel.SetActive(false);
-					break;
-            }
-
-            //switch state
-            base.switchTool(newState);
-
-            //turn on new tool
-            switch (state) {
-                case ToolState.NORMAL:
-                    markerModel.SetActive(true);
-                    break;
-                case ToolState.EYEDROPPER:
-                    eyedropperModel.SetActive(true);
-                    break;
-                case ToolState.ERASE:
-					eraserModel.SetActive(true);
-					break;
-            }
+			markerModel.SetActive(newState == ToolState.NORMAL);
+			eraserModel.SetActive(newState == ToolState.ERASE);
+			eyedropperModel.SetActive(newState == ToolState.EYEDROPPER);
+			
 
         }
         protected override InputData getInputData() {
@@ -138,12 +110,7 @@ namespace VRPen {
 
         }
 
-        protected override void updateColorIndicator(Color32 color) {
-
-            markerColorIndicator.materials[1].color = color;
-            eyedropperColorIndicator.materials[2].color = color;
-
-        }
+        
 
         private void OnTriggerEnter(Collider other) {
             Tag tag;

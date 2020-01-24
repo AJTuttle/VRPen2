@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 4167860366073974991}
   - component: {fileID: 8904092328288809225}
-  - component: {fileID: 2447075152336780480}
   m_Layer: 0
   m_Name: Mouse
   m_TagString: Untagged
@@ -44,23 +43,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2be2245bd853e4f4b9109ca4e8a8c1d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deviceData: {fileID: 2447075152336780480}
+  colorIndicatorRenderers: []
+  colorIndicatorRenderersIndex: 
+  deviceType: 2
   UIClickDown: 0
   stampPrefab: {fileID: 2441548749050361720, guid: cbb90edd4f2d39f4abac245a76f78a78,
     type: 3}
   cam: {fileID: 0}
   pressure: 0
   colorMat: {fileID: 0}
---- !u!114 &2447075152336780480
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6923511768144376201}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e87ae7f66a221214598d18b83e58bb67, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 2

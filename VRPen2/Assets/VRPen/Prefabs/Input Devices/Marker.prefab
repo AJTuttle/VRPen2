@@ -88,7 +88,6 @@ GameObject:
   - component: {fileID: 1433553229}
   - component: {fileID: 8217082110612787810}
   - component: {fileID: 8217082110612787740}
-  - component: {fileID: 4171087101487389530}
   m_Layer: 0
   m_Name: Marker
   m_TagString: Untagged
@@ -123,18 +122,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4101cd3e410578e45ada28cc748abf47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  colorIndicatorRenderers:
+  - {fileID: 8217082111144113738}
+  - {fileID: 7813515921521256852}
+  colorIndicatorRenderersIndex: 0100000002000000
   deviceData: {fileID: 0}
   UIClickDown: 0
-  stampIndicator: {fileID: 0}
   stampPrefab: {fileID: 2441548749050361720, guid: cbb90edd4f2d39f4abac245a76f78a78,
     type: 3}
-  currentStamp: {fileID: 0}
   modelParent: {fileID: 8217082110764964033}
   markerModel: {fileID: 8217082111141914762}
   eyedropperModel: {fileID: 7813515921519064916}
   eraserModel: {fileID: 1939763198835483526}
-  markerColorIndicator: {fileID: 8217082111144113738}
-  eyedropperColorIndicator: {fileID: 7813515921521256852}
   followTarget: {fileID: 0}
   pressureCurve:
     serializedVersion: 2
@@ -199,19 +198,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   tag: Ray-Ignore
---- !u!114 &4171087101487389530
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8217082110612787815}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e87ae7f66a221214598d18b83e58bb67, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 0
 --- !u!1 &8217082110764964032
 GameObject:
   m_ObjectHideFlags: 0

@@ -627,14 +627,8 @@ namespace VRPen {
                         obj = Instantiate(remoteMarkerPrefab);
 						break;
                     case InputDevice.InputDeviceType.Tablet:
-                        obj = Instantiate(tabletPrefab);
-						//remove input since this isnt a local input device
-						Destroy(obj.GetComponent<VRPenInput>());
                         break;
                     case InputDevice.InputDeviceType.Mouse:
-                        obj = Instantiate(mousePrefab);
-						//remove input since this isnt a local input device
-						Destroy(obj.GetComponent<VRPenInput>());
                         break;
                 }
 

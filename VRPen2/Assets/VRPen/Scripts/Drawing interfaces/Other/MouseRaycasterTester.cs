@@ -14,7 +14,7 @@ namespace VRPen {
 
         public Renderer colorMat;
 
-        void Start() {
+        new void Start() {
             
             base.Start();
         }
@@ -80,11 +80,7 @@ namespace VRPen {
 
 
         }
-
-        protected override void updateColorIndicator(Color32 color) {
-            if (colorMat == null) return;
-            colorMat.material.color = color;
-        }
+		
 
     }
 
