@@ -101,7 +101,7 @@ public class VRPenNetworkPiping : MonoBehaviour {
             trimmedPacket[x] = packet[x + 4];
         }
 
-        Debug.Log("Packet recieved from AN = " + actorNumber);
+        //Debug.Log("Packet recieved from AN = " + actorNumber);
 
         //move to unpacking
         pen.unpackPacket(actorNumber, trimmedPacket);

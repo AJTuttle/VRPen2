@@ -26,7 +26,7 @@ namespace VRPen {
         [Space(5)]
         [Tooltip("Make sure to add any displays in the scene here")]
         public List<Display> displays = new List<Display>();
-        [Tooltip("Make sure to add any input devices in the scene here")]
+        [Tooltip("Input devices here will automatically be added to code base, any local devices not here will need to be added using addLocalInputDevice()")]
         public List<VRPenInput> localInputDevices = new List<VRPenInput>();
         [Tooltip("In build, canvases will autosave on applicationQuit and scenchange event.")]
         public bool autoSaveOnExit;
@@ -98,24 +98,18 @@ namespace VRPen {
 
 			//setup input devices
             network.getLocalPlayer().inputDevices = new Dictionary<byte, InputDevice>();
-			//set usable input devices (markers, tablets, raycasting)
-			for (byte deviceIndex = 0; deviceIndex < localInputDevices.Count; deviceIndex++) {
-				InputDevice device = new InputDevice();
-				localInputDevices[deviceIndex].deviceData = device;
-				device.type = localInputDevices[deviceIndex].deviceType;
-                network.getLocalPlayer().inputDevices.Add(deviceIndex, device);
-                device.owner = network.getLocalPlayer();
-                device.deviceIndex = deviceIndex;	
+			
+            //add local devices in list
+            foreach(VRPenInput device in localInputDevices) {
+                addLocalInputDevice(device);
             }
+
 			//set up input device for fascilitative inputs that shouldnt be editable (import background etc.)
 			facilitativeDevice = new InputDevice();
 			facilitativeDevice.type = InputDevice.InputDeviceType.Facilitative;
 			facilitativeDevice.owner = null;
 			facilitativeDevice.deviceIndex = 255;
-
-
-
-
+            
 			//spawn preset canvases
 			addCanvas(true);
 
@@ -126,6 +120,28 @@ namespace VRPen {
 
         private void Update() {
             hotkeys();
+        }
+
+        //Todo: add networking to this so that they can be added after connecting
+        public void addLocalInputDevice(VRPenInput inputDevice) {
+            if (network.sentConnect) {
+                Debug.LogError("Input device addition denied: Adding a local input device after NetworkManager.sendConnect() has been called will cause errors for multiplayer (other users dont get the instantiation)");
+                return;
+            }
+            else {
+                Debug.Log("Adding local input device (this must happen before NetworkManager.sendConnect() is called)");
+
+                NetworkedPlayer localPlayer = network.getLocalPlayer();
+                InputDevice device = new InputDevice();
+                byte deviceIndex = (byte)localPlayer.inputDevices.Count;
+
+                inputDevice.deviceData = device;
+                device.type = localInputDevices[deviceIndex].deviceType;
+                localPlayer.inputDevices.Add(deviceIndex, device);
+                device.owner = network.getLocalPlayer();
+                device.deviceIndex = deviceIndex;
+                
+            }
         }
 
         private void OnSceneChange(Scene oldScene, Scene newScene) {

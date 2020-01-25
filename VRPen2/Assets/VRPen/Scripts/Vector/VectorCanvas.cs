@@ -222,10 +222,10 @@ namespace VRPen {
                     if (device.Value.currentGraphic != null && device.Value.currentGraphic.canvasId == canvasId) device.Value.currentGraphic = null;
                 }
                 int length = player.graphics.Count;
-                for (int x = 0; x < length; x++) {
+                for (int x = length-1; x >=0; x--) {
                     if (player.graphics[x].canvasId == canvasId) {
+                        player.graphics[x] = null;
                         player.graphics.Remove(player.graphics[x]);
-                        length--;
                     }
                 }
             }
@@ -274,9 +274,10 @@ namespace VRPen {
             //wait
             yield return null;
             yield return null;
+            
 
-            //turn off graphic
-            graphic.mr.enabled = false;
+            //turn off graphic.mr if it still exists (it could have been deleted in the 2 frames, especially in catchup sequences)
+            if (graphic.mr != null) graphic.mr.enabled = false;
 
         }
 

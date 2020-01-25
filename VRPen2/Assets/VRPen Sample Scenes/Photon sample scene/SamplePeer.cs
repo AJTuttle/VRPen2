@@ -47,7 +47,7 @@ public class SamplePeer : MonoBehaviourPunCallbacks, IOnEventCallback {
         ulong id = (ulong)photonEvent.Sender;
 
         if (eventCode == drawPacket || eventCode == drawEvent) {
-            Debug.Log("event by " + id + "  - (if it is 0 then this is a catchup packet)");
+            //Debug.Log("event by " + id + "  - (if it is 0 then this is a catchup packet)");
             pipe.recievePacket((byte[])photonEvent.CustomData);
         }
     }

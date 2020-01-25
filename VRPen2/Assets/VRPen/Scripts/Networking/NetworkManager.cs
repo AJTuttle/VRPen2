@@ -44,7 +44,8 @@ namespace VRPen {
 
         //other vars
         long instanceStartTime; //used to differentiate catchup packets and current instance packets
-        bool sentConnect = false;
+        [NonSerialized]
+        public bool sentConnect = false;
 
         //prefabs
         [Space(5)]
@@ -67,8 +68,8 @@ namespace VRPen {
         //event
         public delegate void VRPenEvent(byte[] packet);
         public event VRPenEvent vrpenEvent;
-		public delegate void InputDeviceInstantiatedEvent(InputDevice pen, int deviceIndex);
-		public event InputDeviceInstantiatedEvent InputDeviceInstantiated;
+		public delegate void remoteInputDeviceSpawned(GameObject obj, int deviceIndex);
+		public event remoteInputDeviceSpawned remoteSpawn;
 		
 		public delegate void AddCanvasHandler();
 		public event AddCanvasHandler AddedCanvas = delegate { };
@@ -436,10 +437,10 @@ namespace VRPen {
             //if the packet is from the local player
             if (connectionId == localPlayer.connectionId) {
                 if (timeSent < instanceStartTime) {
-                    Debug.Log("A local catchup packet has been recieved, allowing it through.");
+                    //Debug.Log("A local catchup packet has been recieved, allowing it through.");
                 }
                 else {
-                    Debug.Log("A local NON-catchup packet has been recieved, NOT allowing it through.");
+                    //Debug.Log("A local NON-catchup packet has been recieved, NOT allowing it through.");
                     return;
                 }
             }
@@ -642,7 +643,7 @@ namespace VRPen {
 
                 player.inputDevices.Add(index, device);
 
-				InputDeviceInstantiated?.Invoke(device, x);
+				remoteSpawn?.Invoke(obj, x);
 			}
 
         }
