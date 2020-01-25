@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace VRPen {
 
 
-    public class MouseRaycasterTester : VRPenInput {
+    public class MouseInput : VRPenInput {
         // Start is called before the first frame update
 
         public Camera cam;

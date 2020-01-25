@@ -78,11 +78,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   autoConnect: 0
-  tabletPrefab: {fileID: 4162737611858156914, guid: e993f40c859b92f4ca2d8e94fe053b7f,
-    type: 3}
   remoteMarkerPrefab: {fileID: 8217082110612787815, guid: f929d31bb578d7349baa4813213b4f55,
     type: 3}
-  mousePrefab: {fileID: 6923511768144376201, guid: e4a21bd05ba0d744db8229ab9df9462f,
+  remoteTabletPrefab: {fileID: 4162737611858156914, guid: 27a71b00b9c049b41a5f99f8630e898b,
+    type: 3}
+  remoteMousePrefab: {fileID: 6923511768144376201, guid: 84fccfdf48296f14ebfe5897c7167efb,
     type: 3}
 --- !u!114 &6656644161125225622
 MonoBehaviour:

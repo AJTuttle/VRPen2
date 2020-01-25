@@ -50,9 +50,9 @@ namespace VRPen {
         [Space(5)]
         [Header("Variables that don't need to be changed")]
         [Space(15)]
-        public GameObject tabletPrefab;
         public GameObject remoteMarkerPrefab;
-        public GameObject mousePrefab;
+        public GameObject remoteTabletPrefab;
+        public GameObject remoteMousePrefab;
 
         //data vars
         private Color32[] colors = new Color32[1];
@@ -627,13 +627,15 @@ namespace VRPen {
                         obj = Instantiate(remoteMarkerPrefab);
 						break;
                     case InputDevice.InputDeviceType.Tablet:
+                        obj = Instantiate(remoteTabletPrefab);
                         break;
                     case InputDevice.InputDeviceType.Mouse:
+                        obj = Instantiate(remoteMousePrefab);
                         break;
                 }
 
 
-                InputDevice device = obj.GetComponent<InputDevice>();
+                InputDevice device = new InputDevice();
                 device.deviceIndex = index;
                 device.type = type;
                 device.owner = player;
