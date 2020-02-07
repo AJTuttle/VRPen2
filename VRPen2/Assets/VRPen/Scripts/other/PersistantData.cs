@@ -17,17 +17,17 @@ namespace VRPen {
 		public static void openStampResources() {
 
 			//clear file 
-			string path = Application.dataPath + "/Resources/StampData.txt";
+			string path = Application.dataPath + "/VRPen/Resources/VRPen/Stamps/StampData.txt";
 			File.Create(path).Close();
 
 			//check resources folder for files
-			string[] filePaths = Directory.GetFiles(Application.dataPath + "/Resources");
+			string[] filePaths = Directory.GetFiles(Application.dataPath + "/VRPen/Resources/VRPen/Stamps");
 			Debug.Log("Updated stamp file resources");
 
 			//add pictures to stampdata file
 			StreamWriter sw = new StreamWriter(path, true);
 			for (int x = 0; x < filePaths.Length; x++) {
-				string str = filePaths[x].Substring(Application.dataPath.Length + "/Resources".Length + 1);
+				string str = filePaths[x].Substring(Application.dataPath.Length + "\\VRPen\\Resources".Length + 1);
 				if (str.Substring(str.Length - 4).Equals(".png") || str.Substring(str.Length - 4).Equals(".jpg")) {
 					str = str.Substring(0, str.Length - 4);
 					sw.WriteLine(str);
@@ -45,8 +45,9 @@ namespace VRPen {
         public static void instantiate() {
 
 			//stamp files
-			TextAsset stampFile = Resources.Load<TextAsset>("StampData");
+			TextAsset stampFile = Resources.Load<TextAsset>("VRPen/Stamps/StampData");
 			stampFileNames = stampFile.ToString().Trim(new char[] { '\n' }).Split(new char[] { '\n' });
+			
 			
 		}
 
