@@ -250,10 +250,8 @@ namespace VRPen {
             renderCam.clearFlags = CameraClearFlags.SolidColor;
             renderCam.backgroundColor = bgColor;
             yield return null;
-            yield return null;
             renderCam.clearFlags = CameraClearFlags.Nothing;
-
-
+			
 			//set background
 			if (drawingMan.canvasBackgrounds.Length > canvasId && drawingMan.canvasBackgrounds[canvasId] != null) {
 				drawingMan.stamp(drawingMan.canvasBackgrounds[canvasId], -1, drawingMan.facilitativeDevice.owner, drawingMan.facilitativeDevice.deviceIndex, 0, 0, 1, 0.5f, canvasId, false);
@@ -262,20 +260,17 @@ namespace VRPen {
         }
 
         public IEnumerator renderGraphic(VectorGraphic graphic, InputDevice device) {
-
-
+			
             //turn off the currentgraphic before since we dont want it to be edited while being rendered in
             if (graphic == device.currentGraphic) device.currentGraphic = null;
 
             //make sure mesh renderer is on
             graphic.mr.enabled = true;
             
-
             //wait
             yield return null;
             yield return null;
             
-
             //turn off graphic.mr if it still exists (it could have been deleted in the 2 frames, especially in catchup sequences)
             if (graphic.mr != null) graphic.mr.enabled = false;
 

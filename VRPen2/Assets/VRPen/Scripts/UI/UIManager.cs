@@ -63,7 +63,6 @@ namespace VRPen {
             //grab stamp file names to put in explorer
             addFilesToStampExplorer();
 
-
             //set default stamp size
             //stampSizeSlider.value = DEFAULT_STAMP_SIZE;
             //stampSliderPassthrough()

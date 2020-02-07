@@ -64,6 +64,10 @@ namespace VRPen {
         private byte[] canvasIds = new byte[1];
         private byte[] deviceIndices = new byte[1];
 
+		//cache packets
+		private List<byte[]> packetCache = new List<byte[]>();
+		private List<ulong> packetSenders = new List<ulong>();
+		public bool cachePackets;
 
         //event
         public delegate void VRPenEvent(byte[] packet);
@@ -239,12 +243,70 @@ namespace VRPen {
             pressures = new float[0];
             canvasIds = new byte[0];
             deviceIndices = new byte[0];
-            
+
+			//cache
+			cachePacket(sendBuffer, localPlayer.connectionId);
 
             //return packet
             return sendBuffer;
 
         }
+
+		void cachePacket(byte[] data, ulong connectionId) {
+
+			if (cachePackets) {
+				packetCache.Add(data);
+				packetSenders.Add(connectionId);
+			}
+		}
+
+		public byte[] getCache() {
+
+			//size
+			int size = 0;
+			foreach (byte[] arr in packetCache) {
+				size += arr.Length;
+			}
+			size += packetSenders.Count * 8;   //8 bytes for the sender id for each packet
+			size += packetCache.Count * 4;     //4 bytes for the length of each packet
+
+			//make the packet
+			byte[] bigboy = new byte[size];
+			int offset = 0;
+			for (int x = 0; x < packetCache.Count; x++) {
+				PackULong(packetSenders[x], bigboy, ref offset);
+				PackInt32(packetCache[x].Length, bigboy, ref offset);
+				for (int y = 0; y < packetCache[x].Length; y++) {
+					PackByte(packetCache[x][y], bigboy, ref offset); 
+				}
+			}
+			return bigboy;
+
+		}
+
+		public void loadCache(byte[] data) {
+
+			int offset = 0;
+			
+			while (offset < data.Length - 1) {
+
+				// get header
+				ulong connectionId = ReadULong(data, ref offset);
+				int length = ReadInt(data, ref offset);
+
+				//get data
+				byte[] packet = new byte[length];
+				for (int x = 0; x < length; x++) {
+					packet[x] = data[x + offset];
+				}
+				offset += length;
+
+				//push data through
+				unpackPacket(connectionId, packet);
+
+			}
+
+		}
 
 
         /// <summary>
@@ -444,6 +506,9 @@ namespace VRPen {
                     return;
                 }
             }
+			else {
+				cachePacket(packet, connectionId);
+			}
 
             //manage connection id                                        
             NetworkedPlayer player = players.Find(p => p.connectionId == connectionId);
@@ -677,6 +742,7 @@ namespace VRPen {
             offset += sizeof(short);
             return val;
         }
+		
 
         void PackULong(ulong u, byte[] buf, ref int offset) {
             Buffer.BlockCopy(BitConverter.GetBytes(u), 0, buf, offset, sizeof(ulong));
@@ -700,7 +766,12 @@ namespace VRPen {
             offset += sizeof(UInt32);
         }
 
-        UInt32 ReadUInt32(byte[] buf, ref int offset) {
+		void PackInt32(Int32 u, byte[] buf, ref int offset) {
+			Buffer.BlockCopy(BitConverter.GetBytes(u), 0, buf, offset, sizeof(Int32));
+			offset += sizeof(Int32);
+		}
+
+		UInt32 ReadUInt32(byte[] buf, ref int offset) {
             UInt32 val = BitConverter.ToUInt32(buf, offset);
             offset += sizeof(UInt32);
             return val;
