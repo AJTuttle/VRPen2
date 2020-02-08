@@ -7703,8 +7703,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1227182315225057571}
-        m_MethodName: SetActive
+      - m_Target: {fileID: 2242889434718929404}
+        m_MethodName: canvasMenuToggle
         m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7715,13 +7715,13 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 2242889434718929404}
-        m_MethodName: packState
-        m_Mode: 1
+        m_MethodName: highlightTimer
+        m_Mode: 4
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0
+          m_FloatArgument: 0.2
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
@@ -8951,6 +8951,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc06493e3e3fe624382f71f94172e96d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  networkUI: 0
   vectorMan: {fileID: 0}
   network: {fileID: 0}
   SideMenuParent: {fileID: 6535228158451260676}
@@ -10022,20 +10023,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2048316827590461349}
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 2242889434718929404}
+        m_MethodName: highlightTimer
+        m_Mode: 4
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0
+          m_FloatArgument: 0.2
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
       - m_Target: {fileID: 2242889434718929404}
-        m_MethodName: packState
-        m_Mode: 1
+        m_MethodName: stampExplorerToggle
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -10464,20 +10465,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 8197647085074690295}
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 2242889434718929404}
+        m_MethodName: highlightTimer
+        m_Mode: 4
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0
+          m_FloatArgument: 0.2
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
       - m_Target: {fileID: 2242889434718929404}
-        m_MethodName: packState
-        m_Mode: 1
+        m_MethodName: calculatorToggle
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -15280,20 +15281,20 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 5802579783684581102}
-        m_MethodName: SetActive
-        m_Mode: 6
+      - m_Target: {fileID: 2242889434718929404}
+        m_MethodName: highlightTimer
+        m_Mode: 4
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
-          m_FloatArgument: 0
+          m_FloatArgument: 0.2
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
       - m_Target: {fileID: 2242889434718929404}
-        m_MethodName: packState
-        m_Mode: 1
+        m_MethodName: clearMenuToggle
+        m_Mode: 6
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine

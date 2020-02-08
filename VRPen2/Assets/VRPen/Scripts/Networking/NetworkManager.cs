@@ -451,7 +451,7 @@ namespace VRPen {
 
         }
 
-		public void sendUIState(byte displayId, byte state) {
+		public void sendUIState(byte displayId, byte[] data) {
 
             //dont send if you havent connected to the other users yet
             if (!sentConnect) {
@@ -468,7 +468,7 @@ namespace VRPen {
 
             //add data
             sendBufferList.Add(displayId);
-			sendBufferList.Add(state);
+			sendBufferList.AddRange(data);
 
             // convert to an array
             byte[] sendBuffer = sendBufferList.ToArray();
@@ -654,10 +654,13 @@ namespace VRPen {
 			//data
 			byte displayId = ReadByte(packet, ref offset);
 			Display display = vectorMan.getDisplay(displayId);
-			byte state = ReadByte(packet, ref offset);
+            byte[] choppedPacket = new byte[packet.Length - offset];
+            for (int x = 0; x < choppedPacket.Length; x++) {
+                choppedPacket[x] = packet[x + offset];
+            }
 
 			//update state
-			display.UIMan.unpackState(state);
+			display.UIMan.unpackState(choppedPacket);
 
         }
 

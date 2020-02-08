@@ -12,6 +12,13 @@ namespace VRPen {
 
         public bool networkUI;
         
+        enum PacketHeader : int {
+            Slide,
+            Calc,
+            Canvas,
+            Stamp,
+        }
+        bool[] packetHeaderToSync;
 
 		[Header("Will autofill")]
 		public VectorDrawing vectorMan;
@@ -60,6 +67,9 @@ namespace VRPen {
             if (vectorMan == null) vectorMan = FindObjectOfType<VectorDrawing>();
 			if (network == null) network = FindObjectOfType<NetworkManager>();
 
+            //create array
+            packetHeaderToSync = new bool[Enum.GetValues(typeof(PacketHeader)).Length];
+
             //grab stamp file names to put in explorer
             addFilesToStampExplorer();
 
@@ -69,9 +79,12 @@ namespace VRPen {
 
 		}
 
+        private void Update() {
+            //packState();
+        }
 
 
-		public void openSideMenu(bool localInput) {
+        public void openSideMenu(bool localInput) {
 			if (sideMenuMoving) return;
 			sideMenuMoving = true;
 
@@ -95,9 +108,9 @@ namespace VRPen {
 			menuArrow.transform.GetChild(0).gameObject.SetActive(false);
 			menuArrow.transform.GetChild(1).gameObject.SetActive(true);
 
-			if (localInput) packState();
+			if (localInput) queueState(PacketHeader.Slide);
 
-		}
+        }
 
 		public void closeSideMenu(bool localInput) {
 			if (sideMenuMoving) return;
@@ -132,7 +145,7 @@ namespace VRPen {
 
 
 
-            if (localInput) packState();
+            if (localInput) queueState(PacketHeader.Calc);
 
 		}
 
@@ -144,9 +157,10 @@ namespace VRPen {
             stampExplorerParent.SetActive(false);
 
 
-            if (localInput) packState();
+            if (localInput) queueState(PacketHeader.Canvas);
 
-		}public void clearMenuToggle(bool localInput) {
+        }
+        public void clearMenuToggle(bool localInput) {
 
 			clearMenuParent.SetActive(!clearMenuParent.activeSelf);
 			calculatorParent.SetActive(false);
@@ -156,9 +170,9 @@ namespace VRPen {
 
 
 
-            if (localInput) packState();
+            if (localInput) ;//queueState(PacketHeader.);
 
-		}
+        }
 
         public void stampExplorerToggle(bool localInput) {
 
@@ -169,19 +183,33 @@ namespace VRPen {
 
 
 
-            if (localInput) packState();
+            if (localInput) queueState(PacketHeader.Stamp);
         }
 
 		public void closeMenus(bool localInput) {
-			clearMenuParent.SetActive(false);
-			calculatorParent.SetActive(false);
-			canvasMenuParent.SetActive(false);
-            stampExplorerParent.SetActive(false);
 
+            if (clearMenuParent.activeSelf) {
 
+			    clearMenuParent.SetActive(false);
+                //if (localInput) queueState(PacketHeader.Slide);
+            }
+            if (calculatorParent.activeSelf) {
 
+                calculatorParent.SetActive(false);
+                if (localInput) queueState(PacketHeader.Calc);
+            }
+            if (canvasMenuParent.activeSelf) {
 
-            if (localInput) packState();
+                canvasMenuParent.SetActive(false);
+                if (localInput) queueState(PacketHeader.Canvas);
+            }
+            if (stampExplorerParent.activeSelf) {
+
+                stampExplorerParent.SetActive(false);
+                if (localInput) queueState(PacketHeader.Stamp);
+            }
+            
+
 		}
    
 
@@ -247,42 +275,115 @@ namespace VRPen {
 
         }
 
-		public void packState() {
+        void queueState(PacketHeader head) {
+            packetHeaderToSync[(int)head] = true;
+        }
 
+        void dequeueState() {
+            for (int x = 0; x < packetHeaderToSync.Length; x++) {
+                packetHeaderToSync[x] = false;
+            }
+        }
+
+        void packState() {
+
+            //dont do anything if we dont wanna sync
             if (!networkUI) return;
 
-			byte stateMask = 0;
+            //pack data
+            List<byte> data = new List<byte>();
 
-			stateMask += (byte)((SideMenuParent.activeSelf ? 1 : 0) << 0);
-			stateMask += (byte)((calculatorParent.activeSelf ? 1 : 0) << 1);
-			stateMask += (byte)((canvasMenuParent.activeSelf ? 1 : 0) << 2);
-			stateMask += (byte)((clearMenuParent.activeSelf ? 1 : 0) << 3);
+            for (int x = 0; x < packetHeaderToSync.Length; x++) {
+                if (packetHeaderToSync[x]) {
 
-			network.sendUIState(display.DisplayId, stateMask);
+                    //header
+                    data.AddRange(BitConverter.GetBytes(x));
 
-		}
+                    switch ((PacketHeader)x) {
+                        case PacketHeader.Slide:
+                            data.Add(sideMenuOpen ? (byte)1 : (byte)0);
+                            break;
+                        case PacketHeader.Calc:
+                            data.Add(calculatorParent.activeSelf ? (byte)1 : (byte)0);
+                            break;
+                        case PacketHeader.Canvas:
+                            data.Add(canvasMenuParent.activeSelf ? (byte)1 : (byte)0);
+                            break;
+                        case PacketHeader.Stamp:
+                            data.Add(stampExplorerParent.activeSelf ? (byte)1 : (byte)0);
+                            break;
+                    }
+                }
 
-		public void unpackState(byte stateMask) {
+            }
 
-			//side menu
-			if (!SideMenuParent.activeInHierarchy && ((stateMask & (1 << 0)) > 0)) {
-				openSideMenu(false);
-			}
-			else if (SideMenuParent.activeInHierarchy && !((stateMask & (1 << 0)) > 0)) {
-				closeSideMenu(false);
-			}
+            //dont send if no data
+            if (data.Count == 0) return;
 
-			//menu toggles
-			if (calculatorParent.activeSelf ^ ((stateMask & (1 << 1)) > 0)) calculatorToggle(false);
-			if (canvasMenuParent.activeSelf ^ ((stateMask & (1 << 2)) > 0)) canvasMenuToggle(false);
-			if (clearMenuParent.activeSelf ^ ((stateMask & (1 << 3)) > 0)) clearMenuToggle(false);
+            //send data
+            network.sendUIState(display.DisplayId, data.ToArray());
 
+            //get rid of state sync queue since it was just sent
+            dequeueState();
 
-		}
+            
+        }
 
-        #region Passthroughs
+        public void unpackState(byte[] data) {
 
-        public void addCanvasPassthrough() {
+            //unpack
+            int offset = 0;
+            while (offset < data.Length) {
+                PacketHeader head = (PacketHeader)ReadInt(data, ref offset);
+                switch (head) {
+
+                    case PacketHeader.Slide:
+                        bool open = ReadByte(data, ref offset) == 1? true: false;
+                        if (open && !sideMenuOpen) {
+                            openSideMenu(false);
+                        }
+                        else if(!open && sideMenuOpen) {
+                            closeSideMenu(false);
+                        }
+                        break;
+                    case PacketHeader.Calc:
+                        bool calcEn = ReadByte(data, ref offset) == 1 ? true : false;
+                        if (calcEn && !calculatorParent.activeSelf) {
+                            calculatorToggle(false);
+                        }
+                        else if (!calcEn && calculatorParent.activeSelf) {
+                            calculatorToggle(false);
+                        }
+                        break;
+                    case PacketHeader.Canvas:
+                        bool canvasEn = ReadByte(data, ref offset) == 1 ? true : false;
+                        if (canvasEn && !canvasMenuParent.activeSelf) {
+                            canvasMenuToggle(false);
+                        }
+                        else if (!canvasEn && canvasMenuParent.activeSelf) {
+                            canvasMenuToggle(false);
+                        }
+                        break;
+                    case PacketHeader.Stamp:
+                        bool stampEn = ReadByte(data, ref offset) == 1 ? true : false;
+                        if (stampEn && !stampExplorerParent.activeSelf) {
+                            stampExplorerToggle(false);
+                        }
+                        else if (!stampEn && stampExplorerParent.activeSelf) {
+                            stampExplorerToggle(false);
+                        }
+                        break;
+
+                }
+                
+            }
+            //get rid of state sync queue since it is now outdated
+            dequeueState();
+
+        }
+            #region Passthroughs
+
+            public void addCanvasPassthrough() {
             display.addCanvasPassthrough();
         }
 
@@ -349,7 +450,17 @@ namespace VRPen {
 
         }
 
+        int ReadInt(byte[] buf, ref int offset) {
+            int val = BitConverter.ToInt32(buf, offset);
+            offset += sizeof(Int32);
+            return val;
+        }
+        byte ReadByte(byte[] buf, ref int offset) {
+            byte val = buf[offset];
+            offset += sizeof(byte);
+            return val;
+        }
+
 
     }
-
 }
