@@ -125,8 +125,8 @@ MonoBehaviour:
   colorIndicatorRenderers:
   - {fileID: 8217082111144113738}
   - {fileID: 7813515921521256852}
-  colorIndicatorRenderersIndex: 0100000002000000
-  deviceData: {fileID: 0}
+  colorIndicatorRenderersIndex: 0100000001000000
+  deviceType: 0
   UIClickDown: 0
   stampPrefab: {fileID: 2441548749050361720, guid: cbb90edd4f2d39f4abac245a76f78a78,
     type: 3}

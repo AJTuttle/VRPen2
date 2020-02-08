@@ -250,6 +250,7 @@ namespace VRPen {
             renderCam.clearFlags = CameraClearFlags.SolidColor;
             renderCam.backgroundColor = bgColor;
             yield return null;
+            yield return null;
             renderCam.clearFlags = CameraClearFlags.Nothing;
 			
 			//set background

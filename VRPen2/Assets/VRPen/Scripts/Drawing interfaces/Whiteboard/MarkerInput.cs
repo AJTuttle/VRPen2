@@ -119,7 +119,8 @@ namespace VRPen {
                 if (tag.tag.Equals("snap")) {
                     snappedTo = other.transform;
 					snappedToChecker = true;
-					snappedDisplay = snappedTo.parent.parent.GetComponent<Display>();
+					snappedDisplay = snappedTo.parent.parent.parent.parent.GetComponent<Display>();
+                    int i = 0;
 
                 }
             }

@@ -20,7 +20,8 @@ namespace VRPen {
 				return;
 			}
 			for(int x = 0; x < colorIndicatorRenderers.Count; x++) { 
-				colorIndicatorRenderers[colorIndicatorRenderersIndex[x]].material.color = color;
+				colorIndicatorRenderers[x].materials[colorIndicatorRenderersIndex[x]].color = color;
+
 			}
 		}
 	}

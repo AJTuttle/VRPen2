@@ -30,7 +30,7 @@ public class VRPenNetworkPiping : MonoBehaviour {
     public void beginPipingData() {
 
         //start send timer
-        InvokeRepeating("sendPacket", 1.0f, PACKET_SEND_TIMER);
+        InvokeRepeating(nameof(sendPacket), 1.0f, PACKET_SEND_TIMER);
     }
 
 
