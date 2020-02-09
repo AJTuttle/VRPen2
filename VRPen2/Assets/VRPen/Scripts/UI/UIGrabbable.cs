@@ -6,22 +6,48 @@ namespace VRPen {
 
     public class UIGrabbable : MonoBehaviour {
 
+        public UIManager.PacketHeader type;
         public Transform parent;
+        public UIManager man;
 
-        float x;
-        float y;
+        public float x;
+        public float y;
+        float grabX;
+        float grabY;
 
-        public void updatePos(float x, float y) {
+        private void Start() {
 
+            //set stating values
+            x = parent.transform.localPosition.x;
+            y = parent.transform.localPosition.y;
 
-            parent.transform.localPosition += new Vector3(x-this.x,y-this.y,0);
+            //set grabbable
+            man.addUIGrabbable(type, this);
+
+        }
+
+        public void updatePosRelativeToGrab(float x, float y) {
+            
+            parent.transform.localPosition += new Vector3(x- grabX, y- grabY, 0);
+            grabX = x;
+            grabY = y;
+            this.x = parent.transform.localPosition.x;
+            this.y = parent.transform.localPosition.y;
+
+            //network
+            man.queueState(type);
+
+        }
+
+        public void setExactPos(float x, float y) {
+            parent.transform.localPosition = new Vector3(x, y, 0);
             this.x = x;
             this.y = y;
         }
 
         public void grab(float x, float y) {
-            this.x = x;
-            this.y = y;
+            grabX = x;
+            grabY = y;
         }
 
         public void unGrab() {

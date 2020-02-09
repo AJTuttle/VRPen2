@@ -130,7 +130,7 @@ namespace VRPen {
             //if currently grabbing a uigrabbable
             if (grabbed != null && data.hover != HoverState.NONE) {
                 Vector3 pos = grabbed.parent.parent.InverseTransformPoint(data.hit.point);
-                grabbed.updatePos(pos.x, pos.y);
+                grabbed.updatePosRelativeToGrab(pos.x, pos.y);
                 return;
             }
 

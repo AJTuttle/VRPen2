@@ -12,13 +12,14 @@ namespace VRPen {
 
         public bool networkUI;
         
-        enum PacketHeader : int {
+        public enum PacketHeader : int {
             Slide,
             Calc,
             Canvas,
             Stamp,
         }
         bool[] packetHeaderToSync;
+        UIGrabbable[] packetHeaderGrabbables;
 
 		[Header("Will autofill")]
 		public VectorDrawing vectorMan;
@@ -67,8 +68,9 @@ namespace VRPen {
             if (vectorMan == null) vectorMan = FindObjectOfType<VectorDrawing>();
 			if (network == null) network = FindObjectOfType<NetworkManager>();
 
-            //create array
+            //create arrays for syncing
             packetHeaderToSync = new bool[Enum.GetValues(typeof(PacketHeader)).Length];
+            packetHeaderGrabbables = new UIGrabbable[Enum.GetValues(typeof(PacketHeader)).Length];
 
             //grab stamp file names to put in explorer
             addFilesToStampExplorer();
@@ -80,7 +82,7 @@ namespace VRPen {
 		}
 
         private void Update() {
-            //packState();
+            packState();
         }
 
 
@@ -133,8 +135,10 @@ namespace VRPen {
 			menuArrow.transform.GetChild(0).gameObject.SetActive(true);
 			menuArrow.transform.GetChild(1).gameObject.SetActive(false);
 
+            if (localInput) queueState(PacketHeader.Slide);
 
-		}
+
+        }
 
 		public void calculatorToggle(bool localInput) {
 
@@ -275,8 +279,12 @@ namespace VRPen {
 
         }
 
-        void queueState(PacketHeader head) {
+        public void queueState(PacketHeader head) {
             packetHeaderToSync[(int)head] = true;
+        }
+
+        public void addUIGrabbable(PacketHeader type, UIGrabbable grabbable) {
+            packetHeaderGrabbables[(int)type] = grabbable;
         }
 
         void dequeueState() {
@@ -305,12 +313,18 @@ namespace VRPen {
                             break;
                         case PacketHeader.Calc:
                             data.Add(calculatorParent.activeSelf ? (byte)1 : (byte)0);
+                            data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].x));
+                            data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].y));
                             break;
                         case PacketHeader.Canvas:
                             data.Add(canvasMenuParent.activeSelf ? (byte)1 : (byte)0);
+                            data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].x));
+                            data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].y));
                             break;
                         case PacketHeader.Stamp:
                             data.Add(stampExplorerParent.activeSelf ? (byte)1 : (byte)0);
+                            data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].x));
+                            data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].y));
                             break;
                     }
                 }
@@ -345,6 +359,7 @@ namespace VRPen {
                         else if(!open && sideMenuOpen) {
                             closeSideMenu(false);
                         }
+                        
                         break;
                     case PacketHeader.Calc:
                         bool calcEn = ReadByte(data, ref offset) == 1 ? true : false;
@@ -354,6 +369,8 @@ namespace VRPen {
                         else if (!calcEn && calculatorParent.activeSelf) {
                             calculatorToggle(false);
                         }
+                        Vector2 calcPos = new Vector2(ReadFloat(data, ref offset), ReadFloat(data, ref offset));
+                        packetHeaderGrabbables[(int)PacketHeader.Calc].setExactPos(calcPos.x, calcPos.y);
                         break;
                     case PacketHeader.Canvas:
                         bool canvasEn = ReadByte(data, ref offset) == 1 ? true : false;
@@ -363,6 +380,8 @@ namespace VRPen {
                         else if (!canvasEn && canvasMenuParent.activeSelf) {
                             canvasMenuToggle(false);
                         }
+                        Vector2 canvasPos = new Vector2(ReadFloat(data, ref offset), ReadFloat(data, ref offset));
+                        packetHeaderGrabbables[(int)PacketHeader.Canvas].setExactPos(canvasPos.x, canvasPos.y);
                         break;
                     case PacketHeader.Stamp:
                         bool stampEn = ReadByte(data, ref offset) == 1 ? true : false;
@@ -372,6 +391,8 @@ namespace VRPen {
                         else if (!stampEn && stampExplorerParent.activeSelf) {
                             stampExplorerToggle(false);
                         }
+                        Vector2 StampPos = new Vector2(ReadFloat(data, ref offset), ReadFloat(data, ref offset));
+                        packetHeaderGrabbables[(int)PacketHeader.Stamp].setExactPos(StampPos.x, StampPos.y);
                         break;
 
                 }
@@ -460,7 +481,11 @@ namespace VRPen {
             offset += sizeof(byte);
             return val;
         }
-
+        public static float ReadFloat(byte[] buf, ref int offset) {
+            float val = BitConverter.ToSingle(buf, offset);
+            offset += sizeof(float);
+            return val;
+        }
 
     }
 }

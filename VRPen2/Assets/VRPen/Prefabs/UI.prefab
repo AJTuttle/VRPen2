@@ -362,7 +362,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57661977724c19041ac7c421303a1aa2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  type: 2
   parent: {fileID: 6896084087635601420}
+  man: {fileID: 2242889434718929404}
 --- !u!114 &1449180024263768169
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2942,7 +2944,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57661977724c19041ac7c421303a1aa2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  type: 3
   parent: {fileID: 1080211796336180140}
+  man: {fileID: 2242889434718929404}
 --- !u!114 &2900924354655310595
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6414,7 +6418,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57661977724c19041ac7c421303a1aa2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  type: 1
   parent: {fileID: 5015791966552370144}
+  man: {fileID: 2242889434718929404}
 --- !u!114 &3499986433482940870
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7712,7 +7718,7 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
       - m_Target: {fileID: 2242889434718929404}
         m_MethodName: highlightTimer
@@ -10043,7 +10049,7 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!65 &5116941104668658576
 BoxCollider:
@@ -10485,7 +10491,7 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!65 &6642100425761662852
 BoxCollider:
@@ -11823,7 +11829,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57661977724c19041ac7c421303a1aa2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  type: 0
   parent: {fileID: 671375678124773425}
+  man: {fileID: 0}
 --- !u!114 &1072874319962669654
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15301,7 +15309,7 @@ MonoBehaviour:
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
-          m_BoolArgument: 0
+          m_BoolArgument: 1
         m_CallState: 2
 --- !u!65 &5045674250361901891
 BoxCollider:
