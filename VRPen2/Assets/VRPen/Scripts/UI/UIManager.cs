@@ -17,6 +17,7 @@ namespace VRPen {
             Calc,
             Canvas,
             Stamp,
+            Clear
         }
         bool[] packetHeaderToSync;
         UIGrabbable[] packetHeaderGrabbables;
@@ -151,11 +152,9 @@ namespace VRPen {
 			calculatorParent.SetActive(false);
 			canvasMenuParent.SetActive(false);
             stampExplorerParent.SetActive(false);
+            
 
-
-
-
-            if (localInput) ;//queueState(PacketHeader.);
+            if (localInput) queueState(PacketHeader.Clear);
 
         }
 
@@ -176,7 +175,7 @@ namespace VRPen {
             if (clearMenuParent.activeSelf) {
 
 			    clearMenuParent.SetActive(false);
-                //if (localInput) queueState(PacketHeader.Slide);
+                if (localInput) queueState(PacketHeader.Clear);
             }
             if (calculatorParent.activeSelf) {
 
@@ -308,6 +307,12 @@ namespace VRPen {
                             data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].x));
                             data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].y));
                             break;
+                        case PacketHeader.Clear:
+                            data.Add(clearMenuParent.activeSelf ? (byte)1 : (byte)0);
+                            data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].x));
+                            data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].y));
+                            break;
+
                     }
                 }
 
@@ -375,6 +380,17 @@ namespace VRPen {
                         }
                         Vector2 StampPos = new Vector2(ReadFloat(data, ref offset), ReadFloat(data, ref offset));
                         packetHeaderGrabbables[(int)PacketHeader.Stamp].setExactPos(StampPos.x, StampPos.y);
+                        break;
+                    case PacketHeader.Clear:
+                        bool clearEn = ReadByte(data, ref offset) == 1 ? true : false;
+                        if (clearEn && !clearMenuParent.activeSelf) {
+                            clearMenuToggle(false);
+                        }
+                        else if (!clearEn && clearMenuParent.activeSelf) {
+                            clearMenuToggle(false);
+                        }
+                        Vector2 clearPos = new Vector2(ReadFloat(data, ref offset), ReadFloat(data, ref offset));
+                        packetHeaderGrabbables[(int)PacketHeader.Clear].setExactPos(clearPos.x, clearPos.y);
                         break;
 
                 }

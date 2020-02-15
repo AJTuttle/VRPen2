@@ -11836,9 +11836,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57661977724c19041ac7c421303a1aa2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  type: 0
+  type: 4
   parent: {fileID: 671375678124773425}
-  man: {fileID: 0}
+  man: {fileID: 2242889434718929404}
   x: 0
   y: 0
 --- !u!114 &1072874319962669654
