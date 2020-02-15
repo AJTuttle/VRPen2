@@ -26,6 +26,13 @@ namespace VRPen {
 
         }
 
+        private void Update() {
+            //lerp to the networked pos if its not already pretty much on it
+            if (Vector3.Distance(parent.transform.localPosition, new Vector3(x, y, 0)) > 0.1f) {
+                parent.transform.localPosition = Vector3.Lerp(parent.transform.localPosition, new Vector3(x, y, 0), 0.12f);
+            }
+        }
+
         public void updatePosRelativeToGrab(float x, float y) {
             
             parent.transform.localPosition += new Vector3(x- grabX, y- grabY, 0);
@@ -40,7 +47,7 @@ namespace VRPen {
         }
 
         public void setExactPos(float x, float y) {
-            parent.transform.localPosition = new Vector3(x, y, 0);
+            //parent.transform.localPosition = new Vector3(x, y, 0);
             this.x = x;
             this.y = y;
         }

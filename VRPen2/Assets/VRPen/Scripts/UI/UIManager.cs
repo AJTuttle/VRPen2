@@ -13,6 +13,7 @@ namespace VRPen {
         public bool networkUI;
         
         public enum PacketHeader : int {
+            NULL,
             Slide,
             Calc,
             Canvas,
