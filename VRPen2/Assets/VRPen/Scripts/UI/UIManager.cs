@@ -13,7 +13,6 @@ namespace VRPen {
         public bool networkUI;
         
         public enum PacketHeader : int {
-            NULL,
             Slide,
             Calc,
             Canvas,
@@ -28,6 +27,7 @@ namespace VRPen {
 
 
 		[Header("Will not autofill")]
+		public GameObject slidingParent;
 		public GameObject SideMenuParent;
 		public GameObject calculatorParent;
 		public GameObject canvasMenuParent;
@@ -62,7 +62,7 @@ namespace VRPen {
 		public GameObject grayPanel;
 
 
-		private void Start() {
+		private void Awake() {
             
             
             //grab scripts if not in prefab
@@ -94,19 +94,9 @@ namespace VRPen {
 			// uncull things that will be visible
 			SideMenuParent.SetActive(true);
 
-			StartCoroutine(resizeMenu(SideMenuParent, SideMenuParent.transform.localScale,
-				SideMenuParent.transform.localScale, SideMenuParent.transform.localPosition,
-				SideMenuParent.transform.localPosition + new Vector3(200, 0, 0), false, localInput));
-			StartCoroutine(resizeMenu(menuArrow, menuArrow.transform.localScale, menuArrow.transform.localScale,
-				menuArrow.transform.localPosition, menuArrow.transform.localPosition + new Vector3(200f, 0, 0), false, localInput));
-			StartCoroutine(resizeMenu(calculatorParent, calculatorParent.transform.localScale, calculatorParent.transform.localScale,
-				calculatorParent.transform.localPosition, calculatorParent.transform.localPosition + new Vector3(200f, 0, 0), false, localInput));
-			StartCoroutine(resizeMenu(canvasMenuParent, canvasMenuParent.transform.localScale, canvasMenuParent.transform.localScale,
-				canvasMenuParent.transform.localPosition, canvasMenuParent.transform.localPosition + new Vector3(200f, 0, 0), false, localInput));
-			StartCoroutine(resizeMenu(clearMenuParent, clearMenuParent.transform.localScale, clearMenuParent.transform.localScale,
-				clearMenuParent.transform.localPosition, clearMenuParent.transform.localPosition + new Vector3(200f, 0, 0), false, localInput));
-            StartCoroutine(resizeMenu(stampExplorerParent, stampExplorerParent.transform.localScale, stampExplorerParent.transform.localScale,
-                stampExplorerParent.transform.localPosition, stampExplorerParent.transform.localPosition + new Vector3(200f, 0, 0), false, localInput));
+			StartCoroutine(resizeMenu(slidingParent, slidingParent.transform.localScale,
+                slidingParent.transform.localScale, slidingParent.transform.localPosition,
+                slidingParent.transform.localPosition + new Vector3(200, 0, 0), true, localInput));
             sideMenuOpen = true;
 			menuArrow.transform.GetChild(0).gameObject.SetActive(false);
 			menuArrow.transform.GetChild(1).gameObject.SetActive(true);
@@ -119,19 +109,9 @@ namespace VRPen {
 			if (sideMenuMoving) return;
 			sideMenuMoving = true;
 
-			StartCoroutine(resizeMenu(SideMenuParent, SideMenuParent.transform.localScale,
-				SideMenuParent.transform.localScale, SideMenuParent.transform.localPosition,
-				SideMenuParent.transform.localPosition - new Vector3(200, 0, 0), true, localInput));
-			StartCoroutine(resizeMenu(menuArrow, menuArrow.transform.localScale, menuArrow.transform.localScale,
-				menuArrow.transform.localPosition, menuArrow.transform.localPosition - new Vector3(200f, 0, 0), false, localInput));
-			StartCoroutine(resizeMenu(calculatorParent, calculatorParent.transform.localScale, calculatorParent.transform.localScale,
-				calculatorParent.transform.localPosition, calculatorParent.transform.localPosition - new Vector3(200f, 0, 0), false, localInput));
-			StartCoroutine(resizeMenu(canvasMenuParent, canvasMenuParent.transform.localScale, canvasMenuParent.transform.localScale,
-				canvasMenuParent.transform.localPosition, canvasMenuParent.transform.localPosition - new Vector3(200f, 0, 0), false, localInput));
-			StartCoroutine(resizeMenu(clearMenuParent, clearMenuParent.transform.localScale, clearMenuParent.transform.localScale,
-				clearMenuParent.transform.localPosition, clearMenuParent.transform.localPosition - new Vector3(200f, 0, 0), false, localInput));
-            StartCoroutine(resizeMenu(stampExplorerParent, stampExplorerParent.transform.localScale, stampExplorerParent.transform.localScale,
-                stampExplorerParent.transform.localPosition, stampExplorerParent.transform.localPosition - new Vector3(200f, 0, 0), false, localInput));
+			StartCoroutine(resizeMenu(slidingParent, slidingParent.transform.localScale,
+                slidingParent.transform.localScale, slidingParent.transform.localPosition,
+                slidingParent.transform.localPosition - new Vector3(200, 0, 0), false, localInput));
             sideMenuOpen = false;
 			menuArrow.transform.GetChild(0).gameObject.SetActive(true);
 			menuArrow.transform.GetChild(1).gameObject.SetActive(false);
@@ -228,7 +208,10 @@ namespace VRPen {
             
         }
 
-        IEnumerator resizeMenu(GameObject obj, Vector3 startScale, Vector3 endScale, Vector3 startPos, Vector3 endPos, bool setInactive, bool localInput) {
+        IEnumerator resizeMenu(GameObject obj, Vector3 startScale, Vector3 endScale, Vector3 startPos, Vector3 endPos, bool opening, bool localInput) {
+
+            if (opening) SideMenuParent.SetActive(true);
+
             Vector3 scaleChange = endScale - startScale;
             Vector3 posChange = endPos - startPos;
             float startTime = Time.time;
@@ -239,13 +222,11 @@ namespace VRPen {
             }
             obj.transform.localPosition = endPos;
             obj.transform.localScale = endScale;
+            
+            if (!opening) SideMenuParent.SetActive(false);
 
-			sideMenuMoving = false;
-
-			if (setInactive) {
-				obj.SetActive(false);
-				if (localInput) packState();
-			}
+            sideMenuMoving = false;
+            
 
 		}
 

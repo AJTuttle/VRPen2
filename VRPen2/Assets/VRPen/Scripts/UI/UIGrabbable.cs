@@ -24,6 +24,9 @@ namespace VRPen {
             //set grabbable
             man.addUIGrabbable(type, this);
 
+            //turn off
+            parent.gameObject.SetActive(false);
+
         }
 
         private void Update() {
