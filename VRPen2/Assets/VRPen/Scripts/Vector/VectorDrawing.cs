@@ -462,6 +462,7 @@ namespace VRPen {
                 player.graphicIndexer++;
                 currentLine.index = player.graphicIndexer;
                 currentLine.deviceIndex = device.deviceIndex;
+                currentLine.canvasId = canvas.canvasId;
                 player.graphics.Add(currentLine);
 
 
