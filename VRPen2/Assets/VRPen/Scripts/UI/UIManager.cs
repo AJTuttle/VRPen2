@@ -46,7 +46,7 @@ namespace VRPen {
 		public bool sideMenuOpen = false;
 		private bool sideMenuMoving = false;
 
-		const float RESIZE_TIME = .2f;
+		const float RESIZE_SPEED = .1f;
 
         //used to set default slider values
         //public Slider stampSizeSlider;
@@ -95,8 +95,7 @@ namespace VRPen {
 			// uncull things that will be visible
 			SideMenuParent.SetActive(true);
 
-			StartCoroutine(resizeMenu(slidingParent, slidingParent.transform.localScale,
-                slidingParent.transform.localScale, slidingParent.transform.localPosition,
+			StartCoroutine(resizeMenu(slidingParent,  slidingParent.transform.localPosition,
                 slidingParent.transform.localPosition + new Vector3(200, 0, 0), true, localInput));
             sideMenuOpen = true;
 			menuArrow.transform.GetChild(0).gameObject.SetActive(false);
@@ -110,8 +109,7 @@ namespace VRPen {
 			if (sideMenuMoving) return;
 			sideMenuMoving = true;
 
-			StartCoroutine(resizeMenu(slidingParent, slidingParent.transform.localScale,
-                slidingParent.transform.localScale, slidingParent.transform.localPosition,
+			StartCoroutine(resizeMenu(slidingParent, slidingParent.transform.localPosition,
                 slidingParent.transform.localPosition - new Vector3(200, 0, 0), false, localInput));
             sideMenuOpen = false;
 			menuArrow.transform.GetChild(0).gameObject.SetActive(true);
@@ -207,20 +205,15 @@ namespace VRPen {
             
         }
 
-        IEnumerator resizeMenu(GameObject obj, Vector3 startScale, Vector3 endScale, Vector3 startPos, Vector3 endPos, bool opening, bool localInput) {
+        IEnumerator resizeMenu(GameObject obj, Vector3 startPos, Vector3 endPos, bool opening, bool localInput) {
 
             if (opening) SideMenuParent.SetActive(true);
-
-            Vector3 scaleChange = endScale - startScale;
-            Vector3 posChange = endPos - startPos;
-            float startTime = Time.time;
-            while (startTime + RESIZE_TIME > Time.time) {
-                obj.transform.localScale += scaleChange * Time.deltaTime / RESIZE_TIME;
-                obj.transform.localPosition += posChange * Time.deltaTime / RESIZE_TIME;
+            
+            while (Vector3.Distance(obj.transform.localPosition, endPos) > 5) {
+                obj.transform.localPosition = Vector3.Lerp(obj.transform.localPosition, endPos, RESIZE_SPEED);
                 yield return null;
             }
             obj.transform.localPosition = endPos;
-            obj.transform.localScale = endScale;
             
             if (!opening) SideMenuParent.SetActive(false);
 
