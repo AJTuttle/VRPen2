@@ -78,12 +78,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   autoConnect: 0
+  syncCurrentCanvas: 1
   remoteMarkerPrefab: {fileID: 8217082110612787815, guid: f929d31bb578d7349baa4813213b4f55,
     type: 3}
   remoteTabletPrefab: {fileID: 4162737611858156914, guid: 27a71b00b9c049b41a5f99f8630e898b,
     type: 3}
   remoteMousePrefab: {fileID: 6923511768144376201, guid: 84fccfdf48296f14ebfe5897c7167efb,
     type: 3}
+  cachePackets: 0
 --- !u!114 &6656644161125225622
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -98,15 +100,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   stampTest: {fileID: 2800000, guid: b7542b2f1ee8437448568392538526b1, type: 3}
   canvasBackgrounds:
-  - {fileID: 2800000, guid: 882e2a4b8497de54bb015b36e6cfdb34, type: 3}
+  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 2800000, guid: b66c08fb97815864f9da35e71880d80d, type: 3}
   displays:
   - {fileID: 0}
-  - {fileID: 0}
   localInputDevices:
-  - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
   autoSaveOnExit: 0

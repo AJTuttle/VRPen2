@@ -223,8 +223,6 @@ namespace VRPen {
 		}
 
      
-
-      
         public void addCanvas(byte canvasId) {
 
            
@@ -240,7 +238,7 @@ namespace VRPen {
             
 
             //assign listener to button
-            buttonObj.GetComponent<Button>().onClick.AddListener(() => display.swapCurrentCanvas(canvasId));
+            buttonObj.GetComponent<Button>().onClick.AddListener(() => display.swapCurrentCanvas(canvasId, true));
 
             //change text
             Text text = buttonObj.transform.GetChild(0).GetComponent<Text>();

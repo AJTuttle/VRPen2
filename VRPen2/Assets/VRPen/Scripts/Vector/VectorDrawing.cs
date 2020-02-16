@@ -8,8 +8,7 @@ namespace VRPen {
 
     public class VectorDrawing : MonoBehaviour {
 
-
-        public Texture stampTest;
+        
         public Texture[] canvasBackgrounds;
 
         //scripts
@@ -172,9 +171,6 @@ namespace VRPen {
             }
             else if (Input.GetKeyDown(KeyCode.S)) {
                 saveImage(0);
-            }
-            else if (Input.GetKeyDown(KeyCode.V)) {
-                stamp(stampTest, 0, network.getLocalPlayer(), 0, .5f, .5f, .25f, 0, 0, true);
             }
         }
 
@@ -567,7 +563,7 @@ namespace VRPen {
                 display.UIMan.addCanvas(canvasId);
 
                 //swap to the canvas on all displays if its the initial canvas
-                if (canvasId == 0) display.swapCurrentCanvas(0);
+                if (canvasId == 0) display.swapCurrentCanvas(0, false);
 
             }
 

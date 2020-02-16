@@ -16,7 +16,8 @@ namespace VRPen {
         AddCanvas,
         Undo,
         Stamp,
-		UIState
+		UIState,
+		CanvasSwitch
     }
 
     public class NetworkManager : MonoBehaviour {
@@ -33,6 +34,8 @@ namespace VRPen {
         [Tooltip("If enabled, this script will attempt to invoke an event for sending a connection packet shortly after start " +
             "instead of waited for the sendConnect method to be called")]
         public bool autoConnect;
+        [Tooltip("If enabled, when one personn switches canvas, the canvas on the same display will auto switch for other users as well")]
+        public bool syncCurrentCanvas;
         //[Tooltip("Should networkMan instantiate remote input device or simple make a data struct")]
         //public bool instantiateRemoteInputDevices;
 
@@ -388,6 +391,37 @@ namespace VRPen {
 
         }
 
+        public void sendCanvasChange(byte displayIndex, byte canvasIndex) {
+
+            if (!syncCurrentCanvas) {
+                return;
+            }
+
+            //dont send if you havent connected to the other users yet
+            if (!sentConnect) {
+                Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
+                return;
+            }
+
+
+            //mmake buffer list
+            List<byte> sendBufferList = new List<byte>();
+
+            // header
+            sendBufferList.Add((byte)PacketType.CanvasSwitch);
+            sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
+            sendBufferList.Add(displayIndex);
+            sendBufferList.Add(canvasIndex);
+
+
+            // convert to an array
+            byte[] sendBuffer = sendBufferList.ToArray();
+
+            //send
+            vrpenEvent?.Invoke(sendBuffer);
+
+        }
+
         public void sendStamp(int stampIndex, float x, float y, float size, float rot, byte canvasId, byte deviceIndex) {
 
             //dont send if you havent connected to the other users yet
@@ -546,6 +580,10 @@ namespace VRPen {
                 unpackStamp(player, packet, ref offset);
             }
 
+            else if (header == PacketType.CanvasSwitch) {
+                unpackCanvasSwitch(packet, ref offset);
+            }
+
             else {
                 Debug.LogError("Packet type not recognized, ID = " + header);
             }
@@ -646,6 +684,20 @@ namespace VRPen {
 
         void unpackUndo(NetworkedPlayer player) {
             vectorMan.undo(player, false);
+        }
+
+        void unpackCanvasSwitch(byte[] packet, ref int offset) {
+
+            if (!syncCurrentCanvas) {
+                Debug.LogError("Got a canvas sync event even though syncs shouldnt be enabled.");
+                return;
+            }
+
+            byte displayId = ReadByte(packet, ref offset);
+            byte canvasId = ReadByte(packet, ref offset);
+
+            vectorMan.getDisplay(displayId).swapCurrentCanvas(canvasId, false);
+            
         }
 
         void unpackUIState(byte[] packet, ref int offset) {
