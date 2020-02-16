@@ -76,11 +76,7 @@ namespace VRPen {
 		public InputDevice facilitativeDevice;
 
 
-		private void Awake() {
-
-			//instantiate persistant data
-			PersistantData.instantiate();
-		}
+		
 
 		private void Start() {
             

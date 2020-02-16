@@ -71,8 +71,8 @@ namespace VRPen {
 
 		//-1 means not instantiated
 		public static int getStampFileNameCount() {
-			if (stampFileNames == null) return -1;
-			else return stampFileNames.Length;
+            if (stampFileNames == null) instantiate();
+            return stampFileNames.Length;
 		}
 	}
 }
