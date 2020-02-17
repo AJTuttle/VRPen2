@@ -1,0 +1,27 @@
+{
+  "name": "VRPen",
+  "displayName": "VRPen",
+  "version": "2.3",
+  "unity": "2019.1",
+  "description": "Drawing.",
+  "keywords": [
+    "drawing"
+  ],
+  "author": {
+    "name": "AJ Tuttle",
+    "email": "alexander.tuttle@uga.edu"
+  },
+  "samples": [
+    {
+      "displayName": "C#",
+      "description": "C# socket local networking sample (not working).",
+      "path": "Samples~/C# local networking"
+    },
+    {
+      "displayName": "Photon",
+      "description": "Photon networking sample.",
+      "path": "Samples~/Photon sample scene"
+    }
+
+  ]
+}
