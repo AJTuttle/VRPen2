@@ -30,7 +30,6 @@ namespace VRPen {
 
 		new void Start() {
             base.Start();
-			SceneManager.activeSceneChanged += SceneChanged;
         }
 
 
@@ -66,9 +65,6 @@ namespace VRPen {
 			}
 		}
 
-		void SceneChanged(Scene oldScene, Scene newScene) {
-			Destroy(gameObject);
-		}
 
         protected override void updateModel(ToolState newState) {
 

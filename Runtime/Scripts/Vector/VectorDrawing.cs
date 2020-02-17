@@ -131,7 +131,7 @@ namespace VRPen {
                 byte deviceIndex = (byte)localPlayer.inputDevices.Count;
 
                 inputDevice.deviceData = device;
-                device.type = localInputDevices[deviceIndex].deviceType;
+                device.type = inputDevice.deviceType;
                 localPlayer.inputDevices.Add(deviceIndex, device);
                 device.owner = network.getLocalPlayer();
                 device.deviceIndex = deviceIndex;
