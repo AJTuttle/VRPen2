@@ -7,9 +7,9 @@ using UnityEngine.UI;
 namespace VRPen {
 
     public class MarkerInput : VRPenInput {
+         
 
-
-        //public vars
+        //public varz
         public Transform modelParent;
         public GameObject markerModel;
         public GameObject eyedropperModel;
