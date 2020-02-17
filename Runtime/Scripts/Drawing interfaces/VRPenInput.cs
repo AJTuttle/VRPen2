@@ -355,7 +355,7 @@ namespace VRPen {
         }
 
         void endLine() {
-            if (deviceData.currentGraphic != null) vectorMan.endLineEvent(network.getLocalPlayer(), deviceData.deviceIndex, true);
+            if (deviceData != null && deviceData.currentGraphic != null) vectorMan.endLineEvent(network.getLocalPlayer(), deviceData.deviceIndex, true);
         }
         
 
