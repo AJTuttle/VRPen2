@@ -36,6 +36,10 @@ namespace VRPen {
         public bool autoConnect;
         [Tooltip("If enabled, when one personn switches canvas, the canvas on the same display will auto switch for other users as well")]
         public bool syncCurrentCanvas;
+        [Tooltip("If enabled, ui elements will sync")]
+        public bool syncDisplayUIs;
+        [Tooltip("Period of ui syncing (does not do anything if uisync is disabled")]
+        public float UI_SYNC_PERIOD;
         //[Tooltip("Should networkMan instantiate remote input device or simple make a data struct")]
         //public bool instantiateRemoteInputDevices;
 
@@ -478,6 +482,16 @@ namespace VRPen {
 
             // convert to an array
             byte[] sendBuffer = sendBufferList.ToArray();
+
+            //if initial connection
+            if (!sentConnect) {
+                //start syncing displays
+                if (syncDisplayUIs) {
+                    foreach (Display dis in vectorMan.displays) {
+                        dis.UIMan.startPackingState(UI_SYNC_PERIOD);
+                    }
+                }
+            }
 
             //send
             sentConnect = true;

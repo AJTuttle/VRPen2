@@ -9,8 +9,6 @@ using System;
 namespace VRPen {
 
 	public class UIManager : MonoBehaviour {
-
-        public bool networkUI;
         
         public enum PacketHeader : int {
             Slide,
@@ -83,9 +81,6 @@ namespace VRPen {
 
 		}
 
-        private void Update() {
-            packState();
-        }
 
 
         public void openSideMenu(bool localInput) {
@@ -265,10 +260,14 @@ namespace VRPen {
             }
         }
 
-        void packState() {
+        public void startPackingState(float period) {
+            InvokeRepeating(nameof(packState), 1.0f, period);
+        }
+
+        public void packState() {
 
             //dont do anything if we dont wanna sync
-            if (!networkUI) return;
+            if (!network.syncDisplayUIs) return;
 
             //pack data
             List<byte> data = new List<byte>();
