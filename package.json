@@ -1,7 +1,7 @@
 {
-  "name": "VRPen",
+  "name": "com.aj.vrpen",
   "displayName": "VRPen",
-  "version": "2.3",
+  "version": "2.3.0",
   "unity": "2019.1",
   "description": "Drawing.",
   "keywords": [
