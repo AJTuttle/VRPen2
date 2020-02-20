@@ -9,6 +9,9 @@ namespace VRPen {
         public UIManager UIMan;
         public Transform canvasParent;
 
+        [Tooltip("This sets the intial canvas of this whiteboard LOCALLY, if the canvas index does not exist a new one will be made LOCALLY. " +
+            "WARNING: this does not sync over the network so its a good idea to make everyone have the same initial canvases at start.")]
+        public byte initialCanvasId;
 
 		[System.NonSerialized]
 		public byte DisplayId;
@@ -23,6 +26,29 @@ namespace VRPen {
         private void Awake() {
             vectorMan = FindObjectOfType<VectorDrawing>();
             network = FindObjectOfType<NetworkManager>();
+        }
+
+        private void Start() {
+            switchToInitialCanvas();
+        }
+
+        void switchToInitialCanvas() {
+
+            //make sure the initial canvas isnt too high
+            if (initialCanvasId >= vectorMan.MAX_CANVAS_COUNT) {
+                Debug.LogError("Initial canvas id for display was set the a value higher than possible.");
+                return;
+            }
+            
+            //spawn local canvases if there are no other
+            while (initialCanvasId >= vectorMan.canvases.Count) {
+                vectorMan.addCanvas(false);
+            }
+
+            int x = canvasParent.childCount;
+            //switch to that canvas
+            swapCurrentCanvas(initialCanvasId, false);
+
         }
 
         public void addCanvasPassthrough() {
