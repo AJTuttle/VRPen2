@@ -6,12 +6,23 @@ namespace VRPen {
 
     public class Display : MonoBehaviour {
 
-        public UIManager UIMan;
-        public Transform canvasParent;
+        public int pixelWidth;
+        public int pixelHeight;
+        public float aspectRatio {
+            get {
+                return ((float)pixelWidth / (float)pixelHeight);
+            }
+        }
 
         [Tooltip("This sets the intial canvas of this whiteboard LOCALLY, if the canvas index does not exist a new one will be made LOCALLY. " +
             "WARNING: this does not sync over the network so its a good idea to make everyone have the same initial canvases at start.")]
-        public byte initialCanvasId;
+        public bool initialCanvasIsPrivate;
+
+
+        public UIManager UIMan;
+        public Transform canvasParent;
+
+        public Dictionary<byte, GameObject> canvasObjs = new Dictionary<byte, GameObject>();
 
 		[System.NonSerialized]
 		public byte DisplayId;
@@ -34,25 +45,26 @@ namespace VRPen {
 
         void switchToInitialCanvas() {
 
+            //dont switch if the initial canvas is public
+            if (!initialCanvasIsPrivate) return;
+
             //make sure the initial canvas isnt too high
-            if (initialCanvasId >= vectorMan.MAX_CANVAS_COUNT) {
-                Debug.LogError("Initial canvas id for display was set the a value higher than possible.");
+            if (vectorMan.canvases.Count == vectorMan.MAX_CANVAS_COUNT) {
+                Debug.LogError("Initial was set to private but this would exceed the max number of canvases.");
                 return;
             }
-            
-            //spawn local canvases if there are no other
-            while (initialCanvasId >= vectorMan.canvases.Count) {
-                vectorMan.addCanvas(false);
-            }
 
-            int x = canvasParent.childCount;
+            //spawn local canvase
+            vectorMan.addCanvas(false, false, this); ;
+            
+
             //switch to that canvas
-            swapCurrentCanvas(initialCanvasId, false);
+            swapCurrentCanvas((byte)(vectorMan.canvases.Count - 1), false);
 
         }
 
-        public void addCanvasPassthrough() {
-            vectorMan.addCanvas(true);
+        public void addCanvasPassthrough(bool isPublic) {
+            vectorMan.addCanvas(true, isPublic, this);
             swapCurrentCanvas((byte)(vectorMan.canvases.Count - 1), true);
         }
 
@@ -95,10 +107,11 @@ namespace VRPen {
                 }
             }
 
+
             //swap canvas
-            if(currentLocalCanvas != null) canvasParent.GetChild(currentLocalCanvas.canvasId).GetComponent<Renderer>().enabled = false;
+            if(currentLocalCanvas != null) canvasObjs[currentLocalCanvas.canvasId].GetComponent<Renderer>().enabled = false;
             currentLocalCanvas = vectorMan.getCanvas(canvasId);
-            canvasParent.GetChild(canvasId).GetComponent<Renderer>().enabled = true;
+            canvasObjs[currentLocalCanvas.canvasId].GetComponent<Renderer>().enabled = true;
 
             //sync
             if (localInput) network.sendCanvasChange(DisplayId, canvasId);

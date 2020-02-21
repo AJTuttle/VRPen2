@@ -25,7 +25,8 @@ namespace VRPen {
 		public NetworkManager network;
 
 
-		[Header("Will not autofill")]
+        [Header("Will not autofill")]
+        public Toggle newCanvasIsPrivateToggle;
 		public GameObject slidingParent;
 		public GameObject SideMenuParent;
 		public GameObject calculatorParent;
@@ -392,8 +393,8 @@ namespace VRPen {
         }
             #region Passthroughs
 
-            public void addCanvasPassthrough() {
-            display.addCanvasPassthrough();
+        public void addCanvasPassthrough() {
+            display.addCanvasPassthrough(!newCanvasIsPrivateToggle.isOn);
         }
 
         public void undoPassthrough() {

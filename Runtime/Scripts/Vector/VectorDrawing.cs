@@ -33,16 +33,16 @@ namespace VRPen {
         public int MAX_CANVAS_COUNT;
         [Tooltip("The render area is where the meshs for the drawing is constructed and rendered, this var sets its location in the scene")]
         public Vector3 renderAreaOrigin;
-        [Tooltip("Width of canvas")]
-        public int pixelWidth;
-        [Tooltip("Height of canvas")]
-        public int pixelHeight;
-
-        public float aspectRatio {
+        [Tooltip("Width of inital public canvas")]
+        public int initalPublicCanvasPixelWidth;
+        [Tooltip("Height of initial public canvas")]
+        public int initalPublicCanvasPixelHeight;
+        public float initalPublicCanvasAspectRatio {
             get {
-                return ((float)pixelWidth / (float)pixelHeight);
+                return ((float)initalPublicCanvasPixelWidth / (float)initalPublicCanvasPixelHeight);
             }
         }
+
 
         [Space(5)]
         [Header("Line Smoothing and compression parameters")]
@@ -110,7 +110,7 @@ namespace VRPen {
 			facilitativeDevice.deviceIndex = 255;
             
 			//spawn preset canvases
-			addCanvas(true);
+			addCanvas(true, true, null);
 
             SceneManager.activeSceneChanged += OnSceneChange;
 
@@ -532,7 +532,8 @@ namespace VRPen {
             if (localInput) network.sendUndo();
         }
 
-        public void addCanvas(bool localInput) {
+        //if originDisplay is null, this is the initial public canvas
+        public void addCanvas(bool localInput, bool isPublic, Display originDisplay) {
 
             if (getCanvasListCount() >= MAX_CANVAS_COUNT) {
                 Debug.LogWarning("Failed to add a canvas when max canvas count reached already");
@@ -543,14 +544,20 @@ namespace VRPen {
 
             //make canvas
             VectorCanvas temp = GameObject.Instantiate(canvasPrefab, canvasParent).GetComponent<VectorCanvas>();
-            temp.instantiate(this, network, canvasId, pixelWidth, pixelHeight);
+            if (originDisplay == null) temp.instantiate(this, network, canvasId, initalPublicCanvasPixelWidth, initalPublicCanvasPixelHeight);
+            else temp.instantiate(this, network, canvasId, originDisplay.pixelWidth, originDisplay.pixelHeight);
             temp.GetComponent<Renderer>().enabled = false;
+            temp.isPublic = isPublic;
+            temp.originDisplay = originDisplay;
+
             
             //add to list
             canvases.Add(temp);
             
             //make copys of texture
             foreach (Display display in displays) {
+
+                if (!isPublic && display != originDisplay) continue;
 
 	            GameObject quad = Instantiate(quadPrefab);
 				Destroy(quad.GetComponent<Collider>());
@@ -567,6 +574,9 @@ namespace VRPen {
                 //update ui
                 display.UIMan.addCanvas(canvasId);
 
+                //add the actual obj to display's list
+                display.canvasObjs.Add(canvasId, quad);
+
                 //swap to the canvas on all displays if its the initial canvas
                 if (canvasId == 0) display.swapCurrentCanvas(0, false);
 
@@ -577,7 +587,7 @@ namespace VRPen {
             if (localInput) {
 
                 //network it (make sure you dont send the default board)
-                if (canvasId != 0) network.sendCanvasAddition();
+                if (canvasId != 0) network.sendCanvasAddition(isPublic, originDisplay);
             }
             
         }

@@ -281,11 +281,15 @@ namespace VRPen {
         void canvasHover(InputData data) {
             
 
-
             //get vars from ray
             Transform canvas = data.hit.transform;
             Vector3 pos = canvas.InverseTransformPoint(data.hit.point);
-            xFloat = pos.x * vectorMan.aspectRatio;
+            float aspectRatio;
+            if (data.display.currentLocalCanvas.originDisplay == null) {
+                aspectRatio = vectorMan.initalPublicCanvasAspectRatio;
+            } 
+            else aspectRatio = data.display.currentLocalCanvas.originDisplay.aspectRatio;
+            xFloat = pos.x * aspectRatio;
             yFloat = pos.y;
 
             //do stuff
