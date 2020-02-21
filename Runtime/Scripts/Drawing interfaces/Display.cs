@@ -40,18 +40,21 @@ namespace VRPen {
         }
 
         private void Start() {
-            switchToInitialCanvas();
+            StartCoroutine(nameof(switchToInitialCanvas));
         }
 
-        void switchToInitialCanvas() {
+        IEnumerator switchToInitialCanvas() {
+
+            //wait one frame so that canvas0 can be spawned first if this diplay is in the scene at start
+            yield return null;
 
             //dont switch if the initial canvas is public
-            if (!initialCanvasIsPrivate) return;
+            if (!initialCanvasIsPrivate) yield break;
 
             //make sure the initial canvas isnt too high
             if (vectorMan.canvases.Count == vectorMan.MAX_CANVAS_COUNT) {
                 Debug.LogError("Initial was set to private but this would exceed the max number of canvases.");
-                return;
+                yield break;
             }
 
             //spawn local canvase
