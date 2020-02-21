@@ -38,7 +38,11 @@ namespace VRPen {
         [Tooltip("Height of canvas")]
         public int pixelHeight;
 
-
+        public float aspectRatio {
+            get {
+                return ((float)pixelWidth / (float)pixelHeight);
+            }
+        }
 
         [Space(5)]
         [Header("Line Smoothing and compression parameters")]

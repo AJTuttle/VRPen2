@@ -285,9 +285,8 @@ namespace VRPen {
             //get vars from ray
             Transform canvas = data.hit.transform;
             Vector3 pos = canvas.InverseTransformPoint(data.hit.point);
-            xFloat = pos.x * canvas.parent.parent.localScale.x/canvas.parent.parent.localScale.y;
+            xFloat = pos.x * vectorMan.aspectRatio;
             yFloat = pos.y;
-            
 
             //do stuff
             switch (state) {
