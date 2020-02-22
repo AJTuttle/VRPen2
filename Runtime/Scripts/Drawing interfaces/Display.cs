@@ -48,21 +48,45 @@ namespace VRPen {
             //wait one frame so that canvas0 can be spawned first if this diplay is in the scene at start
             yield return null;
 
-            //dont switch if the initial canvas is public
-            if (!initialCanvasIsPrivate) yield break;
-
-            //make sure the initial canvas isnt too high
-            if (vectorMan.canvases.Count == vectorMan.MAX_CANVAS_COUNT) {
-                Debug.LogError("Initial was set to private but this would exceed the max number of canvases.");
-                yield break;
-            }
-
-            //spawn local canvase
-            vectorMan.addCanvas(false, false, this); ;
             
 
-            //switch to that canvas
-            swapCurrentCanvas((byte)(vectorMan.canvases.Count - 1), false);
+            if (initialCanvasIsPrivate) {
+
+                //make sure the initial canvas isnt too high
+                if (vectorMan.canvases.Count == vectorMan.MAX_CANVAS_COUNT) {
+                    Debug.LogError("Initial was set to private but this would exceed the max number of canvases.");
+                    yield break;
+                }
+
+                //spawn local canvase
+                vectorMan.addCanvas(false, false, this); ;
+
+
+                //switch to that canvas
+                swapCurrentCanvas((byte)(vectorMan.canvases.Count - 1), false);
+            }
+            else {
+
+                // if this isnt the first public canvas
+                if (vectorMan.initialPublicCanvasId != -1) {
+                    swapCurrentCanvas((byte)vectorMan.initialPublicCanvasId, false);
+                }
+
+                //if this is the first public canvas
+                else {
+                    //make sure the initial canvas isnt too high
+                    if (vectorMan.canvases.Count == vectorMan.MAX_CANVAS_COUNT) {
+                        Debug.LogError("Initial was set to private but this would exceed the max number of canvases.");
+                        yield break;
+                    }
+                    //spawn local canvase
+                    vectorMan.addCanvas(false, true, null); ;
+                    
+                    //switch to that canvas
+                    swapCurrentCanvas((byte)(vectorMan.canvases.Count - 1), false);
+                }
+
+            }
 
         }
 

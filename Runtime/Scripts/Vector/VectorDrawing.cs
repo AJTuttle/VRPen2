@@ -19,6 +19,9 @@ namespace VRPen {
         [System.NonSerialized]
         public List<VectorCanvas> canvases = new List<VectorCanvas>();
 
+        [System.NonSerialized]
+        public int initialPublicCanvasId = -1;
+
         //public vars
         [Space(5)]
         [Header("Important variables to set")]
@@ -108,9 +111,6 @@ namespace VRPen {
 			facilitativeDevice.type = InputDevice.InputDeviceType.Facilitative;
 			facilitativeDevice.owner = null;
 			facilitativeDevice.deviceIndex = 255;
-            
-			//spawn preset canvases
-			addCanvas(true, true, null);
 
             SceneManager.activeSceneChanged += OnSceneChange;
 
@@ -535,12 +535,24 @@ namespace VRPen {
         //if originDisplay is null, this is the initial public canvas
         public void addCanvas(bool localInput, bool isPublic, Display originDisplay) {
 
+            //if a canvas is added with no origin display even though a global public canvas has already been setup
+            if (originDisplay == null && initialPublicCanvasId != -1) {
+                Debug.LogWarning("Failed to add a canvas when there is no originDisplay (the only time this works is when the initial public canvas is added)");
+                return;
+            }
+
             if (getCanvasListCount() >= MAX_CANVAS_COUNT) {
                 Debug.LogWarning("Failed to add a canvas when max canvas count reached already");
                 return;
             }
 
+            //get id
             byte canvasId = (byte)canvases.Count;
+
+            //if this is the inital public canvas
+            if (originDisplay == null) {
+                initialPublicCanvasId = canvasId;
+            }
 
             //make canvas
             VectorCanvas temp = GameObject.Instantiate(canvasPrefab, canvasParent).GetComponent<VectorCanvas>();
@@ -576,9 +588,7 @@ namespace VRPen {
 
                 //add the actual obj to display's list
                 display.canvasObjs.Add(canvasId, quad);
-
-                //swap to the canvas on all displays if its the initial canvas
-                if (canvasId == 0) display.swapCurrentCanvas(0, false);
+                
 
             }
 
