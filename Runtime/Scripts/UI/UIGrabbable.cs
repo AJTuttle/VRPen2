@@ -15,18 +15,11 @@ namespace VRPen {
         float grabX;
         float grabY;
 
-        private void Start() {
+        public void initializePos() {
 
             //set stating values
             x = parent.transform.localPosition.x;
             y = parent.transform.localPosition.y;
-
-            //set grabbable
-            man.addUIGrabbable(type, this);
-
-            //turn off
-            parent.gameObject.SetActive(false);
-
         }
 
         private void Update() {

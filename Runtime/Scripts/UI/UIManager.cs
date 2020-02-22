@@ -26,6 +26,8 @@ namespace VRPen {
 
 
         [Header("Will not autofill")]
+
+        public List<UIGrabbable> grabbablesAddedOnStart;
         public Toggle newCanvasIsPrivateToggle;
 		public GameObject slidingParent;
 		public GameObject SideMenuParent;
@@ -72,6 +74,19 @@ namespace VRPen {
             //create arrays for syncing
             packetHeaderToSync = new bool[Enum.GetValues(typeof(PacketHeader)).Length];
             packetHeaderGrabbables = new UIGrabbable[Enum.GetValues(typeof(PacketHeader)).Length];
+            foreach (UIGrabbable grabbable in grabbablesAddedOnStart) {
+
+                grabbable.initializePos();
+
+                int index = (int)grabbable.type;
+                if (packetHeaderGrabbables[index] != null) {
+                    Debug.LogError("Multiple grabbables were added to uiMan with the same type (not allowed)");
+                }
+                else {
+                    packetHeaderGrabbables[index] = grabbable;
+                }
+            }
+
 
             //grab stamp file names to put in explorer
             addFilesToStampExplorer();
@@ -250,10 +265,7 @@ namespace VRPen {
         public void queueState(PacketHeader head) {
             packetHeaderToSync[(int)head] = true;
         }
-
-        public void addUIGrabbable(PacketHeader type, UIGrabbable grabbable) {
-            packetHeaderGrabbables[(int)type] = grabbable;
-        }
+        
 
         void dequeueState() {
             for (int x = 0; x < packetHeaderToSync.Length; x++) {
