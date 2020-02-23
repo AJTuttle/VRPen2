@@ -15,7 +15,8 @@ namespace VRPen {
             Calc,
             Canvas,
             Stamp,
-            Clear
+            Clear,
+            MovableMenu
         }
         bool[] packetHeaderToSync;
         UIGrabbable[] packetHeaderGrabbables;
@@ -37,6 +38,7 @@ namespace VRPen {
 		public GameObject stampExplorerParent;
 		public GameObject clearMenuParent;
 		public GameObject menuArrow;
+		public GameObject movableMenuParent;
 		public Display display;
 		
         public Transform stampUIParent;
@@ -315,6 +317,11 @@ namespace VRPen {
                             data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].x));
                             data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].y));
                             break;
+                        case PacketHeader.MovableMenu:
+                            data.Add(clearMenuParent.activeSelf ? (byte)1 : (byte)0);
+                            data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].x));
+                            data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].y));
+                            break;
 
                     }
                 }
@@ -394,6 +401,17 @@ namespace VRPen {
                         }
                         Vector2 clearPos = new Vector2(ReadFloat(data, ref offset), ReadFloat(data, ref offset));
                         packetHeaderGrabbables[(int)PacketHeader.Clear].setExactPos(clearPos.x, clearPos.y);
+                        break;
+                    case PacketHeader.MovableMenu:
+                        bool menuEn = ReadByte(data, ref offset) == 1 ? true : false;
+                        if (menuEn && !movableMenuParent.activeSelf) {
+                            movableMenuParent.SetActive(true);
+                        }
+                        else if (!menuEn && movableMenuParent.activeSelf) {
+                            movableMenuParent.SetActive(false);
+                        }
+                        Vector2 menuPos = new Vector2(ReadFloat(data, ref offset), ReadFloat(data, ref offset));
+                        packetHeaderGrabbables[(int)PacketHeader.MovableMenu].setExactPos(menuPos.x, menuPos.y);
                         break;
 
                 }
