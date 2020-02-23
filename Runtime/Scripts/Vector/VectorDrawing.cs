@@ -139,6 +139,7 @@ namespace VRPen {
                 localPlayer.inputDevices.Add(deviceIndex, device);
                 device.owner = network.getLocalPlayer();
                 device.deviceIndex = deviceIndex;
+                device.visuals = inputDevice;
                 
             }
         }

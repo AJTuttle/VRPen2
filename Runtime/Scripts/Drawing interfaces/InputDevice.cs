@@ -20,6 +20,7 @@ namespace VRPen {
         public VectorGraphic currentGraphic;
         public Vector3 lastDrawPoint;
         public Vector3 secondLastDrawPoint;
+        public InputVisuals visuals;
 
     }
 

@@ -66,11 +66,14 @@ namespace VRPen {
 		}
 
 
-        protected override void updateModel(ToolState newState) {
+        public override void updateModel(ToolState newState, bool localInput) {
+            
 
 			markerModel.SetActive(newState == ToolState.NORMAL);
 			eraserModel.SetActive(newState == ToolState.ERASE);
 			eyedropperModel.SetActive(newState == ToolState.EYEDROPPER);
+
+            if (localInput) network.sendInputVisualEvent(deviceData.deviceIndex, currentColor, newState);
 			
 
         }

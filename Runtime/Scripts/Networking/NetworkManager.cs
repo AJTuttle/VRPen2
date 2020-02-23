@@ -17,7 +17,8 @@ namespace VRPen {
         Undo,
         Stamp,
 		UIState,
-		CanvasSwitch
+		CanvasSwitch,
+        InputVisualsEvent
     }
 
     public class NetworkManager : MonoBehaviour {
@@ -501,6 +502,32 @@ namespace VRPen {
 
         }
 
+        public void sendInputVisualEvent(byte deviceId, Color32 color, VRPenInput.ToolState state) {
+            
+            //mmake buffer list
+            List<byte> sendBufferList = new List<byte>();
+
+            // header
+            sendBufferList.Add((byte)PacketType.Connect);
+            sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
+
+            //add data
+            sendBufferList.Add(deviceId);
+            sendBufferList.Add((byte)state);
+            sendBufferList.Add(color.r);
+            sendBufferList.Add(color.g);
+            sendBufferList.Add(color.b);
+
+            // convert to an array
+            byte[] sendBuffer = sendBufferList.ToArray();
+            
+
+            //send
+            sentConnect = true;
+            vrpenEvent?.Invoke(sendBuffer);
+
+        }
+
 		public void sendUIState(byte displayId, byte[] data) {
 
             //dont send if you havent connected to the other users yet
@@ -598,6 +625,10 @@ namespace VRPen {
 
             else if (header == PacketType.CanvasSwitch) {
                 unpackCanvasSwitch(packet, ref offset);
+            }
+
+            else if (header == PacketType.InputVisualsEvent) {
+                unpackInputVisualEvent(player, packet, ref offset);
             }
 
             else {
@@ -720,6 +751,19 @@ namespace VRPen {
             
         }
 
+        void unpackInputVisualEvent(NetworkedPlayer player, byte[] packet, ref int offset) {
+            
+            //get data
+            byte deviceId = ReadByte(packet, ref offset);
+            VRPenInput.ToolState state = (VRPenInput.ToolState)ReadByte(packet, ref offset);
+            Color32 col = new Color32(ReadByte(packet, ref offset), ReadByte(packet, ref offset), ReadByte(packet, ref offset), 255);
+
+            //update device
+            player.inputDevices[deviceId].visuals.updateModel(state, false);
+            player.inputDevices[deviceId].visuals.updateColorIndicators(col, false);
+
+        }
+
         void unpackUIState(byte[] packet, ref int offset) {
             
 
@@ -780,6 +824,7 @@ namespace VRPen {
                 device.deviceIndex = index;
                 device.type = type;
                 device.owner = player;
+                device.visuals = obj.GetComponent<InputVisuals>();
 
                 player.inputDevices.Add(index, device);
 

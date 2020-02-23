@@ -19,12 +19,7 @@ namespace VRPen {
 		
 
 
-        //script refs
-        VectorDrawing vectorMan;
-        NetworkManager network;
 
-		[System.NonSerialized]
-		public InputDevice deviceData;
 		public InputDevice.InputDeviceType deviceType;
 
         //public vars
@@ -33,7 +28,6 @@ namespace VRPen {
         //drawing data
         float xFloat = 0f;
         float yFloat = 0f;
-        Color32 currentColor = new Color32(0, 0, 0, 255);
 
 
         //stamp data
@@ -47,12 +41,6 @@ namespace VRPen {
         [System.NonSerialized]
         public HoverState hover = HoverState.NONE;
 
-        //state
-        public enum ToolState {
-            NORMAL, EYEDROPPER, ERASE
-        }
-        [System.NonSerialized]
-        public ToolState state = ToolState.NORMAL;
 
         //stamp
         public GameObject stampPrefab;
@@ -73,13 +61,14 @@ namespace VRPen {
 
         protected void Start() {
 
-            //get script vars
-            vectorMan = FindObjectOfType<VectorDrawing>();
-            network = FindObjectOfType<NetworkManager>();
+            //base
+            base.Start();
+
+            //get script var
             SceneManager.activeSceneChanged += grabReferences;
 
 			//set colors
-			updateColorIndicators(currentColor);
+			updateColorIndicators(currentColor,false);
 
         }
 
@@ -107,7 +96,7 @@ namespace VRPen {
             //change state
             state = newState;
 
-			updateModel(newState);
+			updateModel(newState, true);
         }
 		
 
@@ -232,7 +221,7 @@ namespace VRPen {
                 currentColor = paletteColor;
 
 				//indicator
-				updateColorIndicators(currentColor);
+				updateColorIndicators(currentColor, true);
 
             }
 
@@ -321,7 +310,7 @@ namespace VRPen {
                         currentColor.a = 255;
 
                         //update indicator
-                        updateColorIndicators(currentColor);
+                        updateColorIndicators(currentColor, true);
 
                     }
 
