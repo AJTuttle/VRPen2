@@ -39,9 +39,10 @@ namespace VRPen {
             network = FindObjectOfType<NetworkManager>();
         }
 
-        private void Start() {
+        public void init() {
             StartCoroutine(nameof(switchToInitialCanvas));
         }
+
 
         IEnumerator switchToInitialCanvas() {
 

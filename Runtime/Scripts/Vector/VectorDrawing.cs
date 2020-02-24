@@ -95,6 +95,7 @@ namespace VRPen {
 			//set up deisplay ids
 			for(byte x = 0; x < displays.Count; x++) {
 				displays[x].DisplayId = x;
+                displays[x].init();
 			}
             
 
