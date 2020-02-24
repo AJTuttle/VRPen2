@@ -508,7 +508,7 @@ namespace VRPen {
             List<byte> sendBufferList = new List<byte>();
 
             // header
-            sendBufferList.Add((byte)PacketType.Connect);
+            sendBufferList.Add((byte)PacketType.InputVisualsEvent);
             sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
 
             //add data
@@ -757,6 +757,8 @@ namespace VRPen {
             byte deviceId = ReadByte(packet, ref offset);
             VRPenInput.ToolState state = (VRPenInput.ToolState)ReadByte(packet, ref offset);
             Color32 col = new Color32(ReadByte(packet, ref offset), ReadByte(packet, ref offset), ReadByte(packet, ref offset), 255);
+
+            Debug.LogError(col.ToString());
 
             //update device
             player.inputDevices[deviceId].visuals.updateModel(state, false);

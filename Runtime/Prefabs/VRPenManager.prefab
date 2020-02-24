@@ -79,6 +79,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoConnect: 0
   syncCurrentCanvas: 1
+  syncDisplayUIs: 0
+  UI_SYNC_PERIOD: 0
   remoteMarkerPrefab: {fileID: 8217082110612787815, guid: f929d31bb578d7349baa4813213b4f55,
     type: 3}
   remoteTabletPrefab: {fileID: 4162737611858156914, guid: 27a71b00b9c049b41a5f99f8630e898b,
@@ -98,7 +100,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fc54dc0f8c0b2041bc421af44831579, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  stampTest: {fileID: 2800000, guid: b7542b2f1ee8437448568392538526b1, type: 3}
   canvasBackgrounds:
   - {fileID: 0}
   - {fileID: 0}
@@ -112,8 +113,8 @@ MonoBehaviour:
   autoSaveOnExit: 0
   MAX_CANVAS_COUNT: 6
   renderAreaOrigin: {x: 0, y: -5, z: 0}
-  pixelWidth: 2000
-  pixelHeight: 1200
+  initalPublicCanvasPixelWidth: 2000
+  initalPublicCanvasPixelHeight: 1200
   minDistanceDelta: 0.01
   minCurveAngle: 159.6
   maxCuspAngle: 68.2
