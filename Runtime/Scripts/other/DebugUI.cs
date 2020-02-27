@@ -14,7 +14,7 @@ public class DebugUI : MonoBehaviour
     public bool enabled;
 
     public void display(string str) {
-        if (!enabled) return;
+        if (!enabled) return; 
         obj.SetActive(true);
         errorText.text = str;
     }

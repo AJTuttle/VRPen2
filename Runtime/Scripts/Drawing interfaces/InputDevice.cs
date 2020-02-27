@@ -22,6 +22,17 @@ namespace VRPen {
         public Vector3 secondLastDrawPoint;
         public InputVisuals visuals;
 
+        public Vector3 velocity {
+            get {
+                if (lastDrawPoint == null || secondLastDrawPoint == null) {
+                    return Vector3.zero;
+                }
+                else {
+                    return lastDrawPoint - secondLastDrawPoint;
+                }
+            }
+        }
+
     }
 
 }
