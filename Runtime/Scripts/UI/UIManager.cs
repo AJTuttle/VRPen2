@@ -31,7 +31,8 @@ namespace VRPen {
         public List<UIGrabbable> grabbablesAddedOnStart;
         public Toggle newCanvasIsPrivateToggle;
 		public GameObject slidingParent;
-		public GameObject SideMenuParent;
+		public GameObject SlideMenu;
+		public GameObject SlideMenuParent;
 		public GameObject calculatorParent;
 		public GameObject canvasMenuParent;
 		public GameObject canvasListParent;
@@ -105,11 +106,13 @@ namespace VRPen {
 			if (sideMenuMoving) return;
 			sideMenuMoving = true;
 
-			// uncull things that will be visible
-			SideMenuParent.SetActive(true);
+            // uncull things that will be visible
+            SlideMenu.SetActive(true);
 
 			StartCoroutine(resizeMenu(slidingParent,  slidingParent.transform.localPosition,
                 slidingParent.transform.localPosition + new Vector3(200, 0, 0), true, localInput));
+            StartCoroutine(resizeMenu(SlideMenuParent, SlideMenuParent.transform.localPosition,
+                SlideMenuParent.transform.localPosition + new Vector3(200, 0, 0), true, localInput));
             sideMenuOpen = true;
 			menuArrow.transform.GetChild(0).gameObject.SetActive(false);
 			menuArrow.transform.GetChild(1).gameObject.SetActive(true);
@@ -124,6 +127,8 @@ namespace VRPen {
 
 			StartCoroutine(resizeMenu(slidingParent, slidingParent.transform.localPosition,
                 slidingParent.transform.localPosition - new Vector3(200, 0, 0), false, localInput));
+            StartCoroutine(resizeMenu(SlideMenuParent, SlideMenuParent.transform.localPosition,
+                SlideMenuParent.transform.localPosition - new Vector3(200, 0, 0), false, localInput));
             sideMenuOpen = false;
 			menuArrow.transform.GetChild(0).gameObject.SetActive(true);
 			menuArrow.transform.GetChild(1).gameObject.SetActive(false);
@@ -220,7 +225,7 @@ namespace VRPen {
 
         IEnumerator resizeMenu(GameObject obj, Vector3 startPos, Vector3 endPos, bool opening, bool localInput) {
 
-            if (opening) SideMenuParent.SetActive(true);
+            if (opening) SlideMenu.SetActive(true);
             
             while (Vector3.Distance(obj.transform.localPosition, endPos) > 5) {
                 obj.transform.localPosition = Vector3.Lerp(obj.transform.localPosition, endPos, RESIZE_SPEED);
@@ -228,7 +233,7 @@ namespace VRPen {
             }
             obj.transform.localPosition = endPos;
             
-            if (!opening) SideMenuParent.SetActive(false);
+            if (!opening) SlideMenu.SetActive(false);
 
             sideMenuMoving = false;
             
