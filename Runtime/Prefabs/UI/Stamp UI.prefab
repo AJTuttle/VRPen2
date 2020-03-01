@@ -144,7 +144,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57661977724c19041ac7c421303a1aa2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  notNetworked: 1
+  type: 3
   parent: {fileID: 5899845830871587569}
+  man: {fileID: 0}
+  x: 0
+  y: 0
 --- !u!1 &257328968147648408
 GameObject:
   m_ObjectHideFlags: 0
@@ -878,6 +883,7 @@ MeshRenderer:
   m_MotionVectors: 1
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -1062,7 +1068,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57661977724c19041ac7c421303a1aa2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  notNetworked: 1
+  type: 3
   parent: {fileID: 3471273316958067606}
+  man: {fileID: 0}
+  x: 0
+  y: 0
 --- !u!114 &741302863034768330
 MonoBehaviour:
   m_ObjectHideFlags: 0
