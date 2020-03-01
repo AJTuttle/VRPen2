@@ -362,6 +362,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57661977724c19041ac7c421303a1aa2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  notNetworked: 0
   type: 2
   parent: {fileID: 6896084087635601420}
   man: {fileID: 2242889434718929404}
@@ -1955,6 +1956,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57661977724c19041ac7c421303a1aa2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  notNetworked: 0
   type: 5
   parent: {fileID: 3272727285787175257}
   man: {fileID: 2242889434718929404}
@@ -3405,6 +3407,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57661977724c19041ac7c421303a1aa2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  notNetworked: 0
   type: 3
   parent: {fileID: 1080211796336180140}
   man: {fileID: 2242889434718929404}
@@ -4551,8 +4554,8 @@ RectTransform:
   m_LocalPosition: {x: 0, y: 0, z: -0.00003590641}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 8856819950401370811}
   - {fileID: 4077901999513164856}
+  - {fileID: 8856819950401370811}
   - {fileID: 1779814831205227637}
   m_Father: {fileID: 3589600343686860715}
   m_RootOrder: 0
@@ -5778,7 +5781,7 @@ RectTransform:
   - {fileID: 4037607020348510825}
   - {fileID: 8369232418771525826}
   m_Father: {fileID: 1080211796336180140}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -6627,6 +6630,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57661977724c19041ac7c421303a1aa2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  notNetworked: 0
   type: 1
   parent: {fileID: 5015791966552370144}
   man: {fileID: 2242889434718929404}
@@ -13207,6 +13211,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57661977724c19041ac7c421303a1aa2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  notNetworked: 0
   type: 4
   parent: {fileID: 671375678124773425}
   man: {fileID: 2242889434718929404}
@@ -16608,7 +16613,7 @@ RectTransform:
   m_Children:
   - {fileID: 1350727659300837346}
   m_Father: {fileID: 1080211796336180140}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -16622,7 +16627,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7601965963791564161}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 31a19414c41e5ae4aae2af33fee712f6, type: 3}
   m_Name: 
@@ -18843,7 +18848,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0059d4f8e8914e64c80e15919d7d2b99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultSize: 0
+  defaultSizeAboveScalingMenu: 0
+  defaultSizeBelowScalingMenu: 0
   sizePerScalingMenuItem: 40
   maxSize: 400
   scalingParent: {fileID: 2223262302817515282}
