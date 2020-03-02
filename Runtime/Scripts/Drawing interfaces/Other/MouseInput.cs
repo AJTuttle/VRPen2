@@ -21,6 +21,7 @@ namespace VRPen {
 
         // Update is called once per frame
         void Update() {
+            
 
             pressure = 1;
             UIClickDown = Input.GetKeyDown(KeyCode.Mouse1);

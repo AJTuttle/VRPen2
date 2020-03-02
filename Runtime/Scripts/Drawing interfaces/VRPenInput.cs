@@ -163,7 +163,8 @@ namespace VRPen {
                 value = value / scale + 0.5f;
 
                 //set value
-                ((Slider)button).value = value;
+                //((Slider)button).value = value;
+                button.GetComponent<UISlider>().setPos(value, true);
 
             }
 

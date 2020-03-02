@@ -198,7 +198,6 @@ namespace VRPen {
 
         public void draw(NetworkedPlayer player, byte deviceIndex, bool endLine, Color32 color, float x, float y, float pressure, byte canvasId, bool localInput) {
 
-           
             //get canvas
             VectorCanvas canvas = getCanvas(canvasId);
             if (canvas == null) {

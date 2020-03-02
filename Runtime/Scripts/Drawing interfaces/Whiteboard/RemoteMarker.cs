@@ -10,7 +10,8 @@ namespace VRPen {
 		public Transform modelParent;
 		bool snappedToChecker = false;
 
-		private void Update() {
+
+        private void Update() {
 			if (snappedTo) {
 				Vector3 origin = transform.position - snappedTo.forward * raycastDistance;
 				RaycastHit[] hits = Physics.RaycastAll(origin, snappedTo.forward, 1f);
