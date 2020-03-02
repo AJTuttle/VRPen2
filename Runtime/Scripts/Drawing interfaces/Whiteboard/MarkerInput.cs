@@ -22,8 +22,9 @@ namespace VRPen {
 		private float pressure;
 		public float Pressure { get => pressure; }
 
-		//snap vars
-		protected Transform snappedTo;
+        //snap vars
+        [System.NonSerialized]
+        public Transform snappedTo;
         Display snappedDisplay = null;
 		bool snappedToChecker = false;
 

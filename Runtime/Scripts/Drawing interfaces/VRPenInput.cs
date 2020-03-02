@@ -71,7 +71,6 @@ namespace VRPen {
 			updateColorIndicators(currentColor,false);
 
         }
-
         void grabReferences(Scene old, Scene newScene) {
 
             //make sure drawing references are there 

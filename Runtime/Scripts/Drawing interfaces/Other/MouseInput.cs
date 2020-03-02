@@ -32,6 +32,7 @@ namespace VRPen {
             //reset click value at end of frame
             UIClickDown = false;
 
+
         }
 
         protected override InputData getInputData() {
