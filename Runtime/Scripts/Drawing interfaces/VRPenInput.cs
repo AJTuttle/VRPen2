@@ -18,20 +18,13 @@ namespace VRPen {
     public abstract class VRPenInput : InputVisuals {
 		
 
-
-
-		public InputDevice.InputDeviceType deviceType;
-
         //public vars
+		public InputDevice.InputDeviceType deviceType;
         public bool UIClickDown = false;
 
         //drawing data
         float xFloat = 0f;
         float yFloat = 0f;
-
-
-        //stamp data
-        float stampSize=.1f;
 
 
         //hover

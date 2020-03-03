@@ -24,7 +24,7 @@ namespace VRPen {
 
         public Vector3 velocity {
             get {
-                if (lastDrawPoint == null || secondLastDrawPoint == null) {
+                if (currentGraphic != null && currentGraphic is VectorLine && ((VectorLine)currentGraphic).pointCount < 2) {
                     return Vector3.zero;
                 }
                 else {

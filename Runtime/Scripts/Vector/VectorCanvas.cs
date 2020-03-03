@@ -137,8 +137,14 @@ namespace VRPen {
             //if its not the first point, make triangles
             if (currentLine.pointCount > 0) {
 
-                //check if it is a cusp. This will require slightly different indices so that no tris are facing the wrong way
-                bool cusp = Vector3.Angle(device.lastDrawPoint - device.secondLastDrawPoint, drawPoint - device.lastDrawPoint) > 90f;
+                //check if it is a cusp. This will require slightly different indices so that no tris are facing the wrong way (it cant be a cusp if this is the second point)
+                bool cusp;
+                if (currentLine.pointCount > 1) {
+                    cusp = Vector3.Angle(device.lastDrawPoint - device.secondLastDrawPoint, drawPoint - device.lastDrawPoint) > 90f;
+                } 
+                else {
+                    cusp = false;
+                }
 
                 if (cusp) {
                     currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 4);

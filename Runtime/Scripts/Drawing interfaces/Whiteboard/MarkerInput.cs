@@ -28,13 +28,10 @@ namespace VRPen {
         Display snappedDisplay = null;
 		bool snappedToChecker = false;
 
-
 		new void Start() {
             base.Start();
         }
 
-
-        
         void Update() {
             
             //follow a target
@@ -66,17 +63,14 @@ namespace VRPen {
 			}
 		}
 
-
         public override void updateModel(ToolState newState, bool localInput) {
             
-
 			markerModel.SetActive(newState == ToolState.NORMAL);
 			eraserModel.SetActive(newState == ToolState.ERASE);
 			eyedropperModel.SetActive(newState == ToolState.EYEDROPPER);
 
             if (localInput) network.sendInputVisualEvent(deviceData.deviceIndex, currentColor, newState);
 			
-
         }
         protected override InputData getInputData() {
 
