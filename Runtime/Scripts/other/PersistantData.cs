@@ -30,7 +30,7 @@ namespace VRPen {
 
 			//check resources folder for files
 			string[] filePaths = Directory.GetFiles(Application.dataPath + "/Resources/VRpen/Stamps");
-			Debug.Log("Updating stamp file resources: " + filePaths.Length);
+			Debug.Log("Updating stamp file resources: checking " + filePaths.Length + " files");
 
 			//add pictures to stampdata file
 			StreamWriter sw = new StreamWriter(path, true);
@@ -48,8 +48,9 @@ namespace VRPen {
 
 		}
 
+		[MenuItem("VRPen/GenerateResourcesStructure")]
 		public static void generateStampResources() {
-			Debug.Log("Generating resource folder");
+			Debug.Log("Generating resources structure");
 
 			if (!Directory.Exists(Application.dataPath + "/Resources")) {
 				Directory.CreateDirectory(Application.dataPath + "/Resources");
