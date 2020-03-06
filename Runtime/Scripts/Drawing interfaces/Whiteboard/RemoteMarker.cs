@@ -17,9 +17,21 @@ namespace VRPen {
 				RaycastHit[] hits = Physics.RaycastAll(origin, snappedTo.forward, 1f);
 				
 				//move marker pos;
-				if (hits.Length > 0)
-					modelParent.position = hits[0].point;
+				foreach(RaycastHit hit in hits) {
+					
+					Tag tag = hit.collider.GetComponent<Tag>();
+
+					if (tag != null && tag.tag.Equals("Draw_Area")) {
+
+						modelParent.position = hit.point;
+						break;
+
+					}
+
+				}
+
 			}
+
 		}
 
 		private void OnTriggerEnter(Collider other) {
