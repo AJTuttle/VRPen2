@@ -18848,8 +18848,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0059d4f8e8914e64c80e15919d7d2b99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultSizeAboveScalingMenu: 0
-  defaultSizeBelowScalingMenu: 0
+  defaultSizeAboveScalingMenu: 50
+  defaultSizeBelowScalingMenu: 50
   sizePerScalingMenuItem: 40
   maxSize: 400
   scalingParent: {fileID: 2223262302817515282}

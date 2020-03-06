@@ -10,6 +10,7 @@ public class UISlider : MonoBehaviour
     public int defaultSizeBelowScalingMenu;
     public int sizePerScalingMenuItem;
     public int maxSize;
+    
 
     public GameObject scalingParent;
 
@@ -26,15 +27,23 @@ public class UISlider : MonoBehaviour
     public void setPos(float pos, bool localInput) {
 
         //get scale distance
-        float potentialMovement = (defaultSizeAboveScalingMenu + defaultSizeBelowScalingMenu + scalingParent.transform.childCount * sizePerScalingMenuItem) - maxSize;
+        int totalMenuSize = defaultSizeAboveScalingMenu + defaultSizeBelowScalingMenu + scalingParent.transform.childCount * sizePerScalingMenuItem;
+        int potentialMovement = totalMenuSize- maxSize;
+
         if (potentialMovement > 0) {
 
             //get movement
-            float menuPos = pos * potentialMovement;
+            int menuPos = (int)(pos * potentialMovement);
+
+            //get amount of empty space visable
+            int aboveMenuVisable = defaultSizeAboveScalingMenu - menuPos;
+            if (aboveMenuVisable < 0) aboveMenuVisable = 0;
+            int belowMenuVisable = -totalMenuSize + defaultSizeBelowScalingMenu + menuPos + maxSize;
+            if (belowMenuVisable < 0) belowMenuVisable = 0;
 
             //turn off culled menu items
-            int topCulledCount = (int)((menuPos - defaultSizeAboveScalingMenu + 0.2f * sizePerScalingMenuItem) / sizePerScalingMenuItem);
-            int nonCulledCount = (int)(maxSize - defaultSizeAboveScalingMenu - defaultSizeBelowScalingMenu + 0.8f * sizePerScalingMenuItem) / sizePerScalingMenuItem;
+            int topCulledCount = (int)((menuPos - defaultSizeAboveScalingMenu ) / sizePerScalingMenuItem);
+            int nonCulledCount = (int)(maxSize - aboveMenuVisable - belowMenuVisable /*+ sizePerScalingMenuItem*/) / sizePerScalingMenuItem;
 
             for (int x = 0; x < scalingParent.transform.childCount; x++) {
                 if (x < topCulledCount) scalingParent.transform.GetChild(x).gameObject.SetActive(false);
