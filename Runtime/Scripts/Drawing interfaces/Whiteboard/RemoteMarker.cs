@@ -11,7 +11,7 @@ namespace VRPen {
 		bool snappedToChecker = false;
 
 
-        private void Update() {
+        private void LateUpdate() {
 			if (snappedTo) {
 				Vector3 origin = transform.position - snappedTo.forward * raycastDistance;
 				RaycastHit[] hits = Physics.RaycastAll(origin, snappedTo.forward, 1f);

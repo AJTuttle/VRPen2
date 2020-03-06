@@ -16,6 +16,7 @@ namespace VRPen {
         public GameObject eraserModel;
         public Transform followTarget;
         
+
         public AnimationCurve pressureCurve;
         public float pressureDistanceMultiplier = 1;
         protected float raycastDistance = 0.2f;
@@ -27,6 +28,9 @@ namespace VRPen {
         public Transform snappedTo;
         Display snappedDisplay = null;
 		bool snappedToChecker = false;
+
+        Vector3 snappedPos;
+        bool snappedPosExists;
 
 		new void Start() {
             base.Start();
@@ -63,6 +67,18 @@ namespace VRPen {
 			}
 		}
 
+
+        private void LateUpdate() {
+        
+            //snapping is in lateupdate to avoid the snapped happening before the marker is moved in the frame
+            if (snappedPosExists) {
+                modelParent.position = snappedPos;
+                snappedPosExists = false;
+            } else {
+                modelParent.localPosition = Vector3.zero;
+            }
+        }
+
         public override void updateModel(ToolState newState, bool localInput) {
             
 			markerModel.SetActive(newState == ToolState.NORMAL);
@@ -87,6 +103,12 @@ namespace VRPen {
             //detect hit based off priority
             raycastPriorityDetection(ref data, hits);
 
+            //break if there is nothing detected
+            if (data.hit.collider == null) {
+                Debug.LogWarning("Marker is inside of the snap zone, but it couldnt find anything to snap to when raycasting. IDK if this will cause an issue. Be wary.");
+                return data;
+            }
+
 
             //pressure
             float rawPressure = Mathf.Clamp01(pressureDistanceMultiplier * ((raycastDistance - data.hit.distance) / raycastDistance));
@@ -98,7 +120,8 @@ namespace VRPen {
             data.display = snappedDisplay;
 
             //move marker pos;
-            modelParent.position = data.hit.point;
+            snappedPos = data.hit.point;
+            snappedPosExists = true;
 
             return data;
 
