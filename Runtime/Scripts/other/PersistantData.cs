@@ -31,6 +31,7 @@ namespace VRPen {
 			//check resources folder for files
 			string[] filePaths = Directory.GetFiles(Application.dataPath + "/Resources/VRpen/Stamps");
 			Debug.Log("Updating stamp file resources: checking " + filePaths.Length + " files");
+            int count = 0;
 
 			//add pictures to stampdata file
 			StreamWriter sw = new StreamWriter(path, true);
@@ -39,11 +40,14 @@ namespace VRPen {
 				if (str.Substring(str.Length - 4).Equals(".png") || str.Substring(str.Length - 4).Equals(".jpg")) {
 					str = str.Substring(0, str.Length - 4);
 					sw.WriteLine(str);
+                    count++;
 				}
 			}
+            Debug.Log("Updating stamp file resources: found " + count + " files");
 
-			//end
-			sw.Close();
+
+            //end
+            sw.Close();
 
 
 		}

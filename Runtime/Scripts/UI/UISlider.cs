@@ -41,9 +41,12 @@ public class UISlider : MonoBehaviour
             int belowMenuVisable = -totalMenuSize + defaultSizeBelowScalingMenu + menuPos + maxSize;
             if (belowMenuVisable < 0) belowMenuVisable = 0;
 
+            Debug.Log(aboveMenuVisable + "  " + belowMenuVisable);
+
             //turn off culled menu items
             int topCulledCount = (int)((menuPos - defaultSizeAboveScalingMenu ) / sizePerScalingMenuItem);
-            int nonCulledCount = (int)(maxSize - aboveMenuVisable - belowMenuVisable /*+ sizePerScalingMenuItem*/) / sizePerScalingMenuItem;
+            if (topCulledCount < 0) topCulledCount = 0;
+            int nonCulledCount = (int)(maxSize - aboveMenuVisable - belowMenuVisable + sizePerScalingMenuItem) / sizePerScalingMenuItem;
 
             for (int x = 0; x < scalingParent.transform.childCount; x++) {
                 if (x < topCulledCount) scalingParent.transform.GetChild(x).gameObject.SetActive(false);
