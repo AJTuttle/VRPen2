@@ -37,7 +37,6 @@ namespace VRPen {
 			StreamWriter sw = new StreamWriter(path, true);
 			for (int x = 0; x < filePaths.Length; x++) {
 				string str = filePaths[x].Substring(Application.dataPath.Length + "\\Resources".Length + 1);
-                Debug.Log(str);
 				if (str.Substring(str.Length - 4).Equals(".png") || str.Substring(str.Length - 4).Equals(".jpg")) {
 					str = str.Substring(0, str.Length - 4);
 					sw.WriteLine(str);

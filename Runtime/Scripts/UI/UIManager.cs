@@ -40,6 +40,7 @@ namespace VRPen {
 		public GameObject clearMenuParent;
 		public GameObject menuArrow;
 		public GameObject movableMenuParent;
+        public UISlider stampExplorerSlider;
 		public Display display;
 		
         public Transform stampUIParent;
@@ -316,6 +317,7 @@ namespace VRPen {
                             data.Add(stampExplorerParent.activeSelf ? (byte)1 : (byte)0);
                             data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].x));
                             data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].y));
+                            data.AddRange(BitConverter.GetBytes(stampExplorerSlider.slider.value));
                             break;
                         case PacketHeader.Clear:
                             data.Add(clearMenuParent.activeSelf ? (byte)1 : (byte)0);
@@ -395,6 +397,7 @@ namespace VRPen {
                         }
                         Vector2 StampPos = new Vector2(ReadFloat(data, ref offset), ReadFloat(data, ref offset));
                         packetHeaderGrabbables[(int)PacketHeader.Stamp].setExactPos(StampPos.x, StampPos.y);
+                        stampExplorerSlider.setPos(ReadFloat(data, ref offset),false);
                         break;
                     case PacketHeader.Clear:
                         bool clearEn = ReadByte(data, ref offset) == 1 ? true : false;
@@ -454,6 +457,7 @@ namespace VRPen {
         }
 
         public void stampPassthrough(VRPenInput input, int stampId) {
+            stampExplorerToggle(true);
             display.stampPassthrough(input, stampUIParent, stampId);
         }
         
