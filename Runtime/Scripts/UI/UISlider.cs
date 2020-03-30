@@ -6,9 +6,13 @@ using UnityEngine.UI;
 public class UISlider : MonoBehaviour
 {
 
+    [Tooltip("The slidable area above the list of menu items")]
     public int defaultSizeAboveScalingMenu;
+    [Tooltip("The slidable area below the list of menu items")]
     public int defaultSizeBelowScalingMenu;
+    [Tooltip("The size (height) of each menu item")]
     public int sizePerScalingMenuItem;
+    [Tooltip("Max size (height) of the entire sliding area that is visable at any one time (window size)")]
     public int maxSize;
     
 
