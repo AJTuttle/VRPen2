@@ -325,7 +325,7 @@ namespace VRPen {
                             data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].y));
                             break;
                         case PacketHeader.MovableMenu:
-                            data.Add(clearMenuParent.activeSelf ? (byte)1 : (byte)0);
+                            data.Add(movableMenuParent.activeSelf ? (byte)1 : (byte)0);
                             data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].x));
                             data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].y));
                             break;
