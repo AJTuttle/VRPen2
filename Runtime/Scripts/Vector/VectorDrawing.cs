@@ -382,6 +382,7 @@ namespace VRPen {
 		}
 
         void endLineData(InputDevice device) {
+            
 
             //turn off last mesh for render texture
             if (device.currentGraphic != null) {

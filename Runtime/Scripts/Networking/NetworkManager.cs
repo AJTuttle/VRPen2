@@ -201,7 +201,7 @@ namespace VRPen {
             }
 
             //checks for data
-            if (xFloats.Length <= 1) {
+            if (xFloats.Length < 1) {
                 return null;
             }
 
@@ -664,12 +664,17 @@ namespace VRPen {
 
                 //end line or draw
                 if (endLine == 1) {
+                    
                     vectorMan.endLineEvent(player, deviceIndex, false);
                 }
                 else {
 
                     if (pressure > 0) {
                         vectorMan.draw(player, deviceIndex, (endLine == 1) ? true : false, color, xFloat, yFloat, pressure, canvasId, false);
+                    }
+
+                    else {
+                        //Debug.Log("Testing error state 1");
                     }
 
                     //update cursor at the last input
