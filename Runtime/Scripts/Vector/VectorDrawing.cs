@@ -9,7 +9,6 @@ namespace VRPen {
     public class VectorDrawing : MonoBehaviour {
 
         
-        public Texture[] canvasBackgrounds;
 
         //scripts
         StarTablet tablet;
@@ -24,14 +23,16 @@ namespace VRPen {
 
         //public vars
         [Space(5)]
-        [Header("Important variables to set")]
+        [Header("       Important variables to set")]
         [Space(5)]
         [Tooltip("Make sure to add any displays in the scene here")]
         public List<Display> displays = new List<Display>();
         [Tooltip("Input devices here will automatically be added to code base, any local devices not here will need to be added using addLocalInputDevice()")]
         public List<VRPenInput> localInputDevices = new List<VRPenInput>();
-        [Tooltip("In build, canvases will autosave on applicationQuit and scenchange event.")]
-        public bool autoSaveOnExit;
+        [Tooltip("A constant background that gets spawned with certain canvas IDs (the canvas ID is the index of this array). Don't fret if this list doesnt match the length of canvases.")]
+        public Texture[] canvasBackgrounds;
+        [Tooltip("In build, canvases will autosave on applicationQuit and scenechange event.")]
+        public bool autoSavePNGOnExit;
         [Tooltip("Max number of unique canvases stored")]
         public int MAX_CANVAS_COUNT;
         [Tooltip("The render area is where the meshs for the drawing is constructed and rendered, this var sets its location in the scene")]
@@ -45,10 +46,11 @@ namespace VRPen {
                 return ((float)initalPublicCanvasPixelWidth / (float)initalPublicCanvasPixelHeight);
             }
         }
+        
 
 
         [Space(5)]
-        [Header("Line Smoothing and compression parameters")]
+        [Header("       Line Smoothing and compression parameters")]
         [Space(15)]
         [Tooltip("Minimum distance from the last drawn point before a new one is registered, this primarilly is used for performance but also helps a bit with smoothing.")]
         [Range(0f, 0.1f)]
@@ -57,20 +59,20 @@ namespace VRPen {
             "Recommended values are between 135 (high performance) and 170 (high fidelity). Warning, values >= 180 will not work and may cause infinite loops.")]
         [Range(90, 175)]
         public float minCurveAngle;
-        [Tooltip("For each new line segment, if its angle to the previous line segment is lower than this then it is a cusp. This means that it will not do slope smoothing.")]
+        [Tooltip("For each new line segment, if its angle to the previous line segment is lower than this then it is a cusp. This means that it will not do slope smoothing. Recommended values between 40 and 80.")]
         [Range(0, 90)]
         public float maxCuspAngle;
 
         [Space(5)]
-        [Header("Optimization Parameters")]
+        [Header("       Optimization Parameters")]
         [Space(15)]
-        [Tooltip("How many points are allocated for a line at a time (ie. if this is 50 then every 50 points in a line, new space in memory would be allocated for the next 50. " +
-            "This is an alternative to doing it every time a new point is allocated)")]
+        [Tooltip("How many points are allocated at a time in the line data structure (ie. if this is 50 then every 50 points in a line, 50 new spaces will be allocated. " +
+            "This is used to avoid having to copy array values into a new longer array every single time a new point is allocated)")]
         public int lineDataStepSize;
 
 
         [Space(5)]
-        [Header("Variables that don't need to be changed")]
+        [Header("       Variables that don't need to be changed")]
         [Space(15)]
         public GameObject quadPrefab;
         public Shader depthShaderColor;
@@ -147,7 +149,7 @@ namespace VRPen {
 
         private void OnSceneChange(Scene oldScene, Scene newScene) {
             #if !UNITY_EDITOR
-            if (autoSaveOnExit) {
+            if (autoSavePNGOnExit) {
                 foreach (VectorCanvas canvas in canvases) {
                     saveImage(canvas.canvasId);
                 }
@@ -158,7 +160,7 @@ namespace VRPen {
 		
 		private void OnApplicationQuit() {
             #if !UNITY_EDITOR
-            if (autoSaveOnExit) {
+            if (autoSavePNGOnExit) {
                 foreach (VectorCanvas canvas in canvases) {
                     saveImage(canvas.canvasId);
                 }

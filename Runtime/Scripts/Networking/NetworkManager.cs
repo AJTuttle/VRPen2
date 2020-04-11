@@ -30,7 +30,7 @@ namespace VRPen {
         UIManager UIMan;
 
         [Space(5)]
-        [Header("Important variables to set")]
+        [Header("       Important variables to set")]
         [Space(5)]
         [Tooltip("If enabled, this script will attempt to invoke an event for sending a connection packet shortly after start " +
             "instead of waited for the sendConnect method to be called")]
@@ -55,9 +55,15 @@ namespace VRPen {
         [NonSerialized]
         public bool sentConnect = false;
 
+
+        //cache packets
+        private List<byte[]> packetCache = new List<byte[]>();
+        private List<ulong> packetSenders = new List<ulong>();
+        public bool cachePackets;
+
         //prefabs
         [Space(5)]
-        [Header("Variables that don't need to be changed")]
+        [Header("       Variables that don't need to be changed")]
         [Space(15)]
         public GameObject remoteMarkerPrefab;
         public GameObject remoteTabletPrefab;
@@ -72,10 +78,6 @@ namespace VRPen {
         private byte[] canvasIds = new byte[1];
         private byte[] deviceIndices = new byte[1];
 
-		//cache packets
-		private List<byte[]> packetCache = new List<byte[]>();
-		private List<ulong> packetSenders = new List<ulong>();
-		public bool cachePackets;
 
         //event
         public delegate void VRPenEvent(byte[] packet);
