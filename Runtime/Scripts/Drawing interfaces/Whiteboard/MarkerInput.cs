@@ -11,9 +11,6 @@ namespace VRPen {
 
         //public varz
         public Transform modelParent;
-        public GameObject markerModel;
-        public GameObject eyedropperModel;
-        public GameObject eraserModel;
         public Transform followTarget;
         
 
@@ -78,16 +75,7 @@ namespace VRPen {
                 modelParent.localPosition = Vector3.zero;
             }
         }
-
-        public override void updateModel(ToolState newState, bool localInput) {
-            
-			markerModel.SetActive(newState == ToolState.NORMAL);
-			eraserModel.SetActive(newState == ToolState.ERASE);
-			eyedropperModel.SetActive(newState == ToolState.EYEDROPPER);
-
-            if (localInput) network.sendInputVisualEvent(deviceData.deviceIndex, currentColor, newState);
-			
-        }
+        
         protected override InputData getInputData() {
 
             //init returns

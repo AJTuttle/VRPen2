@@ -11,6 +11,10 @@ namespace VRPen {
         protected VectorDrawing vectorMan;
         protected NetworkManager network;
 
+        public GameObject markerModel;
+        public GameObject eyedropperModel;
+        public GameObject eraserModel;
+
         public List<Renderer> colorIndicatorRenderers;
 		public List<int> colorIndicatorRenderersIndex;
 
@@ -30,14 +34,29 @@ namespace VRPen {
 
         protected void Start() {
 
+            //grab refs
             vectorMan = FindObjectOfType<VectorDrawing>();
             network = FindObjectOfType<NetworkManager>();
+            
+            //set colors
+            updateColorIndicators(currentColor, false);
+
         }
 
 
-        public virtual void updateModel(VRPen.VRPenInput.ToolState newState, bool localInput) {
-		
-		}
+        public void updateModel(VRPen.VRPenInput.ToolState newState, bool localInput) {
+
+            //change state
+            state = newState;
+
+            //switch models
+            if (markerModel != null) markerModel.SetActive(newState == ToolState.NORMAL);
+            if (eraserModel != null) eraserModel.SetActive(newState == ToolState.ERASE);
+            if (eyedropperModel != null) eyedropperModel.SetActive(newState == ToolState.EYEDROPPER);
+
+            //network
+            if (localInput) network.sendInputVisualEvent(deviceData.deviceIndex, currentColor, newState);
+        }
 
 		public void updateColorIndicators(Color32 color, bool localInput) {
 			if (colorIndicatorRenderers.Count != colorIndicatorRenderersIndex.Count) {

@@ -89,7 +89,7 @@ GameObject:
   - component: {fileID: 8217082110612787810}
   - component: {fileID: 8217082110612787740}
   m_Layer: 0
-  m_Name: Remote Marker
+  m_Name: Marker Remote
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -122,6 +122,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2589b9acfb76ff94099c88141db52c58, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  markerModel: {fileID: 8217082111141914762}
+  eyedropperModel: {fileID: 7813515921519064916}
+  eraserModel: {fileID: 1939763198835483526}
+  colorIndicatorRenderers:
+  - {fileID: 8217082111144113738}
+  - {fileID: 7813515921521256852}
+  colorIndicatorRenderersIndex: 0100000002000000
+  snappedTo: {fileID: 0}
   modelParent: {fileID: 8217082110764964033}
 --- !u!54 &8217082110612787810
 Rigidbody:
@@ -258,6 +266,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cd5b00ab6baa6e04daeed7e028d8dfbe, type: 3}
+--- !u!1 &1939763198835483526 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100000, guid: cd5b00ab6baa6e04daeed7e028d8dfbe,
+    type: 3}
+  m_PrefabInstance: {fileID: 1939763198835516710}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1939763198835130278 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: cd5b00ab6baa6e04daeed7e028d8dfbe,
@@ -337,9 +351,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8f758d676a1597c4aa5b829420e63df6, type: 3}
+--- !u!1 &7813515921519064916 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100000, guid: 8f758d676a1597c4aa5b829420e63df6,
+    type: 3}
+  m_PrefabInstance: {fileID: 7813515921519096308}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7813515921519487860 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 8f758d676a1597c4aa5b829420e63df6,
+    type: 3}
+  m_PrefabInstance: {fileID: 7813515921519096308}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &7813515921521256852 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2300000, guid: 8f758d676a1597c4aa5b829420e63df6,
     type: 3}
   m_PrefabInstance: {fileID: 7813515921519096308}
   m_PrefabAsset: {fileID: 0}
@@ -424,9 +450,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d307260758d85c54b98ca02a9be194a9, type: 3}
+--- !u!1 &8217082111141914762 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100000, guid: d307260758d85c54b98ca02a9be194a9,
+    type: 3}
+  m_PrefabInstance: {fileID: 8217082111141948970}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8217082111141819562 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: d307260758d85c54b98ca02a9be194a9,
+    type: 3}
+  m_PrefabInstance: {fileID: 8217082111141948970}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &8217082111144113738 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2300000, guid: d307260758d85c54b98ca02a9be194a9,
     type: 3}
   m_PrefabInstance: {fileID: 8217082111141948970}
   m_PrefabAsset: {fileID: 0}

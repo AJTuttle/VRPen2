@@ -60,8 +60,6 @@ namespace VRPen {
             //get script var
             SceneManager.activeSceneChanged += grabReferences;
 
-			//set colors
-			updateColorIndicators(currentColor,false);
 
         }
         void grabReferences(Scene old, Scene newScene) {
@@ -85,8 +83,6 @@ namespace VRPen {
 
 
         public void switchTool(ToolState newState) {
-            //change state
-            state = newState;
 
 			updateModel(newState, true);
         }

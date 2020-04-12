@@ -122,18 +122,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4101cd3e410578e45ada28cc748abf47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  markerModel: {fileID: 8217082111141914762}
+  eyedropperModel: {fileID: 7813515921519064916}
+  eraserModel: {fileID: 1939763198835483526}
   colorIndicatorRenderers:
   - {fileID: 8217082111144113738}
   - {fileID: 7813515921521256852}
-  colorIndicatorRenderersIndex: 0100000001000000
+  colorIndicatorRenderersIndex: 0100000002000000
   deviceType: 0
   UIClickDown: 0
   stampPrefab: {fileID: 2441548749050361720, guid: cbb90edd4f2d39f4abac245a76f78a78,
     type: 3}
   modelParent: {fileID: 8217082110764964033}
-  markerModel: {fileID: 8217082111141914762}
-  eyedropperModel: {fileID: 7813515921519064916}
-  eraserModel: {fileID: 1939763198835483526}
   followTarget: {fileID: 0}
   pressureCurve:
     serializedVersion: 2
