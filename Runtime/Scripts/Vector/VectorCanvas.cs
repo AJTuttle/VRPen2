@@ -33,7 +33,7 @@ namespace VRPen {
             canvasId = id;
 
             //set up the render texture stuff
-            Transform renderArea = GameObject.Instantiate(renderingPrefab, drawingMan.renderAreaOrigin + new Vector3(0,0,canvasId), Quaternion.identity).transform;
+            Transform renderArea = GameObject.Instantiate(renderingPrefab, drawingMan.renderAreaOrigin + new Vector3(0,0,canvasId*2), Quaternion.identity).transform;
             renderCam = renderArea.GetChild(0).GetComponent<Camera>();
 
             //instance material and make the render texture pipe to it
