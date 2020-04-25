@@ -1,5 +1,17 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!114 &4900158979731682446
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8205674368288535308}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 684b937960b4a874ca2f4ef78ad1292a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &5547515903824979686
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10,7 +22,7 @@ PrefabInstance:
     - target: {fileID: 478674151598599767, guid: 2a8f4263f6ac653428056abb9e469392,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -3.04
       objectReference: {fileID: 0}
     - target: {fileID: 478674151598599767, guid: 2a8f4263f6ac653428056abb9e469392,
         type: 3}
@@ -20,12 +32,12 @@ PrefabInstance:
     - target: {fileID: 478674151598599767, guid: 2a8f4263f6ac653428056abb9e469392,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 2.65
       objectReference: {fileID: 0}
     - target: {fileID: 478674151598599767, guid: 2a8f4263f6ac653428056abb9e469392,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 478674151598599767, guid: 2a8f4263f6ac653428056abb9e469392,
         type: 3}
@@ -92,6 +104,11 @@ PrefabInstance:
       propertyPath: m_AnchorMax.x
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3327360714095440671, guid: 2a8f4263f6ac653428056abb9e469392,
+        type: 3}
+      propertyPath: m_ScaleFactor
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 3413996729719402737, guid: 2a8f4263f6ac653428056abb9e469392,
         type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -120,7 +137,7 @@ PrefabInstance:
     - target: {fileID: 6696130297283601431, guid: 2a8f4263f6ac653428056abb9e469392,
         type: 3}
       propertyPath: m_PlaneDistance
-      value: 0.5
+      value: 0.31
       objectReference: {fileID: 0}
     - target: {fileID: 6791362036789417462, guid: 2a8f4263f6ac653428056abb9e469392,
         type: 3}
@@ -199,3 +216,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2a8f4263f6ac653428056abb9e469392, type: 3}
+--- !u!1 &8205674368288535308 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4403628793261774314, guid: 2a8f4263f6ac653428056abb9e469392,
+    type: 3}
+  m_PrefabInstance: {fileID: 5547515903824979686}
+  m_PrefabAsset: {fileID: 0}
