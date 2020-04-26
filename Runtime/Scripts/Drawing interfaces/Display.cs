@@ -6,6 +6,9 @@ namespace VRPen {
 
     public class Display : MonoBehaviour {
 
+
+        public Shader shaderOverride;
+
         public int pixelWidth;
         public int pixelHeight;
         public float aspectRatio {

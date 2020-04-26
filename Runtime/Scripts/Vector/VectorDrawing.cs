@@ -583,6 +583,7 @@ namespace VRPen {
                 quad.transform.localScale = Vector3.one;
                 quad.name = "" + canvasId;
                 quad.GetComponent<Renderer>().material = temp.GetComponent<Renderer>().material;
+                if (display.shaderOverride != null) quad.GetComponent<Renderer>().material.shader = display.shaderOverride;
 
                 //turn off renderer
                 quad.GetComponent<Renderer>().enabled = false;

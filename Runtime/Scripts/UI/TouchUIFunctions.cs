@@ -12,6 +12,7 @@ namespace VRPen {
     public class TouchUIFunctions : MonoBehaviour {
 
         public GameObject displayObj;
+        public CanvasScaler canvasScale;
 
         void Start() {
 
@@ -22,9 +23,15 @@ namespace VRPen {
         }
 
         public void changeCanvasSize(bool increase) {
-            float increment = increase ? 0.1f : -0.1f;
+            float increment = increase ? 0.05f : -0.05f;
             displayObj.transform.localScale += new Vector3(increment, increment, increment);
         }
+
+        public void changeUIScale(bool increase) {
+            float increment = increase ? 0.05f : -0.05f;
+            canvasScale.scaleFactor += increment;
+        }
+
     }
 
 }
