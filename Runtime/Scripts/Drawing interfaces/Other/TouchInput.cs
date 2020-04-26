@@ -15,6 +15,12 @@ namespace VRPen {
 
         public Renderer colorMat;
 
+        //canvas tranlation vars
+        public bool canvasMove = false;
+        public GameObject displayObj;
+        public bool firstCanvasMoveInput = true;
+        Vector2 lastCanvasMovePos;
+
         new void Start() {
             
             base.Start();
@@ -33,7 +39,10 @@ namespace VRPen {
                 UIClickDown = true;
                 input();
             }
-            else idle();
+            else {
+                firstCanvasMoveInput = true;
+                idle();
+            }
             
             //reset click value at end of frame
             UIClickDown = false;
@@ -54,10 +63,30 @@ namespace VRPen {
             
             //detect hit based off priority
             raycastPriorityDetection(ref data, hits);
-            
 
             //no hit found
             if (data.hover == HoverState.NONE) {
+                return data;
+            }
+            //if we need to move th canvas
+            else if (data.hover == HoverState.DRAW && canvasMove) {
+
+                
+
+                if (firstCanvasMoveInput) {
+                    firstCanvasMoveInput = false;
+                }
+                else {
+                    Vector3 delta = new Vector3(data.hit.point.x - lastCanvasMovePos.x, data.hit.point.y - lastCanvasMovePos.y, 0);
+                    displayObj.transform.position += delta;
+                }
+
+                //Warning, this depends on the canvas rotation in global space being quaternion.identity.
+                lastCanvasMovePos = new Vector2(data.hit.point.x, data.hit.point.y);
+
+
+                //we dont wanna add any draw points so deselect the canvas
+                data.hover = HoverState.NONE;
                 return data;
             }
 

@@ -13,6 +13,7 @@ namespace VRPen {
 
         public GameObject displayObj;
         public CanvasScaler canvasScale;
+        public TouchInput touchInput;
 
         void Start() {
 
@@ -32,6 +33,9 @@ namespace VRPen {
             canvasScale.scaleFactor += increment;
         }
 
+        public void toggleCanvasMove(bool toggle) {
+            touchInput.canvasMove = toggle;
+        }
     }
 
 }

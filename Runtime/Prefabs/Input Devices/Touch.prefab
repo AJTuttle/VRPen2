@@ -48,10 +48,13 @@ MonoBehaviour:
   eraserModel: {fileID: 0}
   colorIndicatorRenderers: []
   colorIndicatorRenderersIndex: 
-  deviceType: 0
+  deviceType: 2
   UIClickDown: 0
   stampPrefab: {fileID: 0}
   cam: {fileID: 0}
   pressure: 0
   display: {fileID: 0}
   colorMat: {fileID: 0}
+  canvasMove: 0
+  displayObj: {fileID: 0}
+  firstCanvasMoveInput: 1

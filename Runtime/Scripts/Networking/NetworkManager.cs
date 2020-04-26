@@ -41,6 +41,8 @@ namespace VRPen {
         public bool syncDisplayUIs;
         [Tooltip("Period of ui syncing (does not do anything if uisync is disabled")]
         public float UI_SYNC_PERIOD;
+        [Tooltip("Where to put the spawned remote devices in global space")]
+        public Vector3 spawnRemoteDevicesLocation;
         //[Tooltip("Should networkMan instantiate remote input device or simple make a data struct")]
         //public bool instantiateRemoteInputDevices;
 
@@ -814,6 +816,7 @@ namespace VRPen {
 
                 GameObject obj = null;
 
+
                 switch (type) {
                     case InputDevice.InputDeviceType.Marker:
                         obj = Instantiate(remoteMarkerPrefab);
@@ -825,6 +828,7 @@ namespace VRPen {
                         obj = Instantiate(remoteMousePrefab);
                         break;
                 }
+                obj.transform.position = spawnRemoteDevicesLocation;
                 
                 InputDevice device = new InputDevice();
                 device.deviceIndex = index;

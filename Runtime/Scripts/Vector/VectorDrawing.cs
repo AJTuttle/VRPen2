@@ -169,7 +169,7 @@ namespace VRPen {
 		}
 
 
-            void hotkeys() {
+        void hotkeys() {
             //hotkeys
             if (Input.GetKeyDown(KeyCode.U)) {
                 undo(network.getLocalPlayer(), true);
