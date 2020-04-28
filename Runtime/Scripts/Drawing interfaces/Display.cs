@@ -5,7 +5,7 @@ using UnityEngine;
 namespace VRPen {
 
     public class Display : MonoBehaviour {
-
+         
 
         public Shader shaderOverride;
 
