@@ -65,7 +65,7 @@ namespace VRPen {
                 }
 
                 //spawn local canvase
-                vectorMan.addCanvas(false, false, this); ;
+                vectorMan.addCanvas(false, false, DisplayId, pixelWidth, pixelHeight);
 
 
                 //switch to that canvas
@@ -86,7 +86,7 @@ namespace VRPen {
                         yield break;
                     }
                     //spawn local canvase
-                    vectorMan.addCanvas(false, true, null); ;
+                    vectorMan.addCanvas(false, true, VectorDrawing.INITIAL_PUBLIC_CANVAS_DISPLAY_ID, vectorMan.initalPublicCanvasPixelWidth, vectorMan.initalPublicCanvasPixelHeight);
                     
                     //switch to that canvas
                     swapCurrentCanvas((byte)(vectorMan.canvases.Count - 1), false);
@@ -97,7 +97,7 @@ namespace VRPen {
         }
 
         public void addCanvasPassthrough(bool isPublic) {
-            vectorMan.addCanvas(true, isPublic, this);
+            vectorMan.addCanvas(true, isPublic, DisplayId, pixelWidth, pixelHeight);
             swapCurrentCanvas((byte)(vectorMan.canvases.Count - 1), true);
         }
 

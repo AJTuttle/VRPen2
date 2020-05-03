@@ -376,7 +376,7 @@ namespace VRPen {
 
         }
 
-        public void sendCanvasAddition(bool isPublic, Display originDisplay) {
+        public void sendCanvasAddition(bool isPublic, byte originDisplayID, int width, int height) {
 
             //dont send if you havent connected to the other users yet
             if (!sentConnect) {
@@ -391,7 +391,9 @@ namespace VRPen {
             sendBufferList.Add((byte)PacketType.AddCanvas);
             sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
             sendBufferList.Add(isPublic?(byte)1:(byte)0);
-            sendBufferList.Add(originDisplay.DisplayId);
+            sendBufferList.Add(originDisplayID);
+            sendBufferList.AddRange(BitConverter.GetBytes(width));
+            sendBufferList.AddRange(BitConverter.GetBytes(height));
 
 
             // convert to an array
@@ -715,10 +717,11 @@ namespace VRPen {
             //get data
             bool isPublic = ReadByte(packet, ref offset) == 1;
             byte displayId = ReadByte(packet, ref offset);
-            Display display = vectorMan.getDisplay(displayId);
+            int width = ReadInt(packet, ref offset);
+            int height = ReadInt(packet, ref offset);
 
             //add board
-            vectorMan.addCanvas(false, isPublic, display);
+            vectorMan.addCanvas(false, isPublic, displayId, width, height);
 
         }
 

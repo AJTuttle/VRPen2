@@ -11,9 +11,9 @@ namespace VRPen {
 
         public byte canvasId;
         public int renderQueueCounter = 1;
+        public float aspectRatio;
         
         public bool isPublic;
-        public Display originDisplay;
 
         //render texture stuff
         public RenderTexture renderTexturePresets;
@@ -31,6 +31,7 @@ namespace VRPen {
             network = net;
             drawingMan = man;
             canvasId = id;
+            aspectRatio = ((float)width) / ((float)height);
 
             //set up the render texture stuff
             Transform renderArea = GameObject.Instantiate(renderingPrefab, drawingMan.renderAreaOrigin + new Vector3(0,0,canvasId*2), Quaternion.identity).transform;

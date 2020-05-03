@@ -20,6 +20,8 @@ namespace VRPen {
 
         [System.NonSerialized]
         public int initialPublicCanvasId = -1;
+        [System.NonSerialized]
+        public const byte INITIAL_PUBLIC_CANVAS_DISPLAY_ID = 255;
 
         //public vars
         [Space(5)]
@@ -537,34 +539,34 @@ namespace VRPen {
         }
 
         //if originDisplay is null, this is the initial public canvas
-        public void addCanvas(bool localInput, bool isPublic, Display originDisplay) {
+        //if origindisplayID is 255, it is the initial public canvas
+        public void addCanvas(bool localInput, bool isPublic, byte originDisplayID, int pixelWidth, int pixelHeight) {
 
-            //if a canvas is added with no origin display even though a global public canvas has already been setup
-            if (originDisplay == null && initialPublicCanvasId != -1) {
-                Debug.LogWarning("Failed to add a canvas when there is no originDisplay (the only time this works is when the initial public canvas is added)");
-                return;
-            }
-
+            //ERROR CASES
+            //if too many canvses
             if (getCanvasListCount() >= MAX_CANVAS_COUNT) {
                 Debug.LogWarning("Failed to add a canvas when max canvas count reached already");
                 return;
             }
-
+            //if a canvas is added as the inital public canvs, but one has already been instantiated
+            if (originDisplayID == INITIAL_PUBLIC_CANVAS_DISPLAY_ID && initialPublicCanvasId != -1) {
+                Debug.LogWarning("Failed to add a canvas when there is no originDisplay (the only time this works is when the initial public canvas is added)");
+                return;
+            }
+            
             //get id
             byte canvasId = (byte)canvases.Count;
 
             //if this is the inital public canvas
-            if (originDisplay == null) {
+            if (originDisplayID == INITIAL_PUBLIC_CANVAS_DISPLAY_ID) {
                 initialPublicCanvasId = canvasId;
             }
 
             //make canvas
             VectorCanvas temp = GameObject.Instantiate(canvasPrefab, canvasParent).GetComponent<VectorCanvas>();
-            if (originDisplay == null) temp.instantiate(this, network, canvasId, initalPublicCanvasPixelWidth, initalPublicCanvasPixelHeight);
-            else temp.instantiate(this, network, canvasId, originDisplay.pixelWidth, originDisplay.pixelHeight);
+            temp.instantiate(this, network, canvasId, pixelWidth, pixelHeight);
             temp.GetComponent<Renderer>().enabled = false;
             temp.isPublic = isPublic;
-            temp.originDisplay = originDisplay;
 
             
             //add to list
@@ -573,7 +575,7 @@ namespace VRPen {
             //make copys of texture
             foreach (Display display in displays) {
                 
-                if (!isPublic && display != originDisplay && !display.fullAccess) continue;
+                if (!isPublic && display.DisplayId != originDisplayID && !display.fullAccess) continue;
 
 	            GameObject quad = Instantiate(quadPrefab);
 				Destroy(quad.GetComponent<Collider>());
@@ -602,7 +604,7 @@ namespace VRPen {
             if (localInput) {
 
                 //network it (make sure you dont send the default board)
-                if (canvasId != 0) network.sendCanvasAddition(isPublic, originDisplay);
+                if (canvasId != 0) network.sendCanvasAddition(isPublic, originDisplayID, pixelWidth, pixelHeight);
             }
             
         }
