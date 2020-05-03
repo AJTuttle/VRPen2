@@ -314,6 +314,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30aa0945ad768554d86bd64a5d3a1979, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  fullAccess: 1
   shaderOverride: {fileID: 4800000, guid: d31b42be86a5ae14f8c8634c95bc3d1c, type: 3}
   pixelWidth: 600
   pixelHeight: 360

@@ -572,8 +572,8 @@ namespace VRPen {
             
             //make copys of texture
             foreach (Display display in displays) {
-
-                if (!isPublic && display != originDisplay) continue;
+                
+                if (!isPublic && display != originDisplay && !display.fullAccess) continue;
 
 	            GameObject quad = Instantiate(quadPrefab);
 				Destroy(quad.GetComponent<Collider>());

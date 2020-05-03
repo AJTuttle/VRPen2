@@ -5,7 +5,9 @@ using UnityEngine;
 namespace VRPen {
 
     public class Display : MonoBehaviour {
-         
+
+        [Tooltip("Full access means that the display can see all canvases whether or not they are private")]
+        public bool fullAccess;
 
         public Shader shaderOverride;
 
