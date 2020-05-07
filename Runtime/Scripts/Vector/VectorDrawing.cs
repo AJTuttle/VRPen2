@@ -542,7 +542,13 @@ namespace VRPen {
 
         //if originDisplay is null, this is the initial public canvas
         //if origindisplayID is 255, it is the initial public canvas
-        public void addCanvas(bool localInput, bool isPublic, byte originDisplayID, int pixelWidth, int pixelHeight, bool isPreset) {
+        //the canvas id should only be used for remote additions (255 is null state)
+        public void addCanvas(bool localInput, bool isPublic, byte originDisplayID, int pixelWidth, int pixelHeight, bool isPreset, byte canvasId) {
+
+            //if there is no canvasId, give it the most recent
+            if (canvasId == 255) canvasId = (byte)canvases.Count;
+
+            if (getCanvas(canvasId) != null) return;
 
             //if the canvas addition is a remote preset, ignore it if not acting as a client.
             if (!localInput && isPreset && !actAsRemoteClient) {
@@ -561,8 +567,6 @@ namespace VRPen {
                 return;
             }
             
-            //get id
-            byte canvasId = (byte)canvases.Count;
 
             //if this is the inital public canvas
             if (originDisplayID == INITIAL_PUBLIC_CANVAS_DISPLAY_ID) {
@@ -603,20 +607,22 @@ namespace VRPen {
                 //add the actual obj to display's list
                 display.canvasObjs.Add(canvasId, quad);
                 
-
             }
-
 
             //if local
             if (localInput) {
 
                 //network it (make sure you dont send the default board)
-                if (canvasId != 0) network.sendCanvasAddition(isPublic, originDisplayID, pixelWidth, pixelHeight, isPreset);
+                network.sendCanvasAddition(isPublic, originDisplayID, pixelWidth, pixelHeight, isPreset,canvasId);
             }
             
         }
 
-		public void saveImage(byte canvasId) {
+        public void addCanvas(bool localInput, bool isPublic, byte originDisplayID, int pixelWidth, int pixelHeight, bool isPreset) {
+            addCanvas(localInput, isPublic, originDisplayID, pixelWidth, pixelHeight, isPreset, 255);
+        }
+
+        public void saveImage(byte canvasId) {
 			TextureSaver.export(getCanvas(canvasId).renderTexture);
 		}
 

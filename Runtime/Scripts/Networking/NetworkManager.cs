@@ -91,6 +91,10 @@ namespace VRPen {
 		public event AddCanvasHandler AddedCanvas = delegate { };
 
 
+        //
+        Queue<byte[]> onConnectPacketQueue = new Queue<byte[]>();
+
+
 		/// <summary>
 		/// Start gets relevant scripts and also inits the local player's data
 		/// </summary>
@@ -376,13 +380,9 @@ namespace VRPen {
 
         }
 
-        public void sendCanvasAddition(bool isPublic, byte originDisplayID, int width, int height, bool isPreset) {
-
-            //dont send if you havent connected to the other users yet
-            if (!sentConnect) {
-                Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
-                return;
-            }
+        public void sendCanvasAddition(bool isPublic, byte originDisplayID, int width, int height, bool isPreset, byte canvasId) {
+            
+            
 
             //mmake buffer list
             List<byte> sendBufferList = new List<byte>();
@@ -395,14 +395,19 @@ namespace VRPen {
             sendBufferList.AddRange(BitConverter.GetBytes(width));
             sendBufferList.AddRange(BitConverter.GetBytes(height));
             sendBufferList.Add(isPreset ? (byte)1 : (byte)0);
+            sendBufferList.Add(canvasId);
 
 
             // convert to an array
             byte[] sendBuffer = sendBufferList.ToArray();
 
-            //send
-            vrpenEvent?.Invoke(sendBuffer);
-
+            //send or queue
+            if (!sentConnect) {
+                onConnectPacketQueue.Enqueue(sendBuffer);
+            }
+            else {
+                vrpenEvent?.Invoke(sendBuffer);
+            }
         }
 
         public void sendCanvasChange(byte displayIndex, byte canvasIndex) {
@@ -507,6 +512,16 @@ namespace VRPen {
             sentConnect = true;
             vrpenEvent?.Invoke(sendBuffer);
 
+            //send on connect packet queue
+            sendOnConnectPacketQueue();
+
+        }
+
+        void sendOnConnectPacketQueue() {
+            Debug.Log("ffdsafdsfdfdaf:    " + onConnectPacketQueue.Count);
+            while (onConnectPacketQueue.Count > 0) {
+                vrpenEvent?.Invoke(onConnectPacketQueue.Dequeue());
+            }
         }
 
         public void sendInputVisualEvent(byte deviceId, Color32 color, VRPenInput.ToolState state) {
@@ -721,9 +736,10 @@ namespace VRPen {
             int width = ReadInt(packet, ref offset);
             int height = ReadInt(packet, ref offset);
             bool isPreset= ReadByte(packet, ref offset) == 1;
+            byte canvasId = ReadByte(packet, ref offset);
 
             //add board
-            vectorMan.addCanvas(false, isPublic, displayId, width, height, isPreset);
+            vectorMan.addCanvas(false, isPublic, displayId, width, height, isPreset, canvasId);
 
         }
 
@@ -754,7 +770,6 @@ namespace VRPen {
         void unpackCanvasSwitch(byte[] packet, ref int offset) {
 
             if (!syncCurrentCanvas) {
-                Debug.LogError("Got a canvas sync event even though syncs shouldnt be enabled.");
                 return;
             }
 
