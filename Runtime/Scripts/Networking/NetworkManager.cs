@@ -376,7 +376,7 @@ namespace VRPen {
 
         }
 
-        public void sendCanvasAddition(bool isPublic, byte originDisplayID, int width, int height) {
+        public void sendCanvasAddition(bool isPublic, byte originDisplayID, int width, int height, bool isPreset) {
 
             //dont send if you havent connected to the other users yet
             if (!sentConnect) {
@@ -394,6 +394,7 @@ namespace VRPen {
             sendBufferList.Add(originDisplayID);
             sendBufferList.AddRange(BitConverter.GetBytes(width));
             sendBufferList.AddRange(BitConverter.GetBytes(height));
+            sendBufferList.Add(isPreset ? (byte)1 : (byte)0);
 
 
             // convert to an array
@@ -719,9 +720,10 @@ namespace VRPen {
             byte displayId = ReadByte(packet, ref offset);
             int width = ReadInt(packet, ref offset);
             int height = ReadInt(packet, ref offset);
+            bool isPreset= ReadByte(packet, ref offset) == 1;
 
             //add board
-            vectorMan.addCanvas(false, isPublic, displayId, width, height);
+            vectorMan.addCanvas(false, isPublic, displayId, width, height, isPreset);
 
         }
 
@@ -777,7 +779,9 @@ namespace VRPen {
         }
 
         void unpackUIState(byte[] packet, ref int offset) {
-            
+
+            //return if not in sync state
+            if (!syncDisplayUIs) return;
 
 			//data
 			byte displayId = ReadByte(packet, ref offset);

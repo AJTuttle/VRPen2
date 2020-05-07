@@ -48,7 +48,6 @@ namespace VRPen {
                 return ((float)initalPublicCanvasPixelWidth / (float)initalPublicCanvasPixelHeight);
             }
         }
-        
 
 
         [Space(5)]
@@ -85,10 +84,13 @@ namespace VRPen {
 		[System.NonSerialized]
 		public InputDevice facilitativeDevice;
 
+        //acting as a remote client restricts the things that the client can do. Things like making new canvases.
+        public static bool actAsRemoteClient = false;
 
-		
 
-		private void Start() {
+
+
+        private void Start() {
             
 
             //get scripts
@@ -540,7 +542,12 @@ namespace VRPen {
 
         //if originDisplay is null, this is the initial public canvas
         //if origindisplayID is 255, it is the initial public canvas
-        public void addCanvas(bool localInput, bool isPublic, byte originDisplayID, int pixelWidth, int pixelHeight) {
+        public void addCanvas(bool localInput, bool isPublic, byte originDisplayID, int pixelWidth, int pixelHeight, bool isPreset) {
+
+            //if the canvas addition is a remote preset, ignore it if not acting as a client.
+            if (!localInput && isPreset && !actAsRemoteClient) {
+                return;
+            }
 
             //ERROR CASES
             //if too many canvses
@@ -604,7 +611,7 @@ namespace VRPen {
             if (localInput) {
 
                 //network it (make sure you dont send the default board)
-                if (canvasId != 0) network.sendCanvasAddition(isPublic, originDisplayID, pixelWidth, pixelHeight);
+                if (canvasId != 0) network.sendCanvasAddition(isPublic, originDisplayID, pixelWidth, pixelHeight, isPreset);
             }
             
         }

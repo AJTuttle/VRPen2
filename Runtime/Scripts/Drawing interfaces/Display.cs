@@ -54,7 +54,11 @@ namespace VRPen {
             //wait one frame so that canvas0 can be spawned first if this diplay is in the scene at start
             yield return null;
 
-            
+            //there is no initial canvas made as a remote client
+            if (VectorDrawing.actAsRemoteClient) {
+                yield break;
+            }
+
 
             if (initialCanvasIsPrivate) {
 
@@ -65,7 +69,7 @@ namespace VRPen {
                 }
 
                 //spawn local canvase
-                vectorMan.addCanvas(false, false, DisplayId, pixelWidth, pixelHeight);
+                vectorMan.addCanvas(true, false, DisplayId, pixelWidth, pixelHeight, true);
 
 
                 //switch to that canvas
@@ -86,7 +90,7 @@ namespace VRPen {
                         yield break;
                     }
                     //spawn local canvase
-                    vectorMan.addCanvas(false, true, VectorDrawing.INITIAL_PUBLIC_CANVAS_DISPLAY_ID, vectorMan.initalPublicCanvasPixelWidth, vectorMan.initalPublicCanvasPixelHeight);
+                    vectorMan.addCanvas(true, true, VectorDrawing.INITIAL_PUBLIC_CANVAS_DISPLAY_ID, vectorMan.initalPublicCanvasPixelWidth, vectorMan.initalPublicCanvasPixelHeight, true);
                     
                     //switch to that canvas
                     swapCurrentCanvas((byte)(vectorMan.canvases.Count - 1), false);
@@ -97,7 +101,7 @@ namespace VRPen {
         }
 
         public void addCanvasPassthrough(bool isPublic) {
-            vectorMan.addCanvas(true, isPublic, DisplayId, pixelWidth, pixelHeight);
+            vectorMan.addCanvas(true, isPublic, DisplayId, pixelWidth, pixelHeight, true);
             swapCurrentCanvas((byte)(vectorMan.canvases.Count - 1), true);
         }
 
