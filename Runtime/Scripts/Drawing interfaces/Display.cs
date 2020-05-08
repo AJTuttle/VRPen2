@@ -55,7 +55,7 @@ namespace VRPen {
             yield return null;
 
             //there is no initial canvas made as a remote client
-            if (VectorDrawing.actAsRemoteClient) {
+            if (!VectorDrawing.actSynchronously) {
                 yield break;
             }
 

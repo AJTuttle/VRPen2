@@ -85,7 +85,7 @@ namespace VRPen {
 		public InputDevice facilitativeDevice;
 
         //acting as a remote client restricts the things that the client can do. Things like making new canvases.
-        public static bool actAsRemoteClient = false;
+        public static bool actSynchronously = true;
 
 
 
@@ -550,8 +550,8 @@ namespace VRPen {
 
             if (getCanvas(canvasId) != null) return;
 
-            //if the canvas addition is a remote preset, ignore it if not acting as a client.
-            if (!localInput && isPreset && !actAsRemoteClient) {
+            //if the canvas addition is a remote preset, ignore it if not acting async.
+            if (!localInput && isPreset && actSynchronously) {
                 return;
             }
 

@@ -514,11 +514,10 @@ namespace VRPen {
 
             //send on connect packet queue
             sendOnConnectPacketQueue();
-
+            
         }
 
         void sendOnConnectPacketQueue() {
-            Debug.Log("ffdsafdsfdfdaf:    " + onConnectPacketQueue.Count);
             while (onConnectPacketQueue.Count > 0) {
                 vrpenEvent?.Invoke(onConnectPacketQueue.Dequeue());
             }
