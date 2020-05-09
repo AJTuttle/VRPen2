@@ -8,12 +8,12 @@ namespace VRPen {
 
     public class VectorDrawing : MonoBehaviour {
 
-        
+
 
         //scripts
         StarTablet tablet;
         NetworkManager network;
-        
+
         //non serialized / private vars
         [System.NonSerialized]
         public List<VectorCanvas> canvases = new List<VectorCanvas>();
@@ -81,11 +81,23 @@ namespace VRPen {
         public GameObject canvasPrefab;
         public Transform canvasParent;
 
-		[System.NonSerialized]
-		public InputDevice facilitativeDevice;
+        [System.NonSerialized]
+        public InputDevice facilitativeDevice;
 
         //acting as a remote client restricts the things that the client can do. Things like making new canvases.
         public static bool actSynchronously = true;
+        private static bool offlineMode = false;
+        public static bool OfflineMode {
+            get {
+                return offlineMode;
+            }
+            set {
+                if (offlineMode && !value) {
+                    Debug.LogError("Cannot return to online mode after being in offline mode");
+                }
+                else offlineMode = value;
+            }
+        } 
 
 
 

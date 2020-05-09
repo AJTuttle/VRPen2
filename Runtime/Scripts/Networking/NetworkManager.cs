@@ -127,6 +127,9 @@ namespace VRPen {
         /// <param name="canvasId">index of board to write to</param>
         public void addToDataOutbox(bool endLine, Color32 currentColor, float x, float y, float pressure, byte canvas, byte deviceIndex) {
 
+            //dont do anything in offline mode
+            if (VectorDrawing.OfflineMode) return;
+
             //make new temp arrays with +1 length
             bool[] tempEL = new bool[endLines.Length + 1];
             Color32[] tempC = new Color32[colors.Length + 1];
@@ -202,6 +205,9 @@ namespace VRPen {
         /// <returns>a byte array packet</returns>
         public byte[] packPenData() {
 
+            //dont do anything in offline mode
+            if (VectorDrawing.OfflineMode) return null;
+
             //dont send if you havent connected to the other users yet
             if (!sentConnect) {
                 Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
@@ -270,7 +276,7 @@ namespace VRPen {
 
 		void cachePacket(byte[] data, ulong connectionId) {
 
-			if (cachePackets) {
+            if (cachePackets) {
 				packetCache.Add(data);
 				packetSenders.Add(connectionId);
 			}
@@ -331,6 +337,9 @@ namespace VRPen {
         /// <param name="canvasId">The id of the canvas to clear</param>
         public void sendClear(byte canvasId) {
 
+            //dont do anything in offline mode
+            if (VectorDrawing.OfflineMode) return;
+
             //dont send if you havent connected to the other users yet
             if (!sentConnect) {
                 Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
@@ -358,6 +367,9 @@ namespace VRPen {
 
         public void sendUndo() {
 
+            //dont do anything in offline mode
+            if (VectorDrawing.OfflineMode) return;
+
             //dont send if you havent connected to the other users yet
             if (!sentConnect) {
                 Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
@@ -381,8 +393,9 @@ namespace VRPen {
         }
 
         public void sendCanvasAddition(bool isPublic, byte originDisplayID, int width, int height, bool isPreset, byte canvasId) {
-            
-            
+
+            //dont do anything in offline mode
+            if (VectorDrawing.OfflineMode) return;
 
             //mmake buffer list
             List<byte> sendBufferList = new List<byte>();
@@ -411,6 +424,9 @@ namespace VRPen {
         }
 
         public void sendCanvasChange(byte displayIndex, byte canvasIndex) {
+
+            //dont do anything in offline mode
+            if (VectorDrawing.OfflineMode) return;
 
             if (!syncCurrentCanvas) {
                 return;
@@ -442,6 +458,9 @@ namespace VRPen {
         }
 
         public void sendStamp(int stampIndex, float x, float y, float size, float rot, byte canvasId, byte deviceIndex) {
+
+            //dont do anything in offline mode
+            if (VectorDrawing.OfflineMode) return;
 
             //dont send if you havent connected to the other users yet
             if (!sentConnect) {
@@ -477,7 +496,10 @@ namespace VRPen {
         }
 
         public void sendConnect(bool requestReply) {
-            
+
+            //dont do anything in offline mode
+            if (VectorDrawing.OfflineMode) return;
+
             //mmake buffer list
             List<byte> sendBufferList = new List<byte>();
 
@@ -518,13 +540,20 @@ namespace VRPen {
         }
 
         void sendOnConnectPacketQueue() {
+
+            //dont do anything in offline mode
+            if (VectorDrawing.OfflineMode) return;
+
             while (onConnectPacketQueue.Count > 0) {
                 vrpenEvent?.Invoke(onConnectPacketQueue.Dequeue());
             }
         }
 
         public void sendInputVisualEvent(byte deviceId, Color32 color, VRPenInput.ToolState state) {
-            
+
+            //dont do anything in offline mode
+            if (VectorDrawing.OfflineMode) return;
+
             //mmake buffer list
             List<byte> sendBufferList = new List<byte>();
 
@@ -550,6 +579,9 @@ namespace VRPen {
         }
 
 		public void sendUIState(byte displayId, byte[] data) {
+
+            //dont do anything in offline mode
+            if (VectorDrawing.OfflineMode) return;
 
             //dont send if you havent connected to the other users yet
             if (!sentConnect) {
@@ -583,6 +615,9 @@ namespace VRPen {
         /// <param name="connectionId">who sent it, must be unique</param>
         /// <param name="packet">the data</param>
         public void unpackPacket(ulong connectionId, byte[] packet) {
+
+            //dont do anything in offline mode
+            if (VectorDrawing.OfflineMode) return;
 
             int offset = 0;
 
