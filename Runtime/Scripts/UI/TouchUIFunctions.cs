@@ -14,9 +14,10 @@ namespace VRPen {
         public GameObject displayObj;
         public CanvasScaler canvasScale;
         public TouchInput touchInput;
+        public UIManager uiMan;
 
         void Start() {
-
+            if (!VectorDrawing.actSynchronously) uiMan.removeAddCanvasButtons();
         }
         
         void Update() {

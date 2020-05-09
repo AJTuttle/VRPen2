@@ -9507,6 +9507,8 @@ MonoBehaviour:
   invisButton: {fileID: 686776423420033573}
   colorPanel: {fileID: 6699010744595825366}
   grayPanel: {fileID: 1061053881362672594}
+  addCanvasButton: {fileID: 9212808432155567018}
+  addCanvasToggle: {fileID: 916524607857234317}
 --- !u!114 &946095300793835445
 MonoBehaviour:
   m_ObjectHideFlags: 0

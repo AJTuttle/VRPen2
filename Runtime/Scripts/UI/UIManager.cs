@@ -68,8 +68,12 @@ namespace VRPen {
 		public GameObject grayPanel;
 
 
+        public GameObject addCanvasButton;
+        public GameObject addCanvasToggle;
+
+
+
 		private void Awake() {
-            
             
             //grab scripts if not in prefab
             if (vectorMan == null) vectorMan = FindObjectOfType<VectorDrawing>();
@@ -241,7 +245,19 @@ namespace VRPen {
 
 		}
 
-     
+
+        public void removeAddCanvasButtons() {
+
+            //turn off
+            addCanvasButton.SetActive(false);
+            addCanvasToggle.SetActive(false);
+            
+            //shift
+            canvasListParent.GetComponent<RectTransform>().sizeDelta += new Vector2(0, -120);
+            canvasListParent.GetComponent<RectTransform>().localPosition += new Vector3(0, 60, 0);
+            canvasListParent.GetComponent<BoxCollider>().size += new Vector3(0, -120, 0);
+        }
+
         public void addCanvas(byte canvasId) {
 
            
