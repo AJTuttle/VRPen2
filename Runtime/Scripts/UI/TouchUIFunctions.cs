@@ -16,6 +16,10 @@ namespace VRPen {
         public TouchInput touchInput;
         public UIManager uiMan;
 
+        public GameObject moveIcon;
+        public GameObject drawIcons;
+
+
         void Start() {
             if (!VectorDrawing.actSynchronously) uiMan.removeAddCanvasButtons();
         }
@@ -36,6 +40,8 @@ namespace VRPen {
 
         public void toggleCanvasMove(bool toggle) {
             touchInput.canvasMove = toggle;
+            moveIcon.SetActive(toggle);
+            drawIcons.SetActive(!toggle);
         }
     }
 

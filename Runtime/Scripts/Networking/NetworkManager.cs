@@ -820,11 +820,12 @@ namespace VRPen {
             byte deviceId = ReadByte(packet, ref offset);
             VRPenInput.ToolState state = (VRPenInput.ToolState)ReadByte(packet, ref offset);
             Color32 col = new Color32(ReadByte(packet, ref offset), ReadByte(packet, ref offset), ReadByte(packet, ref offset), 255);
-            
-            //update device
-            player.inputDevices[deviceId].visuals.updateModel(state, false);
-            player.inputDevices[deviceId].visuals.updateColorIndicators(col, false);
 
+            //update device
+            if (player.inputDevices[deviceId].visuals != null) {
+                player.inputDevices[deviceId].visuals.updateModel(state, false);
+                player.inputDevices[deviceId].visuals.updateColorIndicators(col, false);
+            }
         }
 
         void unpackUIState(byte[] packet, ref int offset) {
