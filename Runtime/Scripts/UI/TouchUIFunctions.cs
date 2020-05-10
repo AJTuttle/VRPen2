@@ -19,13 +19,26 @@ namespace VRPen {
         public GameObject moveIcon;
         public GameObject drawIcons;
 
+        //waiting for canvas text
+        public VRPen.Display display;
+        public Text waitingForCanvas;
+        bool canvasExists = false;
 
         void Start() {
             if (!VectorDrawing.actSynchronously) uiMan.removeAddCanvasButtons();
         }
-        
-        void Update() {
 
+       
+
+        private void Update() {
+
+            //waiting for canvas text
+            if (!canvasExists) {
+                canvasExists = display.currentLocalCanvas != null;
+                if (canvasExists) {
+                    waitingForCanvas.gameObject.SetActive(false);
+                }
+            }
         }
 
         public void changeCanvasSize(bool increase) {

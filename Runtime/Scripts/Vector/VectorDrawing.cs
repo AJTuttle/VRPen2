@@ -618,6 +618,9 @@ namespace VRPen {
 
                 //add the actual obj to display's list
                 display.canvasObjs.Add(canvasId, quad);
+
+                //if theres not canvas on the display, switch
+                if (display.currentLocalCanvas == null) display.swapCurrentCanvas(canvasId, false);
                 
             }
 

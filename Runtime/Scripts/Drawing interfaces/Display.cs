@@ -45,11 +45,11 @@ namespace VRPen {
         }
 
         public void init() {
-            StartCoroutine(nameof(switchToInitialCanvas));
+            StartCoroutine(nameof(createInitialCanvas));
         }
 
 
-        IEnumerator switchToInitialCanvas() {
+        IEnumerator createInitialCanvas() {
 
             //wait one frame so that canvas0 can be spawned first if this diplay is in the scene at start
             yield return null;
