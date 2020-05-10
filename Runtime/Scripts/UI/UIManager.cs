@@ -69,7 +69,7 @@ namespace VRPen {
 
 
         public GameObject addCanvasButton;
-        public GameObject addCanvasToggle;
+        //public GameObject addCanvasToggle;
 
 
 
@@ -250,12 +250,12 @@ namespace VRPen {
 
             //turn off
             addCanvasButton.SetActive(false);
-            addCanvasToggle.SetActive(false);
+            //addCanvasToggle.SetActive(false);
             
             //shift
-            canvasListParent.GetComponent<RectTransform>().sizeDelta += new Vector2(0, -120);
-            canvasListParent.GetComponent<RectTransform>().localPosition += new Vector3(0, 60, 0);
-            canvasListParent.GetComponent<BoxCollider>().size += new Vector3(0, -120, 0);
+            canvasListParent.GetComponent<RectTransform>().sizeDelta += new Vector2(0, -60);
+            canvasListParent.GetComponent<RectTransform>().localPosition += new Vector3(0, 30, 0);
+            canvasListParent.GetComponent<BoxCollider>().size += new Vector3(0, -60, 0);
         }
 
         public void addCanvas(byte canvasId) {

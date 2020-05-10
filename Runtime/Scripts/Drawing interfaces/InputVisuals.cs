@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace VRPen {
 
@@ -15,6 +16,7 @@ namespace VRPen {
         public GameObject eyedropperModel;
         public GameObject eraserModel;
 
+        public List<Image> colorIndicatorUIImages;
         public List<Renderer> colorIndicatorRenderers;
 		public List<int> colorIndicatorRenderersIndex;
 
@@ -67,6 +69,9 @@ namespace VRPen {
 				colorIndicatorRenderers[x].materials[colorIndicatorRenderersIndex[x]].color = color;
 
 			}
+            foreach (Image i in colorIndicatorUIImages) {
+                i.color = color;
+            }
 
             if (localInput) network.sendInputVisualEvent(deviceData.deviceIndex, color, state);
 		}
