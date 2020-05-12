@@ -101,7 +101,7 @@ namespace VRPen {
         }
 
         public void addCanvasPassthrough(bool isPublic) {
-            vectorMan.addCanvas(true, isPublic, DisplayId, pixelWidth, pixelHeight, true);
+            vectorMan.addCanvas(true, isPublic, DisplayId, pixelWidth, pixelHeight, false);
             swapCurrentCanvas((byte)(vectorMan.canvases.Count - 1), true);
         }
 
