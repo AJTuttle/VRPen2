@@ -52,6 +52,10 @@ namespace VRPen {
         }
 
         public void toggleCanvasMove(bool toggle) {
+
+            //if the move is already on, it should be turned off if the button is clicked
+            if (touchInput.canvasMove && toggle) toggle = false;
+
             touchInput.canvasMove = toggle;
             moveIcon.SetActive(toggle);
             drawIcons.SetActive(!toggle);
