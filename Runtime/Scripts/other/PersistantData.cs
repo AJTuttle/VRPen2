@@ -9,7 +9,8 @@ namespace VRPen {
 
 	public static class PersistantData {
 
-		private static string[] stampFileNames;
+		private static List<string> stampFileNames;
+		private static List<Texture2D> stampTextures = new List<Texture2D>();
 
         #if UNITY_EDITOR
 
@@ -73,8 +74,10 @@ namespace VRPen {
 
 			//stamp files
 			TextAsset stampFile = Resources.Load<TextAsset>("VRPen/Stamps/StampData");
-			stampFileNames = stampFile.ToString().Trim(new char[] { '\n' }).Split(new char[] { '\n' });
-			
+			stampFileNames = new List<string>(stampFile.ToString().Trim(new char[] { '\n' }).Split(new char[] { '\n' }));
+			for (int x = 0; x < stampFileNames.Count; x++) {
+                stampTextures.Add(Resources.Load<Texture2D>(getStampFileName(x)));
+            }
 			
 		}
 
@@ -85,7 +88,7 @@ namespace VRPen {
 				return null;
 			}
 
-			else if (stampFileNames.Length <= index) {
+			else if (stampFileNames.Count <= index) {
 				Debug.LogError("Stamp file not found due to persistant data not being updated");
 				return null;
 			}
@@ -99,7 +102,27 @@ namespace VRPen {
 		//-1 means not instantiated
 		public static int getStampFileNameCount() {
             if (stampFileNames == null) instantiate();
-            return stampFileNames.Length;
+            return stampFileNames.Count;
 		}
+
+        public static Texture2D getStampTexture(int index) {
+
+            if (stampTextures == null) {
+                Debug.LogError("Stamp files not found due to persistant data not being instantiated");
+                return null;
+            }
+
+            else if (stampFileNames.Count <= index) {
+                Debug.LogError("Stamp file not found due to persistant data not being updated");
+                return null;
+            }
+
+            else {
+                return stampTextures[index];
+            }
+
+        }
+        
 	}
+
 }

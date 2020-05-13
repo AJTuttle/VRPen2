@@ -790,7 +790,7 @@ namespace VRPen {
             byte deviceIndex = ReadByte(packet, ref offset);
 
             //get stamptexture
-            Texture2D text = Resources.Load<Texture2D>(PersistantData.getStampFileName(stampIndex));
+            Texture2D text = PersistantData.getStampTexture(stampIndex);
 
             //add stamp
             vectorMan.stamp(text, stampIndex, player, deviceIndex, x, y, size, rot, canvasId, false);

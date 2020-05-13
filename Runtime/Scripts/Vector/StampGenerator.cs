@@ -35,7 +35,7 @@ namespace VRPen {
 			//get texture
 			string str = PersistantData.getStampFileName(stampIndex);
 			Debug.Log(str);
-            Texture2D texture = Resources.Load<Texture2D>(str);
+            Texture2D texture = PersistantData.getStampTexture(stampIndex);
 			aspectRatio = (float)texture.width / texture.height;
 
             setTexture(texture);

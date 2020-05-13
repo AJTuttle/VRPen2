@@ -499,20 +499,25 @@ namespace VRPen {
 
 				for (int x = 0; x < count; x++) {
 
-					string str = PersistantData.getStampFileName(x);
-
-					GameObject obj = Instantiate(stampResourcePrefab, stampResourceParent);
-					obj.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = str;
-
-					obj.transform.GetChild(0).GetComponent<ButtonPassthrough>().UI = this;
-					obj.transform.GetChild(0).GetComponent<ButtonPassthrough>().stampIndex = x;
-					obj.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(() => highlightTimer(0.2f));
-					obj.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(() => closeMenus(true));
+                    addFileToStampExplorer(x);
 
 				}
 
 			}
 
+        }
+
+        void addFileToStampExplorer(int index) {
+
+            string str = PersistantData.getStampFileName(index);
+
+            GameObject obj = Instantiate(stampResourcePrefab, stampResourceParent);
+            obj.transform.GetChild(1).GetChild(1).GetComponent<Text>().text = str;
+
+            obj.transform.GetChild(0).GetComponent<ButtonPassthrough>().UI = this;
+            obj.transform.GetChild(0).GetComponent<ButtonPassthrough>().stampIndex = index;
+            obj.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(() => highlightTimer(0.2f));
+            obj.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(() => closeMenus(true));
         }
 
         int ReadInt(byte[] buf, ref int offset) {
