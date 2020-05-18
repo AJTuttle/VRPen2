@@ -18,7 +18,8 @@ namespace VRPen {
         Stamp,
 		UIState,
 		CanvasSwitch,
-        InputVisualsEvent
+        InputVisualsEvent,
+        AddStamp
     }
 
     public class NetworkManager : MonoBehaviour {
@@ -362,6 +363,36 @@ namespace VRPen {
             //send
             vrpenEvent?.Invoke(sendBuffer);
             
+
+        }
+
+        public void sendStampAddition(string name, Texture2D tex) {
+
+            //dont do anything in offline mode
+            if (VectorDrawing.OfflineMode) return;
+
+            //dont send if you havent connected to the other users yet
+            if (!sentConnect) {
+                Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
+                return;
+            }
+
+            //mmake buffer list
+            List<byte> sendBufferList = new List<byte>();
+
+            // header
+            sendBufferList.Add((byte)PacketType.AddStamp);
+            sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
+
+            //data
+            //Encoding.ASCII.GetBytes(name);
+
+            // convert to an array
+            byte[] sendBuffer = sendBufferList.ToArray();
+
+            //send
+            vrpenEvent?.Invoke(sendBuffer);
+
 
         }
 
