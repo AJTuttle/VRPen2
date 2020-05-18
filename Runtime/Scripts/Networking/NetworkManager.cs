@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Text;
 using UnityEngine.Events;
 
 namespace VRPen {
@@ -19,7 +20,7 @@ namespace VRPen {
 		UIState,
 		CanvasSwitch,
         InputVisualsEvent,
-        AddStamp
+        AddStampFile
     }
 
     public class NetworkManager : MonoBehaviour {
@@ -366,7 +367,7 @@ namespace VRPen {
 
         }
 
-        public void sendStampAddition(string name, Texture2D tex) {
+        public void sendStampFile(string name, Texture2D tex, byte index) {
 
             //dont do anything in offline mode
             if (VectorDrawing.OfflineMode) return;
@@ -381,11 +382,21 @@ namespace VRPen {
             List<byte> sendBufferList = new List<byte>();
 
             // header
-            sendBufferList.Add((byte)PacketType.AddStamp);
+            sendBufferList.Add((byte)PacketType.AddStampFile);
             sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
 
             //data
-            //Encoding.ASCII.GetBytes(name);
+            sendBufferList.Add(index);
+            byte[] nameBytes = Encoding.ASCII.GetBytes(name);
+            sendBufferList.AddRange(BitConverter.GetBytes(nameBytes.Length));
+            sendBufferList.AddRange(nameBytes);
+
+            sendBufferList.AddRange(BitConverter.GetBytes(tex.width));
+            sendBufferList.AddRange(BitConverter.GetBytes(tex.height));
+            byte[] rawTex = tex.GetRawTextureData();
+            sendBufferList.AddRange(BitConverter.GetBytes(rawTex.Length));
+            sendBufferList.AddRange(rawTex);
+
 
             // convert to an array
             byte[] sendBuffer = sendBufferList.ToArray();
@@ -492,13 +503,7 @@ namespace VRPen {
 
             //dont do anything in offline mode
             if (VectorDrawing.OfflineMode) return;
-
-            //dont send if you havent connected to the other users yet
-            if (!sentConnect) {
-                Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
-                return;
-            }
-
+            
             //mmake buffer list
             List<byte> sendBufferList = new List<byte>();
 
@@ -516,8 +521,13 @@ namespace VRPen {
             // convert to an array
             byte[] sendBuffer = sendBufferList.ToArray();
 
-            //send
-            vrpenEvent?.Invoke(sendBuffer);
+            //send or queue
+            if (!sentConnect) {
+                onConnectPacketQueue.Enqueue(sendBuffer);
+            }
+            else {
+                vrpenEvent?.Invoke(sendBuffer);
+            }
 
         }
 		
@@ -808,6 +818,34 @@ namespace VRPen {
 
         }
 
+        void unpackStampFileAddition(byte[] packet, ref int offset) {
+
+            //get index
+            byte index = ReadByte(packet, ref offset);
+
+            //return if we already have it
+            if (PersistantData.doesStampExist(index)) {
+                return;
+            }
+
+            //get stamp data
+            int nameLength = ReadInt(packet, ref offset);
+            byte[] nameBytes = ReadByteArray(packet, ref offset, nameLength);
+            string name = Encoding.ASCII.GetString(nameBytes);
+
+            int width = ReadInt(packet, ref offset);
+            int height = ReadInt(packet, ref offset);
+            int texLength = ReadInt(packet, ref offset);
+            byte[] rawTexture = ReadByteArray(packet, ref offset, texLength);
+
+            Texture2D texture = new Texture2D(width, height);
+            texture.LoadRawTextureData(rawTexture);
+
+            //add stamp
+            PersistantData.addStamp(name, texture, index);
+
+        }
+
         void unpackStamp(NetworkedPlayer player, byte[] packet, ref int offset) {
             
 
@@ -1016,6 +1054,15 @@ namespace VRPen {
             quat.z = ReadFloat(buf, ref offset);
             quat.w = ReadFloat(buf, ref offset);
             return quat;
+        }
+
+        byte[] ReadByteArray(byte[] buf, ref int offset, int length) {
+            byte[] temp = new byte[length];
+            for (int x = 0; x <  length; x++) {
+                temp[x] = buf[x + offset];
+            }
+            offset += length;
+            return temp;
         }
 
         #endregion

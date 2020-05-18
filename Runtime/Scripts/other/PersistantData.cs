@@ -142,6 +142,10 @@ namespace VRPen {
             }
 
         }
+
+        public static bool doesStampExist(int index) {
+            return stampTextures.ContainsKey((byte)index);
+        }
         
 	}
 
