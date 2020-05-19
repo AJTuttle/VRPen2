@@ -153,7 +153,8 @@ namespace VRPen {
 
                 //set value
                 UISlider slidyBoi = button.GetComponent<UISlider>();
-                if(slidyBoi != null) slidyBoi.setPos(value, true);
+                if (slidyBoi != null) slidyBoi.setPos(value, true);
+                else ((Slider)button).value = value;
 
             }
 

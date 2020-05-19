@@ -24,11 +24,16 @@ namespace VRPen {
         public Text waitingForCanvas;
         bool canvasExists = false;
 
+        public Transform stampUIParent;
+
         void Start() {
             if (!VectorDrawing.actSynchronously) uiMan.removeAddCanvasButtons();
+            setStampUIParentSize();
         }
 
-       
+        void setStampUIParentSize() {
+            stampUIParent.localScale = Vector3.one / canvasScale.scaleFactor * displayObj.transform.localScale.x / 1.25f;
+        }
 
         private void Update() {
 
@@ -44,11 +49,13 @@ namespace VRPen {
         public void changeCanvasSize(bool increase) {
             float increment = increase ? 0.05f : -0.05f;
             displayObj.transform.localScale += new Vector3(increment, increment, increment);
+            setStampUIParentSize();
         }
 
         public void changeUIScale(bool increase) {
             float increment = increase ? 0.05f : -0.05f;
             canvasScale.scaleFactor += increment;
+            setStampUIParentSize();
         }
 
         public void toggleCanvasMove(bool toggle) {
