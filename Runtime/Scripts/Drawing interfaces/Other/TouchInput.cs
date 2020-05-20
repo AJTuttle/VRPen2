@@ -28,10 +28,9 @@ namespace VRPen {
 
         // Update is called once per frame
         void Update() {
-            
 
             pressure = 1;
-
+            if (Input.touchSupported) pressure = Mathf.Clamp(Input.GetTouch(0).pressure, 0, 1);
 
             //check for marker input
             if (Input.GetKeyDown(KeyCode.Mouse1) || Input.GetKey(KeyCode.Mouse0)) input();
