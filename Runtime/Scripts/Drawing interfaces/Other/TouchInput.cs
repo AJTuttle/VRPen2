@@ -19,7 +19,7 @@ namespace VRPen {
         public bool canvasMove = false;
         public GameObject displayObj;
         public bool firstCanvasMoveInput = true;
-        Vector2 lastCanvasMovePos;
+        Vector3 lastCanvasMovePos;
 
         new void Start() {
             
@@ -76,12 +76,11 @@ namespace VRPen {
                     firstCanvasMoveInput = false;
                 }
                 else {
-                    Vector3 delta = new Vector3(data.hit.point.x - lastCanvasMovePos.x, data.hit.point.y - lastCanvasMovePos.y, 0);
+                    Vector3 delta = data.hit.point - lastCanvasMovePos;
                     displayObj.transform.position += delta;
                 }
-
-                //Warning, this depends on the canvas rotation in global space being quaternion.identity.
-                lastCanvasMovePos = new Vector2(data.hit.point.x, data.hit.point.y);
+                
+                lastCanvasMovePos = data.hit.point;
 
 
                 //we dont wanna add any draw points so deselect the canvas
