@@ -32,8 +32,10 @@ namespace VRPen {
             pressure = 1;
             if (Input.touchSupported) pressure = Mathf.Clamp(Input.GetTouch(0).pressure, 0, 1);
 
+            VRPen.Debug.LogError(Input.touchSupported + "  " + pressure + "  " + Input.GetKeyDown(KeyCode.Mouse0) + "  " + Input.GetKey(KeyCode.Mouse0) + "  " + Input.GetKeyUp(KeyCode.Mouse0));
+
             //check for marker input
-            if (Input.GetKeyDown(KeyCode.Mouse1) || Input.GetKey(KeyCode.Mouse0)) input();
+            if (Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKey(KeyCode.Mouse0)) input();
             else if (Input.GetKeyUp(KeyCode.Mouse0)) {
                 UIClickDown = true;
                 input();
