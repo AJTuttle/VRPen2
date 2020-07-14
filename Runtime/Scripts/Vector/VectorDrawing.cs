@@ -56,13 +56,9 @@ namespace VRPen {
         [Tooltip("Minimum distance from the last drawn point before a new one is registered, this primarilly is used for performance but also helps a bit with smoothing.")]
         [Range(0f, 0.1f)]
         public float minDistanceDelta;
-        [Tooltip("This is used for smoothing and refers to the angle between the last line segment and the new one [0-180]. " +
-            "Recommended values are between 135 (high performance) and 170 (high fidelity). Warning, values >= 180 will not work and may cause infinite loops.")]
-        [Range(90, 175)]
-        public float minCurveAngle;
-        [Tooltip("For each new line segment, if its angle to the previous line segment is lower than this then it is a cusp. This means that it will not do slope smoothing. Recommended values between 40 and 80.")]
-        [Range(0, 90)]
-        public float maxCuspAngle;
+        [Tooltip("For each new line segment, if its angle to the previous line segment is higher than this then it is a cusp. This means that it will not rotate the last point. Recommended values between 110 and 160.")]
+        [Range(90, 180)]
+        public float minCuspAngle;
 
         [Space(5)]
         [Header("       Optimization Parameters")]
@@ -254,21 +250,24 @@ namespace VRPen {
                 //delta compression
                 bool validInput = deltaCompression(device, newLine, drawPoint);
 
-                //add to that mesh and network
+                //add to that mesh and network or just show a line prediction
                 if (validInput) {
+                    
+                    //get angle between last line and new line (negative for left turn, positive for right turn)
+                    float angle = Vector3.Angle(device.lastDrawPoint - device.secondLastDrawPoint, drawPoint - device.lastDrawPoint);
+                    bool isCusp = angle >= minCuspAngle;
 
-                    //if this is not the first or second point in the line, we need to smooth the slope
-                    if (currentLine.mesh.vertexCount > 2) {
+                    if (currentLine.pointCount < 2) isCusp = true;
 
-                        //get angle between last line and new line (negative for left turn, positive for right turn)
-                        float angle = 180f - Vector3.Angle(device.lastDrawPoint - device.secondLastDrawPoint, drawPoint - device.lastDrawPoint);
-                        if (Vector3.Cross(device.lastDrawPoint - device.secondLastDrawPoint, drawPoint - device.lastDrawPoint).y < 0) angle *= -1;
+                    //add to line
+                    canvas.addToLine(device, currentLine, drawPoint, pressure, !isCusp);
 
-                        slopeSmoothing(canvas, device, currentLine, pressure, angle, device.lastDrawPoint, drawPoint);
-                    }
-                    else canvas.addToLine(device, currentLine, drawPoint, pressure);
-
+                    //network it
                     if (localInput) network.addToDataOutbox(endLine, color, x, y, pressure, canvasId, deviceIndex);
+
+                }
+                else {
+                    //to do add line prediction stuff
                 }
             }
         }
@@ -420,39 +419,7 @@ namespace VRPen {
 
         }
 
-        //recursive method that, depending on the angle between the last line and the new line, will split the new line into two new lines to make the slope more gradual
-        void slopeSmoothing(VectorCanvas canvas, InputDevice device, VectorLine currentLine, float pressure, float angle, Vector3 start, Vector3 end) {
-            
-            if (minCurveAngle >= 179.9f) {
-                Debug.LogError("Error: Unresonable/impossible target smoothing angle, please adgust public variable that controls this");
-                return;
-            }
-
-            //if angle is too large
-            if (Mathf.Abs(angle) < minCurveAngle && Mathf.Abs(angle) > maxCuspAngle && currentLine.pointCount > 1) {
-
-                //get the new angle that represents both angles in for the 2 new lines
-                float newAngle = (3 * Mathf.Abs(angle) + 360) / 5 * (angle > 0 ? 1: -1);
-
-                //get the new midpoint
-                float length = Vector3.Distance(start, end);
-                float midPointLength = length / (1 + Mathf.Tan(Mathf.Deg2Rad * Mathf.Abs(newAngle - angle)) / Mathf.Tan(Mathf.Deg2Rad * Mathf.Abs(newAngle - angle) / 2));
-                Vector3 notSmoothedDir = (end - start).normalized;
-                Vector3 midpointDisplacment = new Vector3(-notSmoothedDir.z, 0, notSmoothedDir.x) * midPointLength * (angle > 0 ? 1 : -1) * Mathf.Tan(Mathf.Deg2Rad * Mathf.Abs(newAngle - angle));
-                Vector3 middle = start + (end - start).normalized * midPointLength + midpointDisplacment;
-
-                //recursively call for each new line segment now that we split this one
-                slopeSmoothing(canvas, device, currentLine, pressure, newAngle, start, middle);
-                slopeSmoothing(canvas, device, currentLine, pressure, newAngle, middle, end);
-
-            }
-
-            //actually add triangles to the mesh
-            else {
-                canvas.addToLine(device, currentLine, end, pressure);
-            }
-
-        }
+        
 
         VectorLine getLine(NetworkedPlayer player, InputDevice device, Color32 color, VectorCanvas canvas, ref bool newLine) {
 

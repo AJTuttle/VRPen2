@@ -23,6 +23,7 @@ namespace VRPen {
         public Transform vectorParent;
 		public RenderTexture renderTexture;
 
+        const float PRESSURE_MULTIPLIER = 0.01f;
 
 
 		public void instantiate(VectorDrawing man, NetworkManager net, byte id, int width, int height) {
@@ -50,11 +51,11 @@ namespace VRPen {
             StartCoroutine(fillboard());
         }
 
+        /*
+        public void addToLineold(InputDevice device, VectorLine currentLine, Vector3 drawPoint, float pressure) {
 
-        public void addToLine(InputDevice device, VectorLine currentLine, Vector3 drawPoint, float pressure) {
 
-
-            //get mesh
+            //get mesh 
             Mesh currentMesh = currentLine.mesh;
 
             //if start of line then setup up arrays
@@ -181,6 +182,152 @@ namespace VRPen {
             //set point count
             currentLine.pointCount++;
             
+        }**/
+
+        //think of the normal as if it was ribbon drawing (it is internal used to order the vertices such that they connect to previous ones properlly)
+        //the bool, "moveLastSegment", is for when a new segment goes in the same direction as the last segment. We can turn those 2 segments into one long segment to save polycount
+        public void addToLine(InputDevice device, VectorLine currentLine, Vector3 pos, float pressure, bool rotateLastSegment) {
+
+            //normal is constant since render area doesnt move
+            Vector3 normal = Vector3.up;
+            
+
+            #region errors
+
+            //if this isnt the first point, make sure that the direction of the line is not the same as the normal
+            if (currentLine.pointCount != 0) {
+                Vector3 dir = pos - device.lastDrawPoint;
+                if (dir.Equals(normal)) {
+                    Debug.LogError("The normal of a line segment addition was in the same dirrection as the line which is not possible to render");
+                    return;
+                }
+            }
+            
+
+            if (rotateLastSegment && currentLine.pointCount < 2) {
+                Debug.LogWarning("Shouldnt try to rotate the last line segment if there are less than 2 segments");
+                rotateLastSegment = false;
+            }
+            
+
+            #endregion
+
+            //compute angle data
+            float angle = 0;
+            if (currentLine.pointCount >= 2) angle = Vector3.Angle(pos - device.lastDrawPoint, device.lastDrawPoint - device.secondLastDrawPoint);
+            bool isCusp = angle > 90 && !rotateLastSegment;
+
+            #region vertices
+
+            Vector3[] oldVerts = device.currentGraphic.mesh.vertices;
+
+            Vector3[] verts = new Vector3[oldVerts.Length + 2];
+
+            //if I need to rotate the last segment, do that
+            if (rotateLastSegment) {
+                //recalulate
+
+                //get perpindicular vectors
+                Vector3 dir1 = (pos - device.lastDrawPoint).normalized;
+                Vector3 dir2 = (device.lastDrawPoint - device.secondLastDrawPoint).normalized;
+                Vector3 dir = dir1 + dir2;
+                Vector3 perp = Vector3.Cross(dir, normal).normalized;
+                if (device.flipVerts) perp = -perp;
+
+                //make a list of points that will be ordered into the vert array later
+                List<Vector3> addedVerts = new List<Vector3>() {
+                    device.lastDrawPoint + perp * device.lastPressure * PRESSURE_MULTIPLIER,
+                    device.lastDrawPoint + -perp * device.lastPressure * PRESSURE_MULTIPLIER,
+                };
+                for (int x = 0; x < 2; x++) {
+                    oldVerts[oldVerts.Length - 2 + x] = addedVerts[x];
+                }
+
+            }
+            
+            for (int x = 0; x < oldVerts.Length; x++) {
+                verts[x] = oldVerts[x];
+            }
+            
+            //first point (all p[oints at same point
+            if (currentLine.pointCount == 0) {
+                for (int x = 0; x < 2; x++) {
+                    verts[x] = pos;
+                }
+            }
+            //not first point
+            else {
+
+                //get perpindicular vectors
+                Vector3 dir = pos - device.lastDrawPoint;
+                Vector3 perp = Vector3.Cross(dir, normal).normalized;
+
+                //when theres a 90+ degree turn we need to flip the verts
+                if (isCusp) {
+                    device.flipVerts = !device.flipVerts;
+                    Debug.Log("flip: " + angle);
+                }
+                if (device.flipVerts) perp = -perp;
+
+
+
+                //make a list of points that will be ordered into the vert array later
+                List<Vector3> addedVerts = new List<Vector3>() {
+                    pos + perp * pressure * PRESSURE_MULTIPLIER,
+                    pos + -perp * pressure * PRESSURE_MULTIPLIER,
+                };
+                Debug.Log("hurr");
+                for (int x = 0; x < 2; x++) {
+                    verts[verts.Length - 2 + x] = addedVerts[x];
+                }
+
+
+            }
+
+
+            device.currentGraphic.mesh.SetVertices(verts);
+
+            #endregion
+
+            #region indices
+            
+            if (currentLine.pointCount == 0) {
+                currentLine.indices = new List<int>();
+            }
+            else {
+                currentLine.indices.Add(oldVerts.Length - 2);
+                currentLine.indices.Add(oldVerts.Length + 0);
+                currentLine.indices.Add(oldVerts.Length + 1);
+
+                currentLine.indices.Add(oldVerts.Length + 0);
+                currentLine.indices.Add(oldVerts.Length - 2);
+                currentLine.indices.Add(oldVerts.Length + 1);
+
+                currentLine.indices.Add(oldVerts.Length - 2);
+                currentLine.indices.Add(oldVerts.Length - 1);
+                currentLine.indices.Add(oldVerts.Length + 1);
+
+                currentLine.indices.Add(oldVerts.Length - 1);
+                currentLine.indices.Add(oldVerts.Length - 2);
+                currentLine.indices.Add(oldVerts.Length + 1);
+            }
+            
+
+            device.currentGraphic.mesh.SetIndices(currentLine.indices.ToArray(), MeshTopology.Triangles, 0);
+
+            #endregion
+
+
+            //update vars
+            currentLine.pointCount++;
+            if (currentLine.pointCount > 1) device.secondLastDrawPoint = device.lastDrawPoint;
+            device.lastDrawPoint = pos;
+            device.lastPressure = pressure;
+            
+
+            //turn off prediction
+            //toggleLinePrediction(line, false);
+
         }
 
         public IEnumerator rerenderCanvas() {
