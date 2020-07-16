@@ -51,141 +51,9 @@ namespace VRPen {
             StartCoroutine(fillboard());
         }
 
-        /*
-        public void addToLineold(InputDevice device, VectorLine currentLine, Vector3 drawPoint, float pressure) {
-
-
-            //get mesh 
-            Mesh currentMesh = currentLine.mesh;
-
-            //if start of line then setup up arrays
-            if (currentLine.vertices == null) {
-                currentLine.vertices = new Vector3[drawingMan.lineDataStepSize*2];
-                currentLine.normals = new Vector3[drawingMan.lineDataStepSize*2];
-            }
-
-            //new quad points
-            Vector3[] quadPoints = new Vector3[2];
-
-
-            //if start of line, the first 2 verts are at the draw point
-            if (currentMesh.vertexCount == 0) {
-                quadPoints[0] = drawPoint;
-                quadPoints[1] = drawPoint;
-            }
-
-            //not start of line
-            else {
-                //get the thickness vectors
-                float thickness = pressure * .01f;
-                Vector3 dir = drawPoint - device.lastDrawPoint;
-                Vector3 thicknessDisplacement = Vector3.Cross(dir, vectorParent.up).normalized * thickness;
-
-                //get the 2 new points
-                quadPoints[0] = drawPoint + thicknessDisplacement / 2;
-                quadPoints[1] = drawPoint - thicknessDisplacement / 2;
-            }
-
-
-
-            //new normals
-            Vector3[] quadNormals = new Vector3[2];
-            for (int i = 0; i < 2; i++) {
-                quadNormals[i] = vectorParent.up;
-            }
-
-
-            
-
-            //if we need to add more memery space for the data
-            if (currentLine.vertices.Length < currentLine.pointCount * 2 + 2) {
-
-                Vector3[] newVertices = new Vector3[currentLine.vertices.Length + drawingMan.lineDataStepSize*2];
-                Vector3[] newNormals = new Vector3[currentLine.vertices.Length + drawingMan.lineDataStepSize*2];
-
-                for (int i = 0; i < currentLine.vertices.Length; i++) {
-                    newVertices[i] = currentLine.vertices[i];
-                    newNormals[i] = currentLine.normals[i];
-                }
-                for (int i = 0; i < 2; i++) {
-                    newNormals[currentLine.vertices.Length + i] = quadNormals[i];
-                    newVertices[currentLine.vertices.Length + i] = quadPoints[i];
-                }
-
-                currentLine.vertices = newVertices;
-                currentLine.normals = newNormals;
-
-                currentMesh.vertices = newVertices;
-                currentMesh.normals = newNormals;
-
-            }
-
-            //if we already have open memory space
-            else {
-
-                for (int i = 0; i < 2; i++) {
-                    currentLine.normals[currentLine.pointCount * 2 + i] = quadNormals[i];
-                    currentLine.vertices[currentLine.pointCount*2 + i] = quadPoints[i];
-                }
-
-                currentMesh.vertices = currentLine.vertices;
-                currentMesh.normals = currentLine.normals;
-
-            }
-			
-            //indices
-            if (currentLine.indices == null) currentLine.indices = new List<int>();
-
-            //if its not the first point, make triangles
-            if (currentLine.pointCount > 0) {
-
-                //check if it is a cusp. This will require slightly different indices so that no tris are facing the wrong way (it cant be a cusp if this is the second point)
-                bool cusp;
-                if (currentLine.pointCount > 1) {
-                    cusp = Vector3.Angle(device.lastDrawPoint - device.secondLastDrawPoint, drawPoint - device.lastDrawPoint) > 90f;
-                } 
-                else {
-                    cusp = false;
-                }
-
-                if (cusp) {
-                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 4);
-                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 3);
-                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 1);
-                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 2);
-                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 1);
-                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 3);
-
-                }
-                else {
-                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 4);
-                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 2);
-                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 3);
-                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 2);
-                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 1);
-                    currentLine.indices.Add(currentLine.pointCount * 2 + 2 - 3);
-
-                }
-
-            }
-
-
-            //update mesh
-            currentMesh.SetIndices(currentLine.indices.ToArray(), MeshTopology.Triangles, 0);
-            //currentMesh.RecalculateNormals();
-            currentMesh.RecalculateBounds();
-
-            //set last draw points
-            device.secondLastDrawPoint = device.lastDrawPoint;
-            device.lastDrawPoint = drawPoint;
-
-            //set point count
-            currentLine.pointCount++;
-            
-        }**/
+        
 
         //think of the normal as if it was ribbon drawing (it is internal used to order the vertices such that they connect to previous ones properlly)
-        //the bool, "moveLastSegment", is for when a new segment goes in the same direction as the last segment. We can turn those 2 segments into one long segment to save polycount
         public void addToLine(InputDevice device, VectorLine currentLine, Vector3 pos, float pressure, bool rotateLastSegment) {
 
             //normal is constant since render area doesnt move
@@ -221,7 +89,7 @@ namespace VRPen {
 
             Vector3[] oldVerts = device.currentGraphic.mesh.vertices;
 
-            Vector3[] verts = new Vector3[oldVerts.Length + 2];
+            Vector3[] verts = new Vector3[currentLine.pointCount * 2 + 2];
 
             //if I need to rotate the last segment, do that
             if (rotateLastSegment) {
@@ -240,12 +108,12 @@ namespace VRPen {
                     device.lastDrawPoint + -perp * device.lastPressure * PRESSURE_MULTIPLIER,
                 };
                 for (int x = 0; x < 2; x++) {
-                    oldVerts[oldVerts.Length - 2 + x] = addedVerts[x];
+                    oldVerts[currentLine.pointCount * 2 - 2 + x] = addedVerts[x];
                 }
 
             }
             
-            for (int x = 0; x < oldVerts.Length; x++) {
+            for (int x = 0; x < currentLine.pointCount * 2; x++) {
                 verts[x] = oldVerts[x];
             }
             
@@ -278,7 +146,7 @@ namespace VRPen {
                 };
                 Debug.Log("hurr");
                 for (int x = 0; x < 2; x++) {
-                    verts[verts.Length - 2 + x] = addedVerts[x];
+                    verts[currentLine.pointCount * 2 + x] = addedVerts[x];
                 }
 
 
@@ -290,28 +158,35 @@ namespace VRPen {
             #endregion
 
             #region indices
-            
+
             if (currentLine.pointCount == 0) {
                 currentLine.indices = new List<int>();
             }
             else {
-                currentLine.indices.Add(oldVerts.Length - 2);
-                currentLine.indices.Add(oldVerts.Length + 0);
-                currentLine.indices.Add(oldVerts.Length + 1);
 
-                currentLine.indices.Add(oldVerts.Length + 0);
-                currentLine.indices.Add(oldVerts.Length - 2);
-                currentLine.indices.Add(oldVerts.Length + 1);
+                if (!device.flipVerts) {
+                    currentLine.indices.Add(currentLine.pointCount * 2 - 2);
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 0);
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 1);
 
-                currentLine.indices.Add(oldVerts.Length - 2);
-                currentLine.indices.Add(oldVerts.Length - 1);
-                currentLine.indices.Add(oldVerts.Length + 1);
+                    currentLine.indices.Add(currentLine.pointCount * 2 - 1);
+                    currentLine.indices.Add(currentLine.pointCount * 2 - 2);
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 1);
+                }
 
-                currentLine.indices.Add(oldVerts.Length - 1);
-                currentLine.indices.Add(oldVerts.Length - 2);
-                currentLine.indices.Add(oldVerts.Length + 1);
+                else {
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 0);
+                    currentLine.indices.Add(currentLine.pointCount * 2 - 2);
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 1);
+
+                    currentLine.indices.Add(currentLine.pointCount * 2 - 2);
+                    currentLine.indices.Add(currentLine.pointCount * 2 - 1);
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 1);
+
+                }
+
             }
-            
+
 
             device.currentGraphic.mesh.SetIndices(currentLine.indices.ToArray(), MeshTopology.Triangles, 0);
 
@@ -329,7 +204,113 @@ namespace VRPen {
             //toggleLinePrediction(line, false);
 
         }
+        
+        /*
+        public void updateLinePrediction(InputDevice device, VectorLine currentLine, Vector3 pos, float pressure) {
 
+            //normal is constant since render area doesnt move
+            Vector3 normal = Vector3.up;
+
+
+            #region errors
+
+            //if this isnt the first point, make sure that the direction of the line is not the same as the normal
+            if (currentLine.pointCount != 0) {
+                Vector3 direction = pos - device.lastDrawPoint;
+                if (direction.Equals(normal)) {
+                    Debug.LogError("The normal of a line segment addition was in the same dirrection as the line which is not possible to render");
+                    return;
+                }
+            }
+            else {
+                Debug.LogError("Need one point before adding line prediction");
+                return;
+            }
+            
+            
+            #endregion
+
+            //compute angle data
+            float angle = 0;
+            if (currentLine.pointCount >= 2) angle = Vector3.Angle(pos - device.lastDrawPoint, device.lastDrawPoint - device.secondLastDrawPoint);
+            bool isCusp = angle > 90;
+
+            #region vertices
+
+            Vector3[] oldVerts = device.currentGraphic.mesh.vertices;
+
+            Vector3[] verts = new Vector3[currentLine.pointCount * 2 + 2];
+
+            
+            for (int x = 0; x < currentLine.pointCount * 2; x++) {
+                verts[x] = oldVerts[x];
+            }
+            
+            //get perpindicular vectors
+            Vector3 dir = pos - device.lastDrawPoint;
+            Vector3 perp = Vector3.Cross(dir, normal).normalized;
+
+            //when theres a 90+ degree turn we need to flip the verts
+            bool tempFlip = device.flipVerts;
+            if (isCusp) {
+                tempFlip = !device.flipVerts;
+                if (tempFlip) perp = -perp;
+            }
+            
+            //make a list of points that will be ordered into the vert array later
+            List<Vector3> addedVerts = new List<Vector3>() {
+                pos + perp * pressure * PRESSURE_MULTIPLIER,
+                pos + -perp * pressure * PRESSURE_MULTIPLIER,
+            };
+            Debug.Log("hurr");
+            for (int x = 0; x < 2; x++) {
+                verts[currentLine.pointCount * 2 + x] = addedVerts[x];
+            }
+
+            
+            device.currentGraphic.mesh.SetVertices(verts);
+
+            #endregion
+
+            #region indices
+
+            if (currentLine.pointCount == 0) {
+                currentLine.indices = new List<int>();
+            }
+            else {
+                if (!tempFlip) {
+                    currentLine.indices.Add(currentLine.pointCount * 2 - 2);
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 0);
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 1);
+
+                    currentLine.indices.Add(currentLine.pointCount * 2 - 1);
+                    currentLine.indices.Add(currentLine.pointCount * 2 - 2);
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 1);
+                }
+
+                else {
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 0);
+                    currentLine.indices.Add(currentLine.pointCount * 2 - 2);
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 1);
+
+                    currentLine.indices.Add(currentLine.pointCount * 2 - 2);
+                    currentLine.indices.Add(currentLine.pointCount * 2 - 1);
+                    currentLine.indices.Add(currentLine.pointCount * 2 + 1);
+
+                }
+            }
+
+
+            device.currentGraphic.mesh.SetIndices(currentLine.indices.ToArray(), MeshTopology.Triangles, 0);
+
+            #endregion
+
+            
+
+        }
+
+        **/
+        
         public IEnumerator rerenderCanvas() {
 
             //turn on objs

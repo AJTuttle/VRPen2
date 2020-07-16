@@ -268,6 +268,7 @@ namespace VRPen {
                 }
                 else {
                     //to do add line prediction stuff
+                    //if (currentLine.pointCount > 0) canvas.updateLinePrediction(device, currentLine, drawPoint, pressure);
                 }
             }
         }
