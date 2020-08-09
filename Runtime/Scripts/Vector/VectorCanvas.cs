@@ -204,7 +204,64 @@ namespace VRPen {
             //toggleLinePrediction(line, false);
 
         }
-        
+
+        public void turnLineIntoDot(InputDevice device, VectorLine currentLine) {
+
+            //normal is constant since render area doesnt move
+            Vector3 normal = Vector3.up;
+
+
+            #region errors
+
+            #endregion
+
+
+
+            #region vertices
+
+            Vector3[] oldVerts = device.currentGraphic.mesh.vertices;
+
+            Vector3 midPoint = oldVerts[0];
+            Vector3 side = Vector3.Cross(new Vector3(1, 1, 1), normal);
+            Vector3 up = Vector3.Cross(side, normal);
+            float pressure = device.lastPressure * PRESSURE_MULTIPLIER;
+
+
+            List<Vector3> verts = new List<Vector3>() {
+                midPoint,
+                midPoint + side * pressure,
+                midPoint + side * pressure * 0.7071f + up * pressure * 0.7071f,
+                midPoint + up * pressure,
+                midPoint - side * pressure * 0.7071f + up * pressure * 0.7071f,
+                midPoint - side * pressure,
+                midPoint - side * pressure * 0.7071f - up * pressure * 0.7071f,
+                midPoint - up * pressure,
+                midPoint + side * pressure * 0.7071f - up * pressure * 0.7071f,
+            };
+
+            device.currentGraphic.mesh.SetVertices(verts);
+
+            #endregion
+
+            #region indices
+
+            currentLine.indices = new List<int> {
+                0,2,1,
+                0,3,2,
+                0,4,3,
+                0,5,4,
+                0,6,5,
+                0,7,6,
+                0,8,7,
+                0,1,8
+            };
+
+            device.currentGraphic.mesh.SetIndices(currentLine.indices.ToArray(), MeshTopology.Triangles, 0);
+
+            #endregion
+
+        }
+
         /*
         public void updateLinePrediction(InputDevice device, VectorLine currentLine, Vector3 pos, float pressure) {
 
@@ -310,7 +367,7 @@ namespace VRPen {
         }
 
         **/
-        
+
         public IEnumerator rerenderCanvas() {
 
             //turn on objs

@@ -405,8 +405,15 @@ namespace VRPen {
             //turn off last mesh for render texture
             if (device.currentGraphic != null) {
 
-                //reset the renderqueue so that the depth is set when the line is finished drawing (so that it doesnt shift when undos happen for example)
+                //get canvas
                 VectorCanvas canvas = getCanvas(device.currentGraphic.canvasId);
+
+                //if line only has one point turn it into a dot
+                if (((VectorLine)device.currentGraphic).pointCount == 1) {
+                    canvas.turnLineIntoDot(device, (VectorLine)device.currentGraphic);
+                }
+
+                //reset the renderqueue so that the depth is set when the line is finished drawing (so that it doesnt shift when undos happen for example)
                 device.currentGraphic.obj.GetComponent<Renderer>().material.renderQueue = canvas.renderQueueCounter;
                 canvas.renderQueueCounter++;
 
