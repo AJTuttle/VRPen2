@@ -262,7 +262,7 @@ namespace VRPen {
 
         }
 
-        /*
+        
         public void updateLinePrediction(InputDevice device, VectorLine currentLine, Vector3 pos, float pressure) {
 
             //normal is constant since render area doesnt move
@@ -366,7 +366,7 @@ namespace VRPen {
 
         }
 
-        **/
+        
 
         public IEnumerator rerenderCanvas() {
 

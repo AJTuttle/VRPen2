@@ -268,7 +268,7 @@ namespace VRPen {
                 }
                 else {
                     //to do add line prediction stuff
-                    //if (currentLine.pointCount > 0) canvas.updateLinePrediction(device, currentLine, drawPoint, pressure);
+                    if (currentLine.pointCount > 0) canvas.updateLinePrediction(device, currentLine, drawPoint, pressure);
                 }
             }
         }
@@ -418,7 +418,11 @@ namespace VRPen {
                 canvas.renderQueueCounter++;
 
                 //turn off and remove from curr after a frame
-                StartCoroutine(canvas.renderGraphic(device.currentGraphic, device));
+                //StartCoroutine(canvas.renderGraphic(device.currentGraphic, device));
+
+                //instead of just rendering the 1 line, we rerender the whole canvas so that we can make use of various post processed effects
+                device.currentGraphic = null;
+                StartCoroutine(canvas.rerenderCanvas());
 
             }
             else {
