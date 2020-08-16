@@ -50,6 +50,8 @@ namespace VRPen {
                 return ((float)initalPublicCanvasPixelWidth / (float)initalPublicCanvasPixelHeight);
             }
         }
+        [Tooltip("Height of initial public canvas")]
+        public AnimationCurve pressureCurve;
 
 
         [Space(5)]
@@ -243,6 +245,9 @@ namespace VRPen {
                 //newline bool, useful for delta compression
                 bool newLine = false;
 
+                //fix pressure
+                pressure = pressureCurve.Evaluate(pressure);
+
                 //get or create mesh
                 VectorLine currentLine = getLine(player, device, color, canvas, ref newLine);
 
@@ -420,7 +425,7 @@ namespace VRPen {
                 VectorCanvas canvas = getCanvas(device.currentGraphic.canvasId);
 
                 //if line only has one point turn it into a dot
-                if (((VectorLine)device.currentGraphic).pointCount == 1) {
+                if (((VectorLine)device.currentGraphic).pointCount <= 2) {
                     canvas.turnLineIntoDot(device, (VectorLine)device.currentGraphic);
                 }
 

@@ -221,9 +221,15 @@ namespace VRPen {
 
             Vector3[] oldVerts = device.currentGraphic.mesh.vertices;
 
-            Vector3 midPoint = oldVerts[0];
-            Vector3 side = Vector3.Cross(new Vector3(1, 1, 1), normal);
-            Vector3 up = Vector3.Cross(side, normal);
+            Vector3 midPoint;
+            if (currentLine.pointCount == 1) {
+                midPoint = device.lastDrawPoint;
+            }
+            else {
+                midPoint = device.lastDrawPoint + (device.secondLastDrawPoint-device.lastDrawPoint)/ 2;
+            }
+            Vector3 side = Vector3.Cross(new Vector3(1, 1, 1), normal).normalized;
+            Vector3 up = Vector3.Cross(side, normal).normalized;
             float pressure = device.lastPressure * PRESSURE_MULTIPLIER;
 
 
