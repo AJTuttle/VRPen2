@@ -262,6 +262,27 @@ namespace VRPen {
 
         }
 
+        public void updatePointThickness(InputDevice device, VectorLine currentLine, float pressure) {
+
+            //if its more than just a dot, recalculate the points
+            if (currentLine.pointCount > 1) { 
+                Vector3[] verts = device.currentGraphic.mesh.vertices;
+                Vector3 point = device.lastDrawPoint;
+
+                //get perpindicular vectors
+                Vector3 normal = Vector3.up;
+                Vector3 dir = device.lastDrawPoint - device.secondLastDrawPoint;
+                Vector3 perp = Vector3.Cross(dir, normal).normalized;
+
+
+                if (device.flipVerts) perp = -perp;
+                verts[verts.Length - 2] = point + perp * pressure * PRESSURE_MULTIPLIER;
+                verts[verts.Length - 2] = point - perp * pressure * PRESSURE_MULTIPLIER;
+            }
+
+            //update data
+            device.lastPressure = pressure;
+        }
         
         public void updateLinePrediction(InputDevice device, VectorLine currentLine, Vector3 pos, float pressure) {
 

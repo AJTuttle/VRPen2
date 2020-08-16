@@ -23,6 +23,8 @@ namespace VRPen {
         [System.NonSerialized]
         public const byte INITIAL_PUBLIC_CANVAS_DISPLAY_ID = 255;
 
+        const float PRESSURE_UPDATE_MINIMUM_DELTA = 0.01f; //the min amount that pressure has to change to be considered worth updated the mesh
+
         //public vars
         [Space(5)]
         [Header("       Important variables to set")]
@@ -267,6 +269,15 @@ namespace VRPen {
 
                 }
                 else {
+
+                    //if the pressure is greater then thicken the last point
+                    if (pressure > device.lastPressure + PRESSURE_UPDATE_MINIMUM_DELTA) {
+                        canvas.updatePointThickness(device, currentLine, pressure);
+
+                        //network it
+                        if (localInput) network.addToDataOutbox(endLine, color, x, y, pressure, canvasId, deviceIndex);
+                    }
+
                     //to do add line prediction stuff
                     if (currentLine.pointCount > 0) canvas.updateLinePrediction(device, currentLine, drawPoint, pressure);
                 }
