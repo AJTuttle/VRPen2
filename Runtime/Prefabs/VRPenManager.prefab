@@ -81,13 +81,14 @@ MonoBehaviour:
   syncCurrentCanvas: 1
   syncDisplayUIs: 0
   UI_SYNC_PERIOD: 0
+  spawnRemoteDevicesLocation: {x: 0, y: 0, z: 0}
+  cachePackets: 0
   remoteMarkerPrefab: {fileID: 8217082110612787815, guid: f929d31bb578d7349baa4813213b4f55,
     type: 3}
   remoteTabletPrefab: {fileID: 4162737611858156914, guid: 27a71b00b9c049b41a5f99f8630e898b,
     type: 3}
   remoteMousePrefab: {fileID: 6923511768144376201, guid: 84fccfdf48296f14ebfe5897c7167efb,
     type: 3}
-  cachePackets: 0
 --- !u!114 &6656644161125225622
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -100,24 +101,56 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fc54dc0f8c0b2041bc421af44831579, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvasBackgrounds:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 2800000, guid: b66c08fb97815864f9da35e71880d80d, type: 3}
   displays:
   - {fileID: 0}
   localInputDevices:
   - {fileID: 0}
   - {fileID: 0}
-  autoSaveOnExit: 0
+  canvasBackgrounds:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 2800000, guid: b66c08fb97815864f9da35e71880d80d, type: 3}
+  autoSavePNGOnExit: 0
   MAX_CANVAS_COUNT: 6
   renderAreaOrigin: {x: 0, y: -5, z: 0}
   initalPublicCanvasPixelWidth: 2000
   initalPublicCanvasPixelHeight: 1200
-  minDistanceDelta: 0.01
-  minCurveAngle: 159.6
-  maxCuspAngle: 68.2
+  pressureCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 0
+      inSlope: 2
+      outSlope: 2
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 0.41296047
+      value: 0.875327
+      inSlope: 0.73241234
+      outSlope: 0.73241234
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  minDistanceDelta: 0.005
+  minCuspAngle: 0
   lineDataStepSize: 50
   quadPrefab: {fileID: 5229868460911306089, guid: 78c7fe814c087254fa5566c0b51e29f3,
     type: 3}
