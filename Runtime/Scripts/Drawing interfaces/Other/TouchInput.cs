@@ -32,7 +32,7 @@ namespace VRPen {
             pressure = 1;
             if (Input.touchSupported) pressure = Mathf.Clamp(Input.GetTouch(0).pressure, 0, 1);
 
-            VRPen.Debug.LogError(Input.touchSupported + "  " + pressure + "  " + Input.GetMouseButtonDown(0) + "  " + Input.GetMouseButton(0) + "  " + Input.GetMouseButtonUp(0));
+            //VRPen.Debug.LogError(Input.touchSupported + "  " + pressure + "  " + Input.GetMouseButtonDown(0) + "  " + Input.GetMouseButton(0) + "  " + Input.GetMouseButtonUp(0));
 
             //check for marker input
             if (Input.GetMouseButtonDown(0) || Input.GetMouseButton(0)) input();

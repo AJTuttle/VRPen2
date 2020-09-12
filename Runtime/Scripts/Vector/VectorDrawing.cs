@@ -52,6 +52,8 @@ namespace VRPen {
         }
         [Tooltip("Height of initial public canvas")]
         public AnimationCurve pressureCurve;
+        [Tooltip("Are default hotkeys enabled")]
+        public bool enableHotkeys;
 
 
         [Space(5)]
@@ -137,7 +139,7 @@ namespace VRPen {
         
 
         private void Update() {
-            hotkeys();
+            if (enableHotkeys) hotkeys();
         }
 
         //Todo: add networking to this so that they can be added after connecting
