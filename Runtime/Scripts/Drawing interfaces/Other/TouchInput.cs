@@ -30,7 +30,7 @@ namespace VRPen {
         void Update() {
 
             pressure = 1;
-            if (Input.touchSupported) pressure = Mathf.Clamp(Input.GetTouch(0).pressure, 0, 1);
+            if (Input.touchSupported && Input.touchCount > 0) pressure = Mathf.Clamp(Input.GetTouch(0).pressure, 0, 1);
 
             //VRPen.Debug.LogError(Input.touchSupported + "  " + pressure + "  " + Input.GetMouseButtonDown(0) + "  " + Input.GetMouseButton(0) + "  " + Input.GetMouseButtonUp(0));
 
