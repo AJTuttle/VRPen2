@@ -236,7 +236,7 @@ namespace VRPen {
             }
 
             //end line or draw
-            if (endLine || pressure == 0) {
+            if (endLine) {
 
                 endLineData(device);
                 if (localInput) network.addToDataOutbox(endLine, color, x, y, pressure, canvasId, deviceIndex);

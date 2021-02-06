@@ -771,7 +771,7 @@ namespace VRPen {
                     }
 
                     else {
-                        //Debug.Log("Testing error state 1");
+                        Debug.LogError("Received VRPen draw input packet with 0 pressure (not a newline event either)");
                     }
 
                     //update cursor at the last input
