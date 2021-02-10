@@ -78,8 +78,10 @@ namespace VRPen {
                     firstCanvasMoveInput = false;
                 }
                 else {
+                    float zBefore = displayObj.transform.localPosition.z;
                     Vector3 delta = data.hit.point - lastCanvasMovePos;
                     displayObj.transform.position += delta;
+                    displayObj.transform.localPosition = new Vector3(displayObj.transform.localPosition.x, displayObj.transform.localPosition.y, zBefore);
                 }
                 
                 lastCanvasMovePos = data.hit.point;
