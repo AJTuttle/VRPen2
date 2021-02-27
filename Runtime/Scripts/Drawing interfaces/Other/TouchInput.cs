@@ -21,6 +21,10 @@ namespace VRPen {
         public bool firstCanvasMoveInput = true;
         Vector3 lastCanvasMovePos;
 
+        //slider
+        public bool useThicknessSlider;
+        public Slider thicknessSlider
+
         new void Start() {
             
             base.Start();
@@ -31,6 +35,7 @@ namespace VRPen {
 
             pressure = 1;
             if (Input.touchSupported && Input.touchCount > 0) pressure = Mathf.Clamp(Input.GetTouch(0).pressure, 0, 1);
+            if (useThicknessSlider) pressure *= thicknessSlider.value;
 
             //VRPen.Debug.LogError(Input.touchSupported + "  " + pressure + "  " + Input.GetMouseButtonDown(0) + "  " + Input.GetMouseButton(0) + "  " + Input.GetMouseButtonUp(0));
 
