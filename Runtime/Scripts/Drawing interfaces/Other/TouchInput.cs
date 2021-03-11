@@ -23,7 +23,7 @@ namespace VRPen {
 
         //slider
         public bool useThicknessSlider;
-        public Slider thicknessSlider
+        public Slider thicknessSlider;
 
         new void Start() {
             
