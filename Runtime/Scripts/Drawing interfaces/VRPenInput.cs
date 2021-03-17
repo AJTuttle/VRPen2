@@ -151,8 +151,11 @@ namespace VRPen {
                 float scale = ((BoxCollider)data.hit.collider).size.x;
                 value = value / scale + 0.5f;
 
-                //set value
+                //scale value to slider extremes
                 UISlider slidyBoi = button.GetComponent<UISlider>();
+                value = slidyBoi.minValue + value * (slidyBoi.maxValue - slidyBoi.minValue);
+
+                //set value
                 if (slidyBoi != null) slidyBoi.setPos(value, true);
                 else ((Slider)button).value = value;
 
