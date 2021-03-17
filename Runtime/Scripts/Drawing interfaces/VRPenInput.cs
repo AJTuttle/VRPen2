@@ -153,7 +153,7 @@ namespace VRPen {
 
                 //scale value to slider extremes
                 UISlider slidyBoi = button.GetComponent<UISlider>();
-                value = slidyBoi.minValue + value * (slidyBoi.maxValue - slidyBoi.minValue);
+                value = slidyBoi.slider.minValue + value * (slidyBoi.slider.maxValue - slidyBoi.slider.minValue);
 
                 //set value
                 if (slidyBoi != null) slidyBoi.setPos(value, true);
