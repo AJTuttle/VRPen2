@@ -158,7 +158,7 @@ namespace VRPen {
                 else {
 
                     //scale value to slider extremes
-                    value = slidyBoi.slider.minValue + value * (slidyBoi.slider.maxValue - slidyBoi.slider.minValue);
+                    value = ((Slider)button).minValue + value * (((Slider)button).maxValue - ((Slider)button).minValue);
                     ((Slider)button).value = value;
                 }
 
