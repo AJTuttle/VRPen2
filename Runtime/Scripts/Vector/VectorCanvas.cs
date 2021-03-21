@@ -144,7 +144,6 @@ namespace VRPen {
                     pos + perp * pressure * PRESSURE_MULTIPLIER,
                     pos + -perp * pressure * PRESSURE_MULTIPLIER,
                 };
-                Debug.Log("hurr");
                 for (int x = 0; x < 2; x++) {
                     verts[currentLine.pointCount * 2 + x] = addedVerts[x];
                 }
