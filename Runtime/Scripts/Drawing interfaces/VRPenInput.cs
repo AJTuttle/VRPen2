@@ -205,7 +205,7 @@ namespace VRPen {
 				
 
 				//get vars from raycast
-                Transform canvas = data.hit.transform;
+                Transform canvas = data.hit.collider.transform;
                 Vector3 pos = canvas.InverseTransformPoint(data.hit.point);
                 float xCoord = pos.x + 0.5f;
                 float yCoord = pos.y + 0.5f;
@@ -267,7 +267,7 @@ namespace VRPen {
             
 
             //get vars from ray
-            Transform canvas = data.hit.transform;
+            Transform canvas = data.hit.collider.transform;
             Vector3 pos = canvas.InverseTransformPoint(data.hit.point);
             float aspectRatio = data.display.currentLocalCanvas.aspectRatio;
             xFloat = pos.x * aspectRatio;
