@@ -133,7 +133,7 @@ namespace VRPen {
                 //when theres a 90+ degree turn we need to flip the verts
                 if (isCusp) {
                     device.flipVerts = !device.flipVerts;
-                    Debug.Log("flip: " + angle);
+                    //Debug.Log("flip: " + angle);
                 }
                 if (device.flipVerts) perp = -perp;
 

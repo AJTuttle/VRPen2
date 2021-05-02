@@ -66,12 +66,12 @@ namespace VRPen {
                 localCursor.SetActive(true);
 
                 //aspect rat
-                float aspectRatio = (float)localDisplay.currentLocalCanvas.renderTexturePresets.width / localDisplay.currentLocalCanvas.renderTexturePresets.height;
+                float aspectRatio = localDisplay.currentLocalCanvas.aspectRatio;
 
                 //get x and y
                 float x = .5f * aspectRatio - aspectRatio * currentSample.point.x;
                 float y = .5f - currentSample.point.y;
-
+                
                 //apply
                 localCursor.transform.localPosition = new Vector3(x, 0, y);
 
@@ -96,6 +96,7 @@ namespace VRPen {
 
             //detect hit based off priority
             raycastPriorityDetection(ref data, hits);
+            
             
 
             //pressure

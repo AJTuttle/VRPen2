@@ -111,6 +111,8 @@ namespace VRPen {
                 return;
             }
 
+            Debug.Log(hover+"");
+            
             //use raycast data to do stuff
             if (hover == HoverState.DRAW) canvasHover(data);
             else if (hover == HoverState.NODRAW || hover == HoverState.NONE) noDrawHover(data);
@@ -272,7 +274,7 @@ namespace VRPen {
             float aspectRatio = data.display.currentLocalCanvas.aspectRatio;
             xFloat = pos.x * aspectRatio;
             yFloat = pos.y;
-
+            
             //do stuff
             switch (state) {
 
