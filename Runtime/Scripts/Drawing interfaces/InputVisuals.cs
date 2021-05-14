@@ -11,7 +11,9 @@ namespace VRPen {
         //script refs
         protected VectorDrawing vectorMan;
         protected NetworkManager network;
-
+        
+        [Header("Optional Visual Parameters")]
+        [Space(10)]
         public GameObject markerModel;
         public GameObject eyedropperModel;
         public GameObject eraserModel;

@@ -10,6 +10,8 @@ namespace VRPen {
          
 
         //public varz
+        [Header("Marker Parameters")]
+        [Space(10)]
         public Transform modelParent;
         public Transform followTarget;
         

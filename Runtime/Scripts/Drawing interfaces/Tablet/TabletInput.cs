@@ -9,6 +9,8 @@ namespace VRPen {
 
 
         //scripts
+        [Header("Tablet Parameters")]
+        [Space(10)]
         public StarTablet tablet;
 
         //public vars

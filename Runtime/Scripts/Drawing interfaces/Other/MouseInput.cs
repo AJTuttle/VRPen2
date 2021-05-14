@@ -9,10 +9,15 @@ namespace VRPen {
     public class MouseInput : VRPenInput {
         // Start is called before the first frame update
 
+        [Header("Mouse Parameters")]        
+        [Space(10)]
+        [Tooltip("If not assigned, the main camera will be used")]
         public Camera cam;
+        
+        
+        [Header("Extra Values")]
+        [Space(10)]
         public float pressure = 0;
-
-        public Renderer colorMat;
 
         new void Start() {
             
@@ -22,6 +27,8 @@ namespace VRPen {
         // Update is called once per frame
         void Update() {
             
+            //find cam
+            if (cam == null) cam = Camera.main;
 
             pressure = 1;
             UIClickDown = Input.GetKeyDown(KeyCode.Mouse1);

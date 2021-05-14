@@ -19,7 +19,10 @@ namespace VRPen {
 		
 
         //public vars
+        [Header("Necessary Input Parameters")]
+        [Space(10)]
 		public InputDevice.InputDeviceType deviceType;
+        [System.NonSerialized]
         public bool UIClickDown = false;
 
         //drawing data
