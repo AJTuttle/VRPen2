@@ -114,7 +114,6 @@ namespace VRPen {
                 return;
             }
 
-            Debug.Log(hover+"");
             
             //use raycast data to do stuff
             if (hover == HoverState.DRAW) canvasHover(data);

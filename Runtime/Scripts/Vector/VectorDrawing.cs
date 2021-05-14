@@ -234,7 +234,10 @@ namespace VRPen {
                 Debug.LogError("Failed retreiving input device");
                 return;
             }
-
+            
+            //fix pressure
+            if (localInput) pressure = pressureCurve.Evaluate(pressure);
+            
             //end line or draw
             if (endLine) {
 
@@ -246,9 +249,6 @@ namespace VRPen {
 
                 //newline bool, useful for delta compression
                 bool newLine = false;
-
-                //fix pressure
-                pressure = pressureCurve.Evaluate(pressure);
 
                 //get or create mesh
                 VectorLine currentLine = getLine(player, device, color, canvas, ref newLine);
