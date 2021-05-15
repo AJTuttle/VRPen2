@@ -257,13 +257,13 @@ namespace VRPen {
                 Vector3 drawPoint = new Vector3(x, 0, y);
 
                 //delta compression
-                bool validInput = deltaCompression(device, newLine, drawPoint);
+                bool validInput = deltaCompression(currentLine, newLine, drawPoint);
 
                 //add to that mesh and network or just show a line prediction
                 if (validInput) {
                     
                     //get angle between last line and new line (negative for left turn, positive for right turn)
-                    float angle = Vector3.Angle(device.lastDrawPoint - device.secondLastDrawPoint, drawPoint - device.lastDrawPoint);
+                    float angle = Vector3.Angle(currentLine.lastDrawPoint - currentLine.secondLastDrawPoint, drawPoint - currentLine.lastDrawPoint);
                     bool isCusp = angle >= minCuspAngle;
 
                     if (currentLine.pointCount < 2) isCusp = true;
@@ -278,7 +278,7 @@ namespace VRPen {
                 else {
 
                     //if the pressure is greater then thicken the last point
-                    if (pressure > device.lastPressure + PRESSURE_UPDATE_MINIMUM_DELTA) {
+                    if (pressure > currentLine.lastPressure + PRESSURE_UPDATE_MINIMUM_DELTA) {
                         canvas.updatePointThickness(device, currentLine, pressure);
 
                         //network it
@@ -360,16 +360,14 @@ namespace VRPen {
             VectorStamp currentStamp = new VectorStamp();
             currentStamp.mesh = currentMesh;
 			if (player != null) {
-				currentStamp.owner = player.connectionId;
-				player.graphicIndexer++;
-				currentStamp.index = player.graphicIndexer;
-				player.graphics.Add(currentStamp);
+				currentStamp.ownerId = player.connectionId;
+				currentStamp.localIndex = player.localGraphicIndex;
+                player.localGraphicIndex++;
+				canvas.graphics.Add(currentStamp);
 			}
 			currentStamp.obj = obj;
             currentStamp.mr = mr;
             device.currentGraphic = currentStamp;
-            
-            currentStamp.deviceIndex = device.deviceIndex;
 
 
             //set shader
@@ -476,15 +474,14 @@ namespace VRPen {
                 //vector line data struct and player data structs
                 currentLine = new VectorLine();
                 currentLine.mesh = currentMesh;
-                currentLine.owner = player.connectionId;
+                currentLine.ownerId = player.connectionId;
                 currentLine.obj = obj;
                 currentLine.mr = mr;
                 device.currentGraphic = currentLine;
-                player.graphicIndexer++;
-                currentLine.index = player.graphicIndexer;
-                currentLine.deviceIndex = device.deviceIndex;
+                currentLine.localIndex = player.localGraphicIndex;
+                player.localGraphicIndex++;
                 currentLine.canvasId = canvas.canvasId;
-                player.graphics.Add(currentLine);
+                canvas.graphics.Add(currentLine);
 
 
                 //set shader
@@ -508,9 +505,9 @@ namespace VRPen {
 
         }
 
-        bool deltaCompression(InputDevice device, bool newLine, Vector3 drawPoint) {
+        bool deltaCompression(VectorLine currentLine, bool newLine, Vector3 drawPoint) {
 
-            bool validDistance = Vector3.Distance(drawPoint, device.lastDrawPoint) > minDistanceDelta;
+            bool validDistance = Vector3.Distance(drawPoint, currentLine.lastDrawPoint) > minDistanceDelta;
 
             return newLine || validDistance;
 
@@ -518,9 +515,9 @@ namespace VRPen {
        
 
         public void undo(NetworkedPlayer player, bool localInput) {
-
+            /*
             //get graphic
-            if (player.graphics.Count == 0) return;
+            if (graphics.Count == 0) return;
             VectorGraphic undid = player.graphics.Last();
 
             //remove from data
@@ -547,6 +544,7 @@ namespace VRPen {
 
             //network
             if (localInput) network.sendUndo();
+            */
         }
 
         //if originDisplay is null, this is the initial public canvas

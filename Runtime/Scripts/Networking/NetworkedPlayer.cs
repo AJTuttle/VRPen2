@@ -16,10 +16,7 @@ namespace VRPen {
 
 
         //vector drawing
-        public List<VectorGraphic> graphics = new List<VectorGraphic>();
-        public int graphicIndexer = 0;
-        
-
+        public int localGraphicIndex = 0;
 
 
     }

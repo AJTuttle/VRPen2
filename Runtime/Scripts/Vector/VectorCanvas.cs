@@ -8,6 +8,9 @@ namespace VRPen {
 
         VectorDrawing drawingMan;
         NetworkManager network;
+        
+        [System.NonSerialized]
+        public List<VectorGraphic> graphics = new List<VectorGraphic>();
 
         public byte canvasId;
         public int renderQueueCounter = 1;
@@ -64,7 +67,7 @@ namespace VRPen {
 
             //if this isnt the first point, make sure that the direction of the line is not the same as the normal
             if (currentLine.pointCount != 0) {
-                Vector3 dir = pos - device.lastDrawPoint;
+                Vector3 dir = pos - currentLine.lastDrawPoint;
                 if (dir.Equals(normal)) {
                     Debug.LogError("The normal of a line segment addition was in the same dirrection as the line which is not possible to render");
                     return;
@@ -82,7 +85,7 @@ namespace VRPen {
 
             //compute angle data
             float angle = 0;
-            if (currentLine.pointCount >= 2) angle = Vector3.Angle(pos - device.lastDrawPoint, device.lastDrawPoint - device.secondLastDrawPoint);
+            if (currentLine.pointCount >= 2) angle = Vector3.Angle(pos - currentLine.lastDrawPoint, currentLine.lastDrawPoint - currentLine.secondLastDrawPoint);
             bool isCusp = angle > 90 && !rotateLastSegment;
 
             #region vertices
@@ -96,16 +99,16 @@ namespace VRPen {
                 //recalulate
 
                 //get perpindicular vectors
-                Vector3 dir1 = (pos - device.lastDrawPoint).normalized;
-                Vector3 dir2 = (device.lastDrawPoint - device.secondLastDrawPoint).normalized;
+                Vector3 dir1 = (pos - currentLine.lastDrawPoint).normalized;
+                Vector3 dir2 = (currentLine.lastDrawPoint - currentLine.secondLastDrawPoint).normalized;
                 Vector3 dir = dir1 + dir2;
                 Vector3 perp = Vector3.Cross(dir, normal).normalized;
-                if (device.flipVerts) perp = -perp;
+                if (currentLine.flipVerts) perp = -perp;
 
                 //make a list of points that will be ordered into the vert array later
                 List<Vector3> addedVerts = new List<Vector3>() {
-                    device.lastDrawPoint + perp * device.lastPressure * PRESSURE_MULTIPLIER,
-                    device.lastDrawPoint + -perp * device.lastPressure * PRESSURE_MULTIPLIER,
+                    currentLine.lastDrawPoint + perp * currentLine.lastPressure * PRESSURE_MULTIPLIER,
+                    currentLine.lastDrawPoint + -perp * currentLine.lastPressure * PRESSURE_MULTIPLIER,
                 };
                 for (int x = 0; x < 2; x++) {
                     oldVerts[currentLine.pointCount * 2 - 2 + x] = addedVerts[x];
@@ -127,15 +130,15 @@ namespace VRPen {
             else {
 
                 //get perpindicular vectors
-                Vector3 dir = pos - device.lastDrawPoint;
+                Vector3 dir = pos - currentLine.lastDrawPoint;
                 Vector3 perp = Vector3.Cross(dir, normal).normalized;
 
                 //when theres a 90+ degree turn we need to flip the verts
                 if (isCusp) {
-                    device.flipVerts = !device.flipVerts;
+                    currentLine.flipVerts = !currentLine.flipVerts;
                     //Debug.Log("flip: " + angle);
                 }
-                if (device.flipVerts) perp = -perp;
+                if (currentLine.flipVerts) perp = -perp;
 
 
 
@@ -163,7 +166,7 @@ namespace VRPen {
             }
             else {
 
-                if (!device.flipVerts) {
+                if (!currentLine.flipVerts) {
                     currentLine.indices.Add(currentLine.pointCount * 2 - 2);
                     currentLine.indices.Add(currentLine.pointCount * 2 + 0);
                     currentLine.indices.Add(currentLine.pointCount * 2 + 1);
@@ -194,9 +197,9 @@ namespace VRPen {
 
             //update vars
             currentLine.pointCount++;
-            if (currentLine.pointCount > 1) device.secondLastDrawPoint = device.lastDrawPoint;
-            device.lastDrawPoint = pos;
-            device.lastPressure = pressure;
+            if (currentLine.pointCount > 1) currentLine.secondLastDrawPoint = currentLine.lastDrawPoint;
+            currentLine.lastDrawPoint = pos;
+            currentLine.lastPressure = pressure;
             
 
             //turn off prediction
@@ -222,14 +225,14 @@ namespace VRPen {
 
             Vector3 midPoint;
             if (currentLine.pointCount == 1) {
-                midPoint = device.lastDrawPoint;
+                midPoint = currentLine.lastDrawPoint;
             }
             else {
-                midPoint = device.lastDrawPoint + (device.secondLastDrawPoint-device.lastDrawPoint)/ 2;
+                midPoint = currentLine.lastDrawPoint + (currentLine.secondLastDrawPoint-currentLine.lastDrawPoint)/ 2;
             }
             Vector3 side = Vector3.Cross(new Vector3(1, 1, 1), normal).normalized;
             Vector3 up = Vector3.Cross(side, normal).normalized;
-            float pressure = device.lastPressure * PRESSURE_MULTIPLIER;
+            float pressure = currentLine.lastPressure * PRESSURE_MULTIPLIER;
 
 
             List<Vector3> verts = new List<Vector3>() {
@@ -272,21 +275,21 @@ namespace VRPen {
             //if its more than just a dot, recalculate the points
             if (currentLine.pointCount > 1) { 
                 Vector3[] verts = device.currentGraphic.mesh.vertices;
-                Vector3 point = device.lastDrawPoint;
+                Vector3 point = currentLine.lastDrawPoint;
 
                 //get perpindicular vectors
                 Vector3 normal = Vector3.up;
-                Vector3 dir = device.lastDrawPoint - device.secondLastDrawPoint;
+                Vector3 dir = currentLine.lastDrawPoint - currentLine.secondLastDrawPoint;
                 Vector3 perp = Vector3.Cross(dir, normal).normalized;
 
 
-                if (device.flipVerts) perp = -perp;
+                if (currentLine.flipVerts) perp = -perp;
                 verts[verts.Length - 2] = point + perp * pressure * PRESSURE_MULTIPLIER;
                 verts[verts.Length - 2] = point - perp * pressure * PRESSURE_MULTIPLIER;
             }
 
             //update data
-            device.lastPressure = pressure;
+            currentLine.lastPressure = pressure;
         }
         
         public void updateLinePrediction(InputDevice device, VectorLine currentLine, Vector3 pos, float pressure) {
@@ -299,7 +302,7 @@ namespace VRPen {
 
             //if this isnt the first point, make sure that the direction of the line is not the same as the normal
             if (currentLine.pointCount != 0) {
-                Vector3 direction = pos - device.lastDrawPoint;
+                Vector3 direction = pos - currentLine.lastDrawPoint;
                 if (direction.Equals(normal)) {
                     Debug.LogError("The normal of a line segment addition was in the same dirrection as the line which is not possible to render");
                     return;
@@ -315,7 +318,7 @@ namespace VRPen {
 
             //compute angle data
             float angle = 0;
-            if (currentLine.pointCount >= 2) angle = Vector3.Angle(pos - device.lastDrawPoint, device.lastDrawPoint - device.secondLastDrawPoint);
+            if (currentLine.pointCount >= 2) angle = Vector3.Angle(pos - currentLine.lastDrawPoint, currentLine.lastDrawPoint - currentLine.secondLastDrawPoint);
             bool isCusp = angle > 90;
 
             #region vertices
@@ -330,13 +333,13 @@ namespace VRPen {
             }
             
             //get perpindicular vectors
-            Vector3 dir = pos - device.lastDrawPoint;
+            Vector3 dir = pos - currentLine.lastDrawPoint;
             Vector3 perp = Vector3.Cross(dir, normal).normalized;
 
             //when theres a 90+ degree turn we need to flip the verts
-            bool tempFlip = device.flipVerts;
+            bool tempFlip = currentLine.flipVerts;
             if (isCusp) {
-                tempFlip = !device.flipVerts;
+                tempFlip = !currentLine.flipVerts;
                 if (tempFlip) perp = -perp;
             }
             
@@ -439,14 +442,9 @@ namespace VRPen {
                 foreach (KeyValuePair<byte,InputDevice> device in player.inputDevices) {
                     if (device.Value.currentGraphic != null && device.Value.currentGraphic.canvasId == canvasId) device.Value.currentGraphic = null;
                 }
-                int length = player.graphics.Count;
-                for (int x = length-1; x >=0; x--) {
-                    if (player.graphics[x].canvasId == canvasId) {
-                        player.graphics[x] = null;
-                        player.graphics.Remove(player.graphics[x]);
-                    }
-                }
             }
+            graphics.Clear();
+            
             //delete Graphics
             int index = 0;
             while (index < vectorParent.childCount) {
@@ -454,11 +452,13 @@ namespace VRPen {
                 index++;
             }
 
+            //reset render queue counter
             renderQueueCounter = 1;
 
             //network
             if (localInput) network.sendClear(canvasId); 
 				
+            //fill board
             StartCoroutine(fillboard());
 
         }

@@ -7,16 +7,15 @@ namespace VRPen {
 
     public class VectorGraphic {
 
+        //id vars
+        public ulong ownerId; //the user that added
+        public int localIndex; //index of the owner's graphics
+        
         //vars
-        public ulong owner;
-        public byte deviceIndex;
-        public int index;
         public Mesh mesh;
         public MeshRenderer mr;
         public GameObject obj;
         public byte canvasId;
-
-    
-
+        
     }
 }
