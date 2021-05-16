@@ -16,6 +16,7 @@ namespace VRPen {
         public MeshRenderer mr;
         public GameObject obj;
         public byte canvasId;
-        
+        public bool editLock = false;
+
     }
 }

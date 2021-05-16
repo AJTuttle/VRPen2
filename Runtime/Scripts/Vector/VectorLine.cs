@@ -20,7 +20,6 @@ namespace VRPen {
         public Vector3 secondLastDrawPoint;
         public float lastPressure;
         public bool flipVerts = false; //this is for when the line forms a cusp (90+ degree turn). The verts need to be flipped to avoid intersection
-
         public Vector3 velocity {
             get {
                 if (pointCount < 2) {

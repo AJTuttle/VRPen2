@@ -57,7 +57,7 @@ namespace VRPen {
         
 
         //think of the normal as if it was ribbon drawing (it is internal used to order the vertices such that they connect to previous ones properlly)
-        public void addToLine(InputDevice device, VectorLine currentLine, Vector3 pos, float pressure, bool rotateLastSegment) {
+        public void addToLine(VectorLine currentLine, Vector3 pos, float pressure, bool rotateLastSegment) {
 
             //normal is constant since render area doesnt move
             Vector3 normal = Vector3.up;
@@ -65,6 +65,12 @@ namespace VRPen {
 
             #region errors
 
+            //graphic is edit locked
+            if (currentLine.editLock) {
+                VRPen.Debug.LogError("Tryed to edit a graphic that is edit-locked");
+                return;
+            }
+            
             //if this isnt the first point, make sure that the direction of the line is not the same as the normal
             if (currentLine.pointCount != 0) {
                 Vector3 dir = pos - currentLine.lastDrawPoint;
@@ -90,7 +96,7 @@ namespace VRPen {
 
             #region vertices
 
-            Vector3[] oldVerts = device.currentGraphic.mesh.vertices;
+            Vector3[] oldVerts = currentLine.mesh.vertices;
 
             Vector3[] verts = new Vector3[currentLine.pointCount * 2 + 2];
 
@@ -155,7 +161,7 @@ namespace VRPen {
             }
 
 
-            device.currentGraphic.mesh.SetVertices(verts);
+            currentLine.mesh.SetVertices(verts);
 
             #endregion
 
@@ -190,7 +196,7 @@ namespace VRPen {
             }
 
 
-            device.currentGraphic.mesh.SetIndices(currentLine.indices.ToArray(), MeshTopology.Triangles, 0);
+            currentLine.mesh.SetIndices(currentLine.indices.ToArray(), MeshTopology.Triangles, 0);
 
             #endregion
 
@@ -207,8 +213,14 @@ namespace VRPen {
 
         }
 
-        public void turnLineIntoDot(InputDevice device, VectorLine currentLine) {
+        public void turnLineIntoDot(VectorLine currentLine) {
 
+            //graphic is edit locked
+            if (currentLine.editLock) {
+                VRPen.Debug.LogError("Tryed to edit a graphic that is edit-locked");
+                return;
+            }
+            
             //normal is constant since render area doesnt move
             Vector3 normal = Vector3.up;
 
@@ -221,7 +233,7 @@ namespace VRPen {
 
             #region vertices
 
-            Vector3[] oldVerts = device.currentGraphic.mesh.vertices;
+            Vector3[] oldVerts = currentLine.mesh.vertices;
 
             Vector3 midPoint;
             if (currentLine.pointCount == 1) {
@@ -247,7 +259,7 @@ namespace VRPen {
                 midPoint + side * pressure * 0.7071f - up * pressure * 0.7071f,
             };
 
-            device.currentGraphic.mesh.SetVertices(verts);
+            currentLine.mesh.SetVertices(verts);
 
             #endregion
 
@@ -264,17 +276,23 @@ namespace VRPen {
                 0,1,8
             };
 
-            device.currentGraphic.mesh.SetIndices(currentLine.indices.ToArray(), MeshTopology.Triangles, 0);
+            currentLine.mesh.SetIndices(currentLine.indices.ToArray(), MeshTopology.Triangles, 0);
 
             #endregion
 
         }
 
-        public void updatePointThickness(InputDevice device, VectorLine currentLine, float pressure) {
+        public void updatePointThickness(VectorLine currentLine, float pressure) {
 
+            //graphic is edit locked
+            if (currentLine.editLock) {
+                VRPen.Debug.LogError("Tryed to edit a graphic that is edit-locked");
+                return;
+            }
+            
             //if its more than just a dot, recalculate the points
             if (currentLine.pointCount > 1) { 
-                Vector3[] verts = device.currentGraphic.mesh.vertices;
+                Vector3[] verts = currentLine.mesh.vertices;
                 Vector3 point = currentLine.lastDrawPoint;
 
                 //get perpindicular vectors
@@ -292,8 +310,14 @@ namespace VRPen {
             currentLine.lastPressure = pressure;
         }
         
-        public void updateLinePrediction(InputDevice device, VectorLine currentLine, Vector3 pos, float pressure) {
+        public void updateLinePrediction(VectorLine currentLine, Vector3 pos, float pressure) {
 
+            //graphic is edit locked
+            if (currentLine.editLock) {
+                VRPen.Debug.LogError("Tryed to edit a graphic that is edit-locked");
+                return;
+            }
+            
             //normal is constant since render area doesnt move
             Vector3 normal = Vector3.up;
 
@@ -323,7 +347,7 @@ namespace VRPen {
 
             #region vertices
 
-            Vector3[] oldVerts = device.currentGraphic.mesh.vertices;
+            Vector3[] oldVerts = currentLine.mesh.vertices;
 
             Vector3[] verts = new Vector3[currentLine.pointCount * 2 + 2];
 
@@ -353,7 +377,7 @@ namespace VRPen {
             }
 
             
-            device.currentGraphic.mesh.SetVertices(verts);
+            currentLine.mesh.SetVertices(verts);
 
             #endregion
 
@@ -386,7 +410,7 @@ namespace VRPen {
             }
 
 
-            device.currentGraphic.mesh.SetIndices(currentLine.indices.ToArray(), MeshTopology.Triangles, 0);
+            currentLine.mesh.SetIndices(currentLine.indices.ToArray(), MeshTopology.Triangles, 0);
 
             #endregion
 
@@ -426,10 +450,16 @@ namespace VRPen {
 
         }
 
-        public void placeStamp(VectorStamp stamp, InputDevice device, Vector3 pos) {
+        public void placeStamp(VectorStamp stamp, Vector3 pos) {
 
+            //graphic is edit locked
+            if (stamp.editLock) {
+                VRPen.Debug.LogError("Tryed to edit a graphic that is edit-locked");
+                return;
+            }
+            
             stamp.obj.transform.localPosition = pos;
-            StartCoroutine(renderGraphic(stamp, device));
+            StartCoroutine(renderGraphic(stamp));
 
         }
 
@@ -478,10 +508,10 @@ namespace VRPen {
 
         }
 
-        public IEnumerator renderGraphic(VectorGraphic graphic, InputDevice device) {
+        public IEnumerator renderGraphic(VectorGraphic graphic) {
 			
-            //turn off the currentgraphic before since we dont want it to be edited while being rendered in
-            if (graphic == device.currentGraphic) device.currentGraphic = null;
+            //turn on the edit lock since we dont want it to change now that its been / is being rendered
+            graphic.editLock = true;
 
             //make sure mesh renderer is on
             graphic.mr.enabled = true;

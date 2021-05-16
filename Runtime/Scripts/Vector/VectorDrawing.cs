@@ -269,7 +269,7 @@ namespace VRPen {
                     if (currentLine.pointCount < 2) isCusp = true;
 
                     //add to line
-                    canvas.addToLine(device, currentLine, drawPoint, pressure, !isCusp);
+                    canvas.addToLine(currentLine, drawPoint, pressure, !isCusp);
 
                     //network it
                     if (localInput) network.addToDataOutbox(endLine, color, x, y, pressure, canvasId, deviceIndex);
@@ -279,14 +279,14 @@ namespace VRPen {
 
                     //if the pressure is greater then thicken the last point
                     if (pressure > currentLine.lastPressure + PRESSURE_UPDATE_MINIMUM_DELTA) {
-                        canvas.updatePointThickness(device, currentLine, pressure);
+                        canvas.updatePointThickness(currentLine, pressure);
 
                         //network it
                         if (localInput) network.addToDataOutbox(endLine, color, x, y, pressure, canvasId, deviceIndex);
                     }
 
                     //to do add line prediction stuff
-                    if (currentLine.pointCount > 0) canvas.updateLinePrediction(device, currentLine, drawPoint, pressure);
+                    if (currentLine.pointCount > 0) canvas.updateLinePrediction(currentLine, drawPoint, pressure);
                 }
             }
         }
@@ -318,7 +318,7 @@ namespace VRPen {
             Vector3 drawPoint = new Vector3(x, 0, y);
 
             //make sure it renders in
-            canvas.placeStamp(stamp, device, drawPoint);
+            canvas.placeStamp(stamp, drawPoint);
 
             //network
             if (localInput) {
@@ -426,7 +426,7 @@ namespace VRPen {
 
                 //if line only has one point turn it into a dot
                 if (((VectorLine)device.currentGraphic).pointCount <= 2) {
-                    canvas.turnLineIntoDot(device, (VectorLine)device.currentGraphic);
+                    canvas.turnLineIntoDot((VectorLine)device.currentGraphic);
                 }
 
                 //reset the renderqueue so that the depth is set when the line is finished drawing (so that it doesnt shift when undos happen for example)
