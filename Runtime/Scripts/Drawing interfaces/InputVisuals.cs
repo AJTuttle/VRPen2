@@ -24,7 +24,8 @@ namespace VRPen {
 
 
         [System.NonSerialized]
-        public InputDevice deviceData;
+        public VectorGraphic currentGraphic;
+        //public InputDevice deviceData;
 
         protected Color32 currentColor = new Color32(0, 0, 0, 255);
 
@@ -59,7 +60,7 @@ namespace VRPen {
             if (eyedropperModel != null) eyedropperModel.SetActive(newState == ToolState.EYEDROPPER);
 
             //network
-            if (localInput) network.sendInputVisualEvent(deviceData.deviceIndex, currentColor, newState);
+            //if (localInput) network.sendInputVisualEvent(deviceData.deviceIndex, currentColor, newState);
         }
 
 		public void updateColorIndicators(Color32 color, bool localInput) {
@@ -75,7 +76,7 @@ namespace VRPen {
                 i.color = color;
             }
 
-            if (localInput) network.sendInputVisualEvent(deviceData.deviceIndex, color, state);
+            //if (localInput) network.sendInputVisualEvent(deviceData.deviceIndex, color, state);
 		}
 	}
 }

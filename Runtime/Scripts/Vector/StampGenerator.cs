@@ -65,9 +65,12 @@ namespace VRPen {
         }
 
         public void confirmStamp() {
-            Vector3 pos = display.canvasParent.InverseTransformPoint(transform.position);
+            
+            Debug.LogError("TODO: I still need to bring back this functionality for stamping (uncomment code below and fix)");
+            
+            /*Vector3 pos = display.canvasParent.InverseTransformPoint(transform.position);
             vectorMan.stamp(imageMat.mainTexture, stampIndex, player, device.deviceData.deviceIndex, -pos.x*display.canvasParent.transform.parent.localScale.x/display.canvasParent.transform.parent.localScale.y, -pos.y, size, rot, display.currentLocalCanvas.canvasId, true);
-            close();
+            close();*/
         }
 
         public void close() {

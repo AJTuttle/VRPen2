@@ -54,7 +54,9 @@ namespace VRPen {
             StartCoroutine(fillboard());
         }
 
-        
+        public VectorGraphic findGraphic(ulong ownerId, int localIndex) {
+            return graphics.Find(x => x.ownerId == ownerId && x.localIndex == localIndex);
+        }
 
         //think of the normal as if it was ribbon drawing (it is internal used to order the vertices such that they connect to previous ones properlly)
         public void addToLine(VectorLine currentLine, Vector3 pos, float pressure, bool rotateLastSegment) {
@@ -442,10 +444,8 @@ namespace VRPen {
             }
 
             //turn back on the current Graphics for each user
-            foreach (NetworkedPlayer player in network.players) {
-                foreach (KeyValuePair<byte, InputDevice> device in player.inputDevices) {
-                    if (device.Value.currentGraphic != null) device.Value.currentGraphic.mr.enabled = true;
-                }
+            foreach (VectorGraphic graphic in graphics) {
+                if (graphic.editLock) graphic.mr.enabled = true;
             }
 
         }
@@ -468,10 +468,8 @@ namespace VRPen {
         public void clear(bool localInput) {
 
             //deal with players data structures
-            foreach (NetworkedPlayer player in network.players) {
-                foreach (KeyValuePair<byte,InputDevice> device in player.inputDevices) {
-                    if (device.Value.currentGraphic != null && device.Value.currentGraphic.canvasId == canvasId) device.Value.currentGraphic = null;
-                }
+            foreach (InputVisuals input in FindObjectsOfType<InputVisuals>()){
+                if (input.currentGraphic != null && input.currentGraphic.canvasId == canvasId) input.currentGraphic = null;
             }
             graphics.Clear();
             

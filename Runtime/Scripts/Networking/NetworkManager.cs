@@ -80,7 +80,7 @@ namespace VRPen {
         private float[] yFloats = new float[1];
         private float[] pressures = new float[1];
         private byte[] canvasIds = new byte[1];
-        private byte[] deviceIndices = new byte[1];
+        private int[] localGraphicIndices = new int[1];
 
 
         //event
@@ -127,7 +127,7 @@ namespace VRPen {
         /// <param name="y">The y coordinate, 0 - 1.</param>
         /// <param name="pressure">The value that determines the thickenss of the line, 0 - 1.</param>
         /// <param name="canvasId">index of board to write to</param>
-        public void addToDataOutbox(bool endLine, Color32 currentColor, float x, float y, float pressure, byte canvas, byte deviceIndex) {
+        public void addToDataOutbox(bool endLine, Color32 currentColor, float x, float y, float pressure, byte canvas, int localGraphicIndex) {
 
             //dont do anything in offline mode
             if (VectorDrawing.OfflineMode) return;
@@ -139,7 +139,7 @@ namespace VRPen {
             float[] tempY = new float[yFloats.Length + 1];
             float[] tempP = new float[pressures.Length + 1];
             byte[] tempCanvasIds = new byte[canvasIds.Length + 1];
-            byte[] tempDeviceIndices = new byte[deviceIndices.Length + 1];
+            int[] tempLocalGraphicIndices = new int[localGraphicIndices.Length + 1];
 
             //copy existing data to temp array
             for (int i = 0; i < pressures.Length; i++) {
@@ -150,7 +150,7 @@ namespace VRPen {
                 tempY[i] = yFloats[i];
                 tempP[i] = pressures[i];
                 tempCanvasIds[i] = canvasIds[i];
-                tempDeviceIndices[i] = deviceIndices[i];
+                tempLocalGraphicIndices[i] = localGraphicIndices[i];
             }
 
             //add the most recent data entry
@@ -160,7 +160,7 @@ namespace VRPen {
             tempY[tempY.Length - 1] = y;
             tempP[tempP.Length - 1] = pressure;
             tempCanvasIds[tempCanvasIds.Length - 1] = canvas;
-            tempDeviceIndices[tempDeviceIndices.Length - 1] = deviceIndex;
+            tempLocalGraphicIndices[tempLocalGraphicIndices.Length - 1] = localGraphicIndex;
 
             //replace the array references with the temp array references
             endLines = tempEL;
@@ -169,7 +169,7 @@ namespace VRPen {
             yFloats = tempY;
             pressures = tempP;
             canvasIds = tempCanvasIds;
-            deviceIndices = tempDeviceIndices;
+            localGraphicIndices = tempLocalGraphicIndices;
 
         }
 
@@ -251,7 +251,7 @@ namespace VRPen {
                 sendBufferList.AddRange(BitConverter.GetBytes(yFloats[i]));
                 sendBufferList.AddRange(BitConverter.GetBytes(pressures[i]));
                 sendBufferList.Add(canvasIds[i]);
-                sendBufferList.Add(deviceIndices[i]);
+                sendBufferList.AddRange(BitConverter.GetBytes(localGraphicIndices[i]));
 
             }
 
@@ -266,7 +266,7 @@ namespace VRPen {
             yFloats = new float[0];
             pressures = new float[0];
             canvasIds = new byte[0];
-            deviceIndices = new byte[0];
+            localGraphicIndices = new int[0];
 
 			//cache
 			cachePacket(sendBuffer, localPlayer.connectionId);
@@ -757,17 +757,17 @@ namespace VRPen {
                 float yFloat = ReadFloat(packet, ref offset);
                 float pressure = ReadFloat(packet, ref offset);
                 byte canvasId = ReadByte(packet, ref offset);
-                byte deviceIndex = ReadByte(packet, ref offset);
+                int localGraphicIndex = ReadInt(packet, ref offset);
 
                 //end line or draw
                 if (endLine == 1) {
                     
-                    vectorMan.endLineEvent(player, deviceIndex, false);
+                    vectorMan.endLineEvent(player, localGraphicIndex, false);
                 }
                 else {
 
                     if (pressure > 0) {
-                        vectorMan.draw(player, deviceIndex, (endLine == 1) ? true : false, color, xFloat, yFloat, pressure, canvasId, false);
+                        vectorMan.draw(player, localGraphicIndex, (endLine == 1) ? true : false, color, xFloat, yFloat, pressure, canvasId, false);
                     }
 
                     else {
@@ -937,20 +937,20 @@ namespace VRPen {
             byte inputDeviceCount = ReadByte(packet, ref offset);
             for (int x = 0; x < inputDeviceCount; x++) {
 
-                InputDevice.InputDeviceType type = (InputDevice.InputDeviceType)ReadByte(packet, ref offset);
+                InputDeviceType type = (InputDeviceType)ReadByte(packet, ref offset);
                 byte index = ReadByte(packet, ref offset);
 
                 GameObject obj = null;
 
 
                 switch (type) {
-                    case InputDevice.InputDeviceType.Marker:
+                    case InputDeviceType.Marker:
                         obj = Instantiate(remoteMarkerPrefab);
 						break;
-                    case InputDevice.InputDeviceType.Tablet:
+                    case InputDeviceType.Tablet:
                         obj = Instantiate(remoteTabletPrefab);
                         break;
-                    case InputDevice.InputDeviceType.Mouse:
+                    case InputDeviceType.Mouse:
                         obj = Instantiate(remoteMousePrefab);
                         break;
                 }

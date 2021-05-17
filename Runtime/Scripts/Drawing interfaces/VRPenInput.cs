@@ -14,6 +14,13 @@ namespace VRPen {
         public Display display;
 
     }
+    
+    public enum InputDeviceType : byte {
+        Marker,
+        Tablet,
+        Mouse,
+        Facilitative
+    }
 
     public abstract class VRPenInput : InputVisuals {
 		
@@ -21,7 +28,7 @@ namespace VRPen {
         //public vars
         [Header("Necessary Input Parameters")]
         [Space(10)]
-		public InputDevice.InputDeviceType deviceType;
+		public InputDeviceType deviceType;
         [System.NonSerialized]
         public bool UIClickDown = false;
 
@@ -282,7 +289,7 @@ namespace VRPen {
 
                 case ToolState.NORMAL:
                     
-                    vectorMan.draw(network.getLocalPlayer(), deviceData.deviceIndex, false, currentColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
+                    vectorMan.draw(network.getLocalPlayer(), currentGraphic.localIndex, false, currentColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
                     
                     break;
 
@@ -316,7 +323,7 @@ namespace VRPen {
 
                 case ToolState.ERASE:
 
-                    vectorMan.draw(network.getLocalPlayer(), deviceData.deviceIndex, false, data.display.currentLocalCanvas.bgColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
+                    vectorMan.draw(network.getLocalPlayer(), currentGraphic.localIndex, false, data.display.currentLocalCanvas.bgColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
                     break;
 
                 //case ToolState.STAMP:
@@ -343,7 +350,7 @@ namespace VRPen {
         }
 
         void endLine() {
-            if (deviceData != null && deviceData.currentGraphic != null) vectorMan.endLineEvent(network.getLocalPlayer(), deviceData.deviceIndex, true);
+            if (currentGraphic != null) vectorMan.endLineEvent(network.getLocalPlayer(), currentGraphic.localIndex, true);
         }
         
 

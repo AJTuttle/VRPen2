@@ -123,13 +123,13 @@ namespace VRPen {
             network.getLocalPlayer().inputDevices = new Dictionary<byte, InputDevice>();
 			
             //add local devices in list
-            foreach(VRPenInput device in localInputDevices) {
-                addLocalInputDevice(device);
-            }
+            // foreach(VRPenInput device in localInputDevices) {
+            //     addLocalInputDevice(device);
+            // }
 
 			//set up input device for fascilitative inputs that shouldnt be editable (import background etc.)
 			facilitativeDevice = new InputDevice();
-			facilitativeDevice.type = InputDevice.InputDeviceType.Facilitative;
+			facilitativeDevice.type = InputDeviceType.Facilitative;
 			facilitativeDevice.owner = null;
 			facilitativeDevice.deviceIndex = 255;
 
@@ -142,28 +142,28 @@ namespace VRPen {
             if (enableHotkeys) hotkeys();
         }
 
-        //Todo: add networking to this so that they can be added after connecting
-        public void addLocalInputDevice(VRPenInput inputDevice) {
-            if (network.sentConnect) {
-                Debug.LogError("Input device addition denied: Adding a local input device after NetworkManager.sendConnect() has been called will cause errors for multiplayer (other users dont get the instantiation)");
-                return;
-            }
-            else {
-                Debug.Log("Adding local input device (this must happen before NetworkManager.sendConnect() is called)");
-
-                NetworkedPlayer localPlayer = network.getLocalPlayer();
-                InputDevice device = new InputDevice();
-                byte deviceIndex = (byte)localPlayer.inputDevices.Count;
-
-                inputDevice.deviceData = device;
-                device.type = inputDevice.deviceType;
-                localPlayer.inputDevices.Add(deviceIndex, device);
-                device.owner = network.getLocalPlayer();
-                device.deviceIndex = deviceIndex;
-                device.visuals = inputDevice;
-                
-            }
-        }
+        // //Todo: add networking to this so that they can be added after connecting
+        // public void addLocalInputDevice(VRPenInput inputDevice) {
+        //     if (network.sentConnect) {
+        //         Debug.LogError("Input device addition denied: Adding a local input device after NetworkManager.sendConnect() has been called will cause errors for multiplayer (other users dont get the instantiation)");
+        //         return;
+        //     }
+        //     else {
+        //         Debug.Log("Adding local input device (this must happen before NetworkManager.sendConnect() is called)");
+        //
+        //         NetworkedPlayer localPlayer = network.getLocalPlayer();
+        //         InputDevice device = new InputDevice();
+        //         byte deviceIndex = (byte)localPlayer.inputDevices.Count;
+        //
+        //         inputDevice.deviceData = device;
+        //         device.type = inputDevice.deviceType;
+        //         localPlayer.inputDevices.Add(deviceIndex, device);
+        //         device.owner = network.getLocalPlayer();
+        //         device.deviceIndex = deviceIndex;
+        //         device.visuals = inputDevice;
+        //         
+        //     }
+        // }
 
         private void OnSceneChange(Scene oldScene, Scene newScene) {
             #if !UNITY_EDITOR
@@ -212,11 +212,11 @@ namespace VRPen {
             return canvases.Count;
         }
 
-        public void endLineEvent(NetworkedPlayer player, byte deviceIndex, bool localInput) {
-            draw(player, deviceIndex, true, Color.black, 0, 0, 0, 0, localInput);
+        public void endLineEvent(NetworkedPlayer player, int graphicIndex, bool localInput) {
+            draw(player, graphicIndex, true, Color.black, 0, 0, 0, 0, localInput);
         }
 
-        public void draw(NetworkedPlayer player, byte deviceIndex, bool endLine, Color32 color, float x, float y, float pressure, byte canvasId, bool localInput) {
+        public void draw(NetworkedPlayer player, int graphicIndex, bool endLine, Color32 color, float x, float y, float pressure, byte canvasId, bool localInput) {
 
             //get canvas
             VectorCanvas canvas = getCanvas(canvasId);
@@ -225,24 +225,14 @@ namespace VRPen {
                 return;
             }
 
-            //get device
-            InputDevice device;
-			if (player == null && deviceIndex == facilitativeDevice.deviceIndex) {
-				device = facilitativeDevice;
-			}
-			else if ((device = player.inputDevices[deviceIndex]) == null) {
-                Debug.LogError("Failed retreiving input device");
-                return;
-            }
-            
             //fix pressure
             if (localInput) pressure = pressureCurve.Evaluate(pressure);
             
             //end line or draw
             if (endLine) {
 
-                endLineData(device);
-                if (localInput) network.addToDataOutbox(endLine, color, x, y, pressure, canvasId, deviceIndex);
+                endLineData(player.connectionId, graphicIndex, canvas);
+                if (localInput) network.addToDataOutbox(endLine, color, x, y, pressure, canvasId, graphicIndex);
                 
             }
             else {
@@ -251,7 +241,7 @@ namespace VRPen {
                 bool newLine = false;
 
                 //get or create mesh
-                VectorLine currentLine = getLine(player, device, color, canvas, ref newLine);
+                VectorLine currentLine = getLine(player, color, graphicIndex, canvas, ref newLine);
 
                 //got vector pos
                 Vector3 drawPoint = new Vector3(x, 0, y);
@@ -272,7 +262,7 @@ namespace VRPen {
                     canvas.addToLine(currentLine, drawPoint, pressure, !isCusp);
 
                     //network it
-                    if (localInput) network.addToDataOutbox(endLine, color, x, y, pressure, canvasId, deviceIndex);
+                    if (localInput) network.addToDataOutbox(endLine, color, x, y, pressure, canvasId, graphicIndex);
 
                 }
                 else {
@@ -282,7 +272,7 @@ namespace VRPen {
                         canvas.updatePointThickness(currentLine, pressure);
 
                         //network it
-                        if (localInput) network.addToDataOutbox(endLine, color, x, y, pressure, canvasId, deviceIndex);
+                        if (localInput) network.addToDataOutbox(endLine, color, x, y, pressure, canvasId, graphicIndex);
                     }
 
                     //to do add line prediction stuff
@@ -330,7 +320,7 @@ namespace VRPen {
 
         VectorStamp createStamp(Texture stampTex, VectorCanvas canvas, InputDevice device, NetworkedPlayer player, float size, float rotation) {
 
-            //line end check needed
+            /*//line end check needed
             if (device.currentGraphic != null && (device.currentGraphic is VectorLine)) {
 				endLineData(device);
             }
@@ -378,8 +368,10 @@ namespace VRPen {
             canvas.renderQueueCounter++;
 
 
-            return currentStamp;
-            
+            return currentStamp;*/
+
+            return null;
+
         }
 
 		Mesh generateStampQuad(float width, float height) {
@@ -415,29 +407,28 @@ namespace VRPen {
 
 		}
 
-        void endLineData(InputDevice device) {
+        void endLineData(ulong connectionId, int graphicIndex, VectorCanvas canvas) {
             
+            //find graphic
+            VectorGraphic currentGraphic = canvas.findGraphic(connectionId, graphicIndex);
 
             //turn off last mesh for render texture
-            if (device.currentGraphic != null) {
-
-                //get canvas
-                VectorCanvas canvas = getCanvas(device.currentGraphic.canvasId);
+            if (currentGraphic != null) {
 
                 //if line only has one point turn it into a dot
-                if (((VectorLine)device.currentGraphic).pointCount <= 2) {
-                    canvas.turnLineIntoDot((VectorLine)device.currentGraphic);
+                if (((VectorLine)currentGraphic).pointCount <= 2) {
+                    canvas.turnLineIntoDot((VectorLine)currentGraphic);
                 }
 
                 //reset the renderqueue so that the depth is set when the line is finished drawing (so that it doesnt shift when undos happen for example)
-                device.currentGraphic.obj.GetComponent<Renderer>().material.renderQueue = canvas.renderQueueCounter;
+                currentGraphic.obj.GetComponent<Renderer>().material.renderQueue = canvas.renderQueueCounter;
                 canvas.renderQueueCounter++;
 
                 //turn off and remove from curr after a frame
                 //StartCoroutine(canvas.renderGraphic(device.currentGraphic, device));
 
                 //instead of just rendering the 1 line, we rerender the whole canvas so that we can make use of various post processed effects
-                device.currentGraphic = null;
+                currentGraphic = null;
                 StartCoroutine(canvas.rerenderCanvas());
 
             }
@@ -449,12 +440,12 @@ namespace VRPen {
 
         
 
-        VectorLine getLine(NetworkedPlayer player, InputDevice device, Color32 color, VectorCanvas canvas, ref bool newLine) {
+        VectorLine getLine(NetworkedPlayer player, Color32 color, int graphicIndex, VectorCanvas canvas, ref bool newLine) {
 
-            VectorLine currentLine;
+            VectorGraphic currentGraphic = canvas.findGraphic(player.connectionId, graphicIndex);
 
             //if new line needed
-            if (device.currentGraphic == null || !(device.currentGraphic is VectorLine)) {
+            if (currentGraphic == null || !(currentGraphic is VectorLine)) {
 
                 //make obj
                 GameObject obj = new GameObject();
@@ -472,16 +463,15 @@ namespace VRPen {
                 
 
                 //vector line data struct and player data structs
-                currentLine = new VectorLine();
-                currentLine.mesh = currentMesh;
-                currentLine.ownerId = player.connectionId;
-                currentLine.obj = obj;
-                currentLine.mr = mr;
-                device.currentGraphic = currentLine;
-                currentLine.localIndex = player.localGraphicIndex;
+                currentGraphic = new VectorLine();
+                currentGraphic.mesh = currentMesh;
+                currentGraphic.ownerId = player.connectionId;
+                currentGraphic.obj = obj;
+                currentGraphic.mr = mr;
+                currentGraphic.localIndex = player.localGraphicIndex;
                 player.localGraphicIndex++;
-                currentLine.canvasId = canvas.canvasId;
-                canvas.graphics.Add(currentLine);
+                currentGraphic.canvasId = canvas.canvasId;
+                canvas.graphics.Add(currentGraphic);
 
 
                 //set shader
@@ -495,13 +485,10 @@ namespace VRPen {
             }
             //if addition to existing line
             else {
-
-                currentLine = (VectorLine)device.currentGraphic;
-
                 newLine = false;
             }
 
-            return currentLine;
+            return (VectorLine)currentGraphic;
 
         }
 
