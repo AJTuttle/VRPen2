@@ -196,10 +196,7 @@ namespace VRPen {
             localPlayerHasID = true;
         }
 
-        public Dictionary<byte, InputDevice> getPlayerDevices(ulong connectionId) {
-            NetworkedPlayer player = players.Find(p => p.connectionId == connectionId);
-            return player.inputDevices;
-        }
+     
 
         /// <summary>
         /// Packe pen data take all data accumulted since the last time it was called and returns it in a packet
@@ -550,14 +547,7 @@ namespace VRPen {
 
             //add data
             sendBufferList.Add(requestReply ? (byte)1 : (byte)0); //request reply?
-
-            //inputdevice data
-            sendBufferList.Add((byte)localPlayer.inputDevices.Count);
-            foreach (KeyValuePair<byte, InputDevice> device in localPlayer.inputDevices) {
-                sendBufferList.Add((byte)device.Value.type);
-                sendBufferList.Add(device.Value.deviceIndex);
-            }
-
+            
             // convert to an array
             byte[] sendBuffer = sendBufferList.ToArray();
 
@@ -891,10 +881,10 @@ namespace VRPen {
             Color32 col = new Color32(ReadByte(packet, ref offset), ReadByte(packet, ref offset), ReadByte(packet, ref offset), 255);
 
             //update device
-            if (player.inputDevices[deviceId].visuals != null) {
-                player.inputDevices[deviceId].visuals.updateModel(state, false);
-                player.inputDevices[deviceId].visuals.updateColorIndicators(col, false);
-            }
+            // if (player.inputDevices[deviceId].visuals != null) {
+            //     player.inputDevices[deviceId].visuals.updateModel(state, false);
+            //     player.inputDevices[deviceId].visuals.updateColorIndicators(col, false);
+            // }
         }
 
         void unpackUIState(byte[] packet, ref int offset) {
@@ -929,44 +919,9 @@ namespace VRPen {
             
             player = new NetworkedPlayer();
             player.connectionId = connectionId;
-            player.inputDevices = new Dictionary<byte, InputDevice>();
             players.Add(player);
             
-
-            //spawn networked input devices
-            byte inputDeviceCount = ReadByte(packet, ref offset);
-            for (int x = 0; x < inputDeviceCount; x++) {
-
-                InputDeviceType type = (InputDeviceType)ReadByte(packet, ref offset);
-                byte index = ReadByte(packet, ref offset);
-
-                GameObject obj = null;
-
-
-                switch (type) {
-                    case InputDeviceType.Marker:
-                        obj = Instantiate(remoteMarkerPrefab);
-						break;
-                    case InputDeviceType.Tablet:
-                        obj = Instantiate(remoteTabletPrefab);
-                        break;
-                    case InputDeviceType.Mouse:
-                        obj = Instantiate(remoteMousePrefab);
-                        break;
-                }
-                obj.transform.position = spawnRemoteDevicesLocation;
-                
-                InputDevice device = new InputDevice();
-                device.deviceIndex = index;
-                device.type = type;
-                device.owner = player;
-                device.visuals = obj.GetComponent<InputVisuals>();
-
-                player.inputDevices.Add(index, device);
-
-				remoteSpawn?.Invoke(obj, x);
-			}
-
+            
         }
 
         #region Serialization

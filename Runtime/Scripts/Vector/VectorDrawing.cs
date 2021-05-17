@@ -8,7 +8,8 @@ namespace VRPen {
 
     public class VectorDrawing : MonoBehaviour {
 
-
+        //instance
+        public static VectorDrawing s_instance;
 
         //scripts
         StarTablet tablet;
@@ -83,8 +84,6 @@ namespace VRPen {
         public GameObject canvasPrefab;
         public Transform canvasParent;
 
-        [System.NonSerialized]
-        public InputDevice facilitativeDevice;
 
         //acting as a remote client restricts the things that the client can do. Things like making new canvases.
         public static bool actSynchronously = true;
@@ -106,6 +105,8 @@ namespace VRPen {
 
         private void Start() {
             
+            //set instance
+            s_instance = this;
 
             //get scripts
             tablet = GetComponent<StarTablet>();
@@ -118,20 +119,6 @@ namespace VRPen {
                 displays[x].init();
 			}
             
-
-			//setup input devices
-            network.getLocalPlayer().inputDevices = new Dictionary<byte, InputDevice>();
-			
-            //add local devices in list
-            // foreach(VRPenInput device in localInputDevices) {
-            //     addLocalInputDevice(device);
-            // }
-
-			//set up input device for fascilitative inputs that shouldnt be editable (import background etc.)
-			facilitativeDevice = new InputDevice();
-			facilitativeDevice.type = InputDeviceType.Facilitative;
-			facilitativeDevice.owner = null;
-			facilitativeDevice.deviceIndex = 255;
 
             SceneManager.activeSceneChanged += OnSceneChange;
 
@@ -237,17 +224,20 @@ namespace VRPen {
             }
             else {
 
-                //newline bool, useful for delta compression
-                bool newLine = false;
-
-                //get or create mesh
-                VectorLine currentLine = getLine(player, color, graphicIndex, canvas, ref newLine);
+                //get line
+                VectorGraphic currentGraphic = canvas.findGraphic(player.connectionId, graphicIndex);
+                if (currentGraphic == null) currentGraphic = createNewLine(player, color, graphicIndex, canvas);
+                if (!(currentGraphic is VectorLine)) {
+                    Debug.LogError("Trying tp draw onto a non-line graphic");
+                    return;
+                }
+                VectorLine currentLine = (VectorLine)currentGraphic;
 
                 //got vector pos
                 Vector3 drawPoint = new Vector3(x, 0, y);
 
                 //delta compression
-                bool validInput = deltaCompression(currentLine, newLine, drawPoint);
+                bool validInput = deltaCompression(currentLine, drawPoint);
 
                 //add to that mesh and network or just show a line prediction
                 if (validInput) {
@@ -284,7 +274,7 @@ namespace VRPen {
         //non networked stamps use a stamp index of -1 (for example when stamping is used for the background)
         public void stamp(Texture stampTex, int stampIndex, NetworkedPlayer player, byte deviceIndex, float x, float y, float size, float rotation, byte canvasId, bool localInput) {
             
-            //get canvas
+            /*//get canvas
             VectorCanvas canvas = getCanvas(canvasId);
             if (canvas == null) {
                 Debug.LogError("No canvas found for draw input");
@@ -314,13 +304,13 @@ namespace VRPen {
             if (localInput) {
                 if (stampIndex == -1) Debug.LogError("Tried to network a non-networkable stamp (stamp index == -1)");
                 else network.sendStamp(stampIndex, x, y, size, rotation, canvasId, deviceIndex);
-            }
+            }*/
 
         }
 
-        VectorStamp createStamp(Texture stampTex, VectorCanvas canvas, InputDevice device, NetworkedPlayer player, float size, float rotation) {
+        /*VectorStamp createStamp(Texture stampTex, VectorCanvas canvas, InputDevice device, NetworkedPlayer player, float size, float rotation) {
 
-            /*//line end check needed
+            //line end check needed
             if (device.currentGraphic != null && (device.currentGraphic is VectorLine)) {
 				endLineData(device);
             }
@@ -368,11 +358,11 @@ namespace VRPen {
             canvas.renderQueueCounter++;
 
 
-            return currentStamp;*/
+            return currentStamp;
 
             return null;
 
-        }
+        }*/
 
 		Mesh generateStampQuad(float width, float height) {
 
@@ -437,66 +427,50 @@ namespace VRPen {
             }
 
         }
-
         
+        public VectorLine createNewLine(NetworkedPlayer player, Color32 color, int graphicIndex, VectorCanvas canvas) {
+            
+            //make obj
+            GameObject obj = new GameObject();
+            obj.transform.parent = canvas.vectorParent;
+            obj.transform.localPosition = Vector3.zero;
+            obj.transform.localRotation = Quaternion.identity;
+            obj.transform.localScale = Vector3.one;
 
-        VectorLine getLine(NetworkedPlayer player, Color32 color, int graphicIndex, VectorCanvas canvas, ref bool newLine) {
+            //add mesh
+            MeshRenderer mr = obj.AddComponent<MeshRenderer>();
+            MeshFilter mf = obj.AddComponent<MeshFilter>();
+            Mesh currentMesh = new Mesh();
+            mf.mesh = currentMesh;
 
-            VectorGraphic currentGraphic = canvas.findGraphic(player.connectionId, graphicIndex);
+            //vector line data struct and player data structs
+            VectorLine currentLine = new VectorLine();
+            currentLine.mesh = currentMesh;
+            currentLine.ownerId = player.connectionId;
+            currentLine.localIndex = graphicIndex;
+            currentLine.obj = obj;
+            currentLine.mr = mr;
+            currentLine.localIndex = player.localGraphicIndex;
+            player.localGraphicIndex++;
+            currentLine.canvasId = canvas.canvasId;
+            canvas.graphics.Add(currentLine);
 
-            //if new line needed
-            if (currentGraphic == null || !(currentGraphic is VectorLine)) {
+            //set shader
+            mr.material = new Material(depthShaderColor);
+            mr.material.color = color;
+            mr.material.renderQueue = canvas.renderQueueCounter;
+            canvas.renderQueueCounter++;
 
-                //make obj
-                GameObject obj = new GameObject();
-                obj.transform.parent = canvas.vectorParent;
-                obj.transform.localPosition = Vector3.zero;
-                obj.transform.localRotation = Quaternion.identity;
-                obj.transform.localScale = Vector3.one;
-
-                //add mesh
-                MeshRenderer mr = obj.AddComponent<MeshRenderer>();
-                MeshFilter mf = obj.AddComponent<MeshFilter>();
-                Mesh currentMesh = new Mesh();
-                mf.mesh = currentMesh;
-
-                
-
-                //vector line data struct and player data structs
-                currentGraphic = new VectorLine();
-                currentGraphic.mesh = currentMesh;
-                currentGraphic.ownerId = player.connectionId;
-                currentGraphic.obj = obj;
-                currentGraphic.mr = mr;
-                currentGraphic.localIndex = player.localGraphicIndex;
-                player.localGraphicIndex++;
-                currentGraphic.canvasId = canvas.canvasId;
-                canvas.graphics.Add(currentGraphic);
-
-
-                //set shader
-                mr.material = new Material(depthShaderColor);
-                mr.material.color = color;
-                mr.material.renderQueue = canvas.renderQueueCounter;
-                canvas.renderQueueCounter++;
-
-                newLine = true;
-
-            }
-            //if addition to existing line
-            else {
-                newLine = false;
-            }
-
-            return (VectorLine)currentGraphic;
-
+            //return
+            return currentLine;
+            
         }
 
-        bool deltaCompression(VectorLine currentLine, bool newLine, Vector3 drawPoint) {
+        bool deltaCompression(VectorLine currentLine, Vector3 drawPoint) {
 
             bool validDistance = Vector3.Distance(drawPoint, currentLine.lastDrawPoint) > minDistanceDelta;
 
-            return newLine || validDistance;
+            return currentLine.pointCount == 0 || validDistance;
 
         }
        

@@ -468,8 +468,9 @@ namespace VRPen {
         public void clear(bool localInput) {
 
             //deal with players data structures
-            foreach (InputVisuals input in FindObjectsOfType<InputVisuals>()){
-                if (input.currentGraphic != null && input.currentGraphic.canvasId == canvasId) input.currentGraphic = null;
+            foreach (VRPenInput input in FindObjectsOfType<VRPenInput>()){
+                if (input.currentLine != null && input.currentLine.canvasId == canvasId) input.currentLine = null;
+                input.undoStack.RemoveAll(x => x.canvasId == canvasId);
             }
             graphics.Clear();
             
@@ -501,7 +502,8 @@ namespace VRPen {
 			
 			//set background
 			if (drawingMan.canvasBackgrounds.Length > canvasId && drawingMan.canvasBackgrounds[canvasId] != null) {
-				drawingMan.stamp(drawingMan.canvasBackgrounds[canvasId], -1, drawingMan.facilitativeDevice.owner, drawingMan.facilitativeDevice.deviceIndex, 0, 0, 1, 0.5f, canvasId, false);
+				//TODO - bring back backgrounds
+				//drawingMan.stamp(drawingMan.canvasBackgrounds[canvasId], -1, drawingMan.facilitativeDevice.owner, drawingMan.facilitativeDevice.deviceIndex, 0, 0, 1, 0.5f, canvasId, false);
 			}
 
         }

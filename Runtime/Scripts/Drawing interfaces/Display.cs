@@ -138,10 +138,10 @@ namespace VRPen {
         public void swapCurrentCanvas(byte canvasId, bool localInput) {
 
             //end local drawing if it is drawing
-            foreach (InputVisuals input in FindObjectsOfType<InputVisuals>()){
-                if (input.currentGraphic != null &&
-                    input.currentGraphic.ownerId == network.getLocalPlayer().connectionId) {
-                    vectorMan.endLineEvent(network.getLocalPlayer(), input.currentGraphic.localIndex, true);
+            foreach (VRPenInput input in FindObjectsOfType<VRPenInput>()){
+                if (input.currentLine != null &&
+                    input.currentLine.ownerId == network.getLocalPlayer().connectionId) {
+                    vectorMan.endLineEvent(network.getLocalPlayer(), input.currentLine.localIndex, true);
                 }
             }
 

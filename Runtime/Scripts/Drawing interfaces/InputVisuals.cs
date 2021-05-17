@@ -24,7 +24,6 @@ namespace VRPen {
 
 
         [System.NonSerialized]
-        public VectorGraphic currentGraphic;
         //public InputDevice deviceData;
 
         protected Color32 currentColor = new Color32(0, 0, 0, 255);

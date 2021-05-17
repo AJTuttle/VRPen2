@@ -58,6 +58,11 @@ namespace VRPen {
         //abstract methods
         protected abstract InputData getInputData();
 
+        //current line
+        [System.NonSerialized]
+        public VectorLine currentLine;
+        [System.NonSerialized]
+        public List<VectorGraphic> undoStack = new List<VectorGraphic>();
         
 
 		
@@ -276,6 +281,13 @@ namespace VRPen {
 
         void canvasHover(InputData data) {
             
+            //add new line if need new one
+            if (currentLine == null) {
+                currentLine = VectorDrawing.s_instance.createNewLine(network.getLocalPlayer(), currentColor, network.getLocalPlayer().localGraphicIndex,
+                    data.display.currentLocalCanvas);
+                network.getLocalPlayer().localGraphicIndex++;
+                undoStack.Add(currentLine);
+            }
 
             //get vars from ray
             Transform canvas = data.hit.collider.transform;
@@ -289,7 +301,7 @@ namespace VRPen {
 
                 case ToolState.NORMAL:
                     
-                    vectorMan.draw(network.getLocalPlayer(), currentGraphic.localIndex, false, currentColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
+                    vectorMan.draw(network.getLocalPlayer(), currentLine.localIndex, false, currentColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
                     
                     break;
 
@@ -323,7 +335,7 @@ namespace VRPen {
 
                 case ToolState.ERASE:
 
-                    vectorMan.draw(network.getLocalPlayer(), currentGraphic.localIndex, false, data.display.currentLocalCanvas.bgColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
+                    vectorMan.draw(network.getLocalPlayer(), currentLine.localIndex, false, data.display.currentLocalCanvas.bgColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
                     break;
 
                 //case ToolState.STAMP:
@@ -350,7 +362,8 @@ namespace VRPen {
         }
 
         void endLine() {
-            if (currentGraphic != null) vectorMan.endLineEvent(network.getLocalPlayer(), currentGraphic.localIndex, true);
+            if (currentLine != null) vectorMan.endLineEvent(network.getLocalPlayer(), currentLine.localIndex, true);
+            currentLine = null;
         }
         
 
