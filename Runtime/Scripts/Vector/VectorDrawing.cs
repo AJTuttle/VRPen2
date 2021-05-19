@@ -176,10 +176,10 @@ namespace VRPen {
 
         void hotkeys() {
             //hotkeys
-            if (Input.GetKeyDown(KeyCode.U)) {
-                undo(network.getLocalPlayer(), true);
-            }
-            else if (Input.GetKeyDown(KeyCode.C)) {
+            //if (Input.GetKeyDown(KeyCode.U)) {
+            //    undo(network.getLocalPlayer(), true);
+            //}
+            if (Input.GetKeyDown(KeyCode.C)) {
                 canvases[0].clear(true);
             }
             else if (Input.GetKeyDown(KeyCode.S)) {
@@ -199,8 +199,8 @@ namespace VRPen {
             return canvases.Count;
         }
 
-        public void endLineEvent(NetworkedPlayer player, int graphicIndex, bool localInput) {
-            draw(player, graphicIndex, true, Color.black, 0, 0, 0, 0, localInput);
+        public void endLineEvent(NetworkedPlayer player, int graphicIndex, byte canvasId, bool localInput) {
+            draw(player, graphicIndex, true, Color.black, 0, 0, 0, canvasId, localInput);
         }
 
         public void draw(NetworkedPlayer player, int graphicIndex, bool endLine, Color32 color, float x, float y, float pressure, byte canvasId, bool localInput) {
@@ -475,37 +475,31 @@ namespace VRPen {
         }
        
 
-        public void undo(NetworkedPlayer player, bool localInput) {
-            /*
-            //get graphic
-            if (graphics.Count == 0) return;
-            VectorGraphic undid = player.graphics.Last();
-
-            //remove from data
-            player.graphics.RemoveAt(player.graphics.Count - 1);
-
-            byte deviceIndex = undid.deviceIndex;
+        public void undo(ulong playerId, int graphicIndex, byte canvasId, bool localInput) {
 
             //get canvas
-            VectorCanvas canvas = getCanvas(undid.canvasId);
+            VectorCanvas canvas = getCanvas(canvasId);
+            
+            //get graphic
+            VectorGraphic undid = canvas.graphics.Find(x => x.ownerId == playerId && x.localIndex == graphicIndex);
+            canvas.graphics.Remove(undid);
+            
+            //if local undo then remove from undo queue
+            if (localInput) {
+                foreach (VRPenInput input in FindObjectsOfType<VRPenInput>()) {
+                    input.undoStack.Remove(undid);
+                }
+            }
 
             //destroy graphic
             Destroy(undid.obj);
-
-            //reset curr graphic
-            InputDevice device;
-            if ((device = player.inputDevices[deviceIndex]) == null) {
-                Debug.LogError("Failed retreiving input device from undo event");
-                return;
-            }
-            device.currentGraphic = null;
 
             //rerender rest
             StartCoroutine(canvas.rerenderCanvas());
 
             //network
-            if (localInput) network.sendUndo();
-            */
+            if (localInput) network.sendUndo(playerId, graphicIndex, canvasId);
+            
         }
 
         //if originDisplay is null, this is the initial public canvas

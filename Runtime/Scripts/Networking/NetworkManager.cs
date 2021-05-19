@@ -74,13 +74,13 @@ namespace VRPen {
         public GameObject remoteMousePrefab;
 
         //data vars
-        private Color32[] colors = new Color32[1];
-        private bool[] endLines = new bool[1];
-        private float[] xFloats = new float[1];
-        private float[] yFloats = new float[1];
-        private float[] pressures = new float[1];
-        private byte[] canvasIds = new byte[1];
-        private int[] localGraphicIndices = new int[1];
+        private Color32[] colors = new Color32[0];
+        private bool[] endLines = new bool[0];
+        private float[] xFloats = new float[0];
+        private float[] yFloats = new float[0];
+        private float[] pressures = new float[0];
+        private byte[] canvasIds = new byte[0];
+        private int[] localGraphicIndices = new int[0];
 
 
         //event
@@ -132,6 +132,8 @@ namespace VRPen {
             //dont do anything in offline mode
             if (VectorDrawing.OfflineMode) return;
 
+            Debug.Log(";;;" +pressure + "  " + endLine);
+            
             //make new temp arrays with +1 length
             bool[] tempEL = new bool[endLines.Length + 1];
             Color32[] tempC = new Color32[colors.Length + 1];
@@ -404,7 +406,7 @@ namespace VRPen {
 
         }
 
-        public void sendUndo() {
+        public void sendUndo(ulong playerId, int graphicIndex, byte canvasId) {
 
             //dont do anything in offline mode
             if (VectorDrawing.OfflineMode) return;
@@ -421,7 +423,11 @@ namespace VRPen {
             // header
             sendBufferList.Add((byte)PacketType.Undo);
             sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
-
+            
+            //add data
+            sendBufferList.AddRange(BitConverter.GetBytes(playerId));
+            sendBufferList.AddRange(BitConverter.GetBytes(graphicIndex));
+            sendBufferList.Add(canvasId);
 
             // convert to an array
             byte[] sendBuffer = sendBufferList.ToArray();
@@ -699,7 +705,7 @@ namespace VRPen {
             }
             
             else if (header == PacketType.Undo) {
-                unpackUndo(player);
+                unpackUndo(packet, ref offset);
             }
 
 			else if (header == PacketType.UIState) {
@@ -752,7 +758,7 @@ namespace VRPen {
                 //end line or draw
                 if (endLine == 1) {
                     
-                    vectorMan.endLineEvent(player, localGraphicIndex, false);
+                    vectorMan.endLineEvent(player, localGraphicIndex, canvasId, false);
                 }
                 else {
 
@@ -856,8 +862,15 @@ namespace VRPen {
             
         }
 
-        void unpackUndo(NetworkedPlayer player) {
-            vectorMan.undo(player, false);
+        void unpackUndo(byte[] packet, ref int offset) {
+            
+            //get data
+            ulong playerId = ReadULong(packet, ref offset);
+            int graphixIndex = ReadInt(packet, ref offset);
+            byte canvasID = ReadByte(packet, ref offset);
+            
+            //apply undo
+            vectorMan.undo(playerId, graphixIndex, canvasID, false);
         }
 
         void unpackCanvasSwitch(byte[] packet, ref int offset) {

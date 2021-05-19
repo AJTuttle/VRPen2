@@ -362,7 +362,7 @@ namespace VRPen {
         }
 
         void endLine() {
-            if (currentLine != null) vectorMan.endLineEvent(network.getLocalPlayer(), currentLine.localIndex, true);
+            if (currentLine != null) vectorMan.endLineEvent(network.getLocalPlayer(), currentLine.localIndex, currentLine.canvasId, true);
             currentLine = null;
         }
         

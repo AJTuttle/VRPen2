@@ -105,10 +105,6 @@ namespace VRPen {
             swapCurrentCanvas((byte)(vectorMan.canvases.Count - 1), true);
         }
 
-        public void undoPassthrough() {
-            vectorMan.undo(network.getLocalPlayer(), true);
-        }
-
 		public void savePassthrough() {
 			vectorMan.saveImage(currentLocalCanvas.canvasId);
 		}
@@ -141,7 +137,7 @@ namespace VRPen {
             foreach (VRPenInput input in FindObjectsOfType<VRPenInput>()){
                 if (input.currentLine != null &&
                     input.currentLine.ownerId == network.getLocalPlayer().connectionId) {
-                    vectorMan.endLineEvent(network.getLocalPlayer(), input.currentLine.localIndex, true);
+                    vectorMan.endLineEvent(network.getLocalPlayer(), input.currentLine.localIndex, input.currentLine.canvasId,true);
                 }
             }
 

@@ -451,8 +451,14 @@ namespace VRPen {
             display.addCanvasPassthrough(!newCanvasIsPrivateToggle.isOn);
         }
 
-        public void undoPassthrough() {
-            display.undoPassthrough();
+        public void undoPassthrough(VRPenInput input) {
+            
+            //do nothing if nothing to undo
+            if (input.undoStack.Count == 0) return;
+            
+            //undo
+            VectorGraphic curr = input.undoStack[input.undoStack.Count - 1];
+            vectorMan.undo(curr.ownerId, curr.localIndex, curr.canvasId, true);
         }
 
         public void savePassthrough() {

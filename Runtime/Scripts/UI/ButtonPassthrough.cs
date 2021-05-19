@@ -42,6 +42,9 @@ namespace VRPen {
                 case 3:
                     UI.stampPassthrough(clickedBy, stampIndex);
                     break;
+                case 4:
+                    UI.undoPassthrough(clickedBy);
+                    break;
                 default:
                     Debug.LogError("Undetected case");
                     break;
