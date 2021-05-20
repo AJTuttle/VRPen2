@@ -59,7 +59,7 @@ namespace VRPen {
         protected abstract InputData getInputData();
 
         //current line
-        [System.NonSerialized]
+        //[System.NonSerialized]
         public VectorLine currentLine;
         [System.NonSerialized]
         public List<VectorGraphic> undoStack = new List<VectorGraphic>();
@@ -281,13 +281,7 @@ namespace VRPen {
 
         void canvasHover(InputData data) {
             
-            //add new line if need new one
-            if (currentLine == null) {
-                currentLine = VectorDrawing.s_instance.createNewLine(network.getLocalPlayer(), currentColor, network.getLocalPlayer().localGraphicIndex,
-                    data.display.currentLocalCanvas);
-                network.getLocalPlayer().localGraphicIndex++;
-                undoStack.Add(currentLine);
-            }
+            
 
             //get vars from ray
             Transform canvas = data.hit.collider.transform;
@@ -300,6 +294,14 @@ namespace VRPen {
             switch (state) {
 
                 case ToolState.NORMAL:
+                    
+                    //add new line if need new one
+                    if (currentLine == null) {
+                        currentLine = VectorDrawing.s_instance.createNewLine(network.getLocalPlayer(), currentColor, network.getLocalPlayer().localGraphicIndex,
+                            data.display.currentLocalCanvas, true);
+                        network.getLocalPlayer().localGraphicIndex++;
+                        undoStack.Add(currentLine);
+                    }
                     
                     vectorMan.draw(network.getLocalPlayer(), currentLine.localIndex, false, currentColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
                     
@@ -335,6 +337,14 @@ namespace VRPen {
 
                 case ToolState.ERASE:
 
+                    //add new line if need new one
+                    if (currentLine == null) {
+                        currentLine = VectorDrawing.s_instance.createNewLine(network.getLocalPlayer(), data.display.currentLocalCanvas.bgColor, network.getLocalPlayer().localGraphicIndex,
+                            data.display.currentLocalCanvas, true);
+                        network.getLocalPlayer().localGraphicIndex++;
+                        undoStack.Add(currentLine);
+                    }
+                    
                     vectorMan.draw(network.getLocalPlayer(), currentLine.localIndex, false, data.display.currentLocalCanvas.bgColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
                     break;
 
@@ -362,7 +372,9 @@ namespace VRPen {
         }
 
         void endLine() {
-            if (currentLine != null) vectorMan.endLineEvent(network.getLocalPlayer(), currentLine.localIndex, currentLine.canvasId, true);
+            if (currentLine != null) {
+                vectorMan.endLineEvent(network.getLocalPlayer(), currentLine.localIndex, currentLine.canvasId, true);
+            }
             currentLine = null;
         }
         

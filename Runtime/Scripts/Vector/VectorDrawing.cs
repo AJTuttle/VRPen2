@@ -226,7 +226,7 @@ namespace VRPen {
 
                 //get line
                 VectorGraphic currentGraphic = canvas.findGraphic(player.connectionId, graphicIndex);
-                if (currentGraphic == null) currentGraphic = createNewLine(player, color, graphicIndex, canvas);
+                if (currentGraphic == null) currentGraphic = createNewLine(player, color, graphicIndex, canvas, localInput);
                 if (!(currentGraphic is VectorLine)) {
                     Debug.LogError("Trying tp draw onto a non-line graphic");
                     return;
@@ -428,7 +428,7 @@ namespace VRPen {
 
         }
         
-        public VectorLine createNewLine(NetworkedPlayer player, Color32 color, int graphicIndex, VectorCanvas canvas) {
+        public VectorLine createNewLine(NetworkedPlayer player, Color32 color, int graphicIndex, VectorCanvas canvas, bool isLocal) {
             
             //make obj
             GameObject obj = new GameObject();
@@ -447,6 +447,7 @@ namespace VRPen {
             VectorLine currentLine = new VectorLine();
             currentLine.mesh = currentMesh;
             currentLine.ownerId = player.connectionId;
+            currentLine.createdLocally = isLocal;
             currentLine.localIndex = graphicIndex;
             currentLine.obj = obj;
             currentLine.mr = mr;

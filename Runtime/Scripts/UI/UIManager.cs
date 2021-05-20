@@ -456,6 +456,8 @@ namespace VRPen {
             //do nothing if nothing to undo
             if (input.undoStack.Count == 0) return;
             
+            
+            
             //undo
             VectorGraphic curr = input.undoStack[input.undoStack.Count - 1];
             vectorMan.undo(curr.ownerId, curr.localIndex, curr.canvasId, true);

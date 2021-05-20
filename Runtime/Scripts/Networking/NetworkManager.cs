@@ -131,8 +131,6 @@ namespace VRPen {
 
             //dont do anything in offline mode
             if (VectorDrawing.OfflineMode) return;
-
-            Debug.Log(";;;" +pressure + "  " + endLine);
             
             //make new temp arrays with +1 length
             bool[] tempEL = new bool[endLines.Length + 1];
@@ -196,6 +194,13 @@ namespace VRPen {
             }
             localPlayer.connectionId = ID;
             localPlayerHasID = true;
+            
+            //find all graphics added before connection and set their owner id to be correct
+            foreach (VectorCanvas canvas in vectorMan.canvases) {
+                foreach (VectorGraphic graphic in canvas.graphics) {
+                    if (graphic.createdLocally) graphic.ownerId = ID;
+                }
+            }
         }
 
      
@@ -544,6 +549,11 @@ namespace VRPen {
             //dont do anything in offline mode
             if (VectorDrawing.OfflineMode) return;
 
+            //if local player has no id, send out warning
+            if (!localPlayerHasID) {
+                Debug.LogWarning("Connection packet is being sent without assigned a local player ID first, this could cause errors.");
+            }
+            
             //mmake buffer list
             List<byte> sendBufferList = new List<byte>();
 

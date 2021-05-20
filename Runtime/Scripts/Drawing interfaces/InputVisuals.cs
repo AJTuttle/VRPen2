@@ -23,17 +23,17 @@ namespace VRPen {
 		public List<int> colorIndicatorRenderersIndex;
 
 
-        [System.NonSerialized]
+        //[System.NonSerialized]
         //public InputDevice deviceData;
 
-        protected Color32 currentColor = new Color32(0, 0, 0, 255);
+        protected  Color32 currentColor = new Color32(0, 0, 0, 255);
 
 
         //state
         public enum ToolState {
             NORMAL, EYEDROPPER, ERASE
         }
-        [System.NonSerialized]
+        //[System.NonSerialized]
         public ToolState state = ToolState.NORMAL;
 
         protected void Start() {

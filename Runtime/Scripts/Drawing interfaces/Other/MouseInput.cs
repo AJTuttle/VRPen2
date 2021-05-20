@@ -27,15 +27,23 @@ namespace VRPen {
         // Update is called once per frame
         void Update() {
             
+            
             //find cam
             if (cam == null) cam = Camera.main;
 
             pressure = 1;
-            UIClickDown = Input.GetKeyDown(KeyCode.Mouse1);
-
+            
+            
             //check for marker input
-            if (Input.GetKeyDown(KeyCode.Mouse1) || Input.GetKey(KeyCode.Mouse0)) input();
-            else idle();
+            if (Input.GetKeyDown(KeyCode.Mouse0) || Input.GetKey(KeyCode.Mouse0)) input();
+            else if (Input.GetKeyUp(KeyCode.Mouse0)) {
+                UIClickDown = true;
+                input();
+            }
+            else {
+                idle();
+            }
+            
             
             //reset click value at end of frame
             UIClickDown = false;
