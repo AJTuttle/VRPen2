@@ -297,9 +297,9 @@ namespace VRPen {
                     
                     //add new line if need new one
                     if (currentLine == null) {
-                        currentLine = VectorDrawing.s_instance.createNewLine(network.getLocalPlayer(), currentColor, network.getLocalPlayer().localGraphicIndex,
+                        currentLine = VectorDrawing.s_instance.createNewLine(network.getLocalPlayer(), currentColor, network.localGraphicIndex,
                             data.display.currentLocalCanvas, true);
-                        network.getLocalPlayer().localGraphicIndex++;
+                        network.localGraphicIndex++;
                         undoStack.Add(currentLine);
                     }
                     
@@ -339,9 +339,9 @@ namespace VRPen {
 
                     //add new line if need new one
                     if (currentLine == null) {
-                        currentLine = VectorDrawing.s_instance.createNewLine(network.getLocalPlayer(), data.display.currentLocalCanvas.bgColor, network.getLocalPlayer().localGraphicIndex,
+                        currentLine = VectorDrawing.s_instance.createNewLine(network.getLocalPlayer(), data.display.currentLocalCanvas.bgColor, network.localGraphicIndex,
                             data.display.currentLocalCanvas, true);
-                        network.getLocalPlayer().localGraphicIndex++;
+                        network.localGraphicIndex++;
                         undoStack.Add(currentLine);
                     }
                     

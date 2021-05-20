@@ -43,7 +43,6 @@ namespace VRPen {
                     UI.stampPassthrough(clickedBy, stampIndex);
                     break;
                 case 4:
-                    Debug.Log("clickedafadsfdsa");
                     UI.undoPassthrough(clickedBy);
                     break;
                 default:

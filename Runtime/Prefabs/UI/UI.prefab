@@ -15290,7 +15290,6 @@ GameObject:
   - component: {fileID: 1544671984502763795}
   - component: {fileID: 5594727856624169527}
   - component: {fileID: 1431841884914957283}
-  - component: {fileID: 3075690619453035712}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -15447,25 +15446,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &3075690619453035712
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6916175154355789619}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_HorizontalAxis: Horizontal
-  m_VerticalAxis: Vertical
-  m_SubmitButton: Submit
-  m_CancelButton: Cancel
-  m_InputActionsPerSecond: 10
-  m_RepeatDelay: 0.5
-  m_ForceModuleActive: 0
 --- !u!1 &6993523938156731665
 GameObject:
   m_ObjectHideFlags: 0

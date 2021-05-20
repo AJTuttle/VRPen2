@@ -9,8 +9,6 @@ namespace VRPen {
         public ulong connectionId;
 
         
-        //vector drawing
-        public int localGraphicIndex = 0;
 
 
     }

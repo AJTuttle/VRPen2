@@ -272,27 +272,17 @@ namespace VRPen {
         }
 
         //non networked stamps use a stamp index of -1 (for example when stamping is used for the background)
-        public void stamp(Texture stampTex, int stampIndex, NetworkedPlayer player, byte deviceIndex, float x, float y, float size, float rotation, byte canvasId, bool localInput) {
+        public void stamp(Texture stampTex, int stampIndex, NetworkedPlayer player, int graphicIndex, float x, float y, float size, float rotation, byte canvasId, bool localInput) {
             
-            /*//get canvas
+            //get canvas
             VectorCanvas canvas = getCanvas(canvasId);
             if (canvas == null) {
                 Debug.LogError("No canvas found for draw input");
                 return;
             }
 
-            //get device
-            InputDevice device;
-			if (player == null && deviceIndex == facilitativeDevice.deviceIndex) {
-				device = facilitativeDevice;
-			}
-            else if ((device = player.inputDevices[deviceIndex]) == null) {
-                Debug.LogError("Failed retreiving input device");
-                return;
-            }
-
             //make stamp
-            VectorStamp stamp = createStamp(stampTex, canvas, device, player, size, rotation);
+            VectorStamp stamp = createStamp(stampTex, canvas, player, graphicIndex, size, rotation, localInput);
 
             //got vector pos
             Vector3 drawPoint = new Vector3(x, 0, y);
@@ -303,17 +293,12 @@ namespace VRPen {
             //network
             if (localInput) {
                 if (stampIndex == -1) Debug.LogError("Tried to network a non-networkable stamp (stamp index == -1)");
-                else network.sendStamp(stampIndex, x, y, size, rotation, canvasId, deviceIndex);
-            }*/
+                else network.sendStamp(stampIndex, x, y, size, rotation, canvasId, graphicIndex);
+            }
 
         }
 
-        /*VectorStamp createStamp(Texture stampTex, VectorCanvas canvas, InputDevice device, NetworkedPlayer player, float size, float rotation) {
-
-            //line end check needed
-            if (device.currentGraphic != null && (device.currentGraphic is VectorLine)) {
-				endLineData(device);
-            }
+        VectorStamp createStamp(Texture stampTex, VectorCanvas canvas, NetworkedPlayer player, int graphicIndex, float size, float rotation, bool isLocal) {
 
             //make obj
             //GameObject obj = Instantiate(stampTest) ;
@@ -341,13 +326,15 @@ namespace VRPen {
             currentStamp.mesh = currentMesh;
 			if (player != null) {
 				currentStamp.ownerId = player.connectionId;
-				currentStamp.localIndex = player.localGraphicIndex;
-                player.localGraphicIndex++;
+				currentStamp.localIndex = network.localGraphicIndex;
+                network.localGraphicIndex++;
 				canvas.graphics.Add(currentStamp);
 			}
 			currentStamp.obj = obj;
             currentStamp.mr = mr;
-            device.currentGraphic = currentStamp;
+            currentStamp.createdLocally = isLocal;
+            currentStamp.ownerId = player.connectionId;
+            currentStamp.localIndex = graphicIndex;
 
 
             //set shader
@@ -360,9 +347,7 @@ namespace VRPen {
 
             return currentStamp;
 
-            return null;
-
-        }*/
+        }
 
 		Mesh generateStampQuad(float width, float height) {
 
@@ -451,8 +436,6 @@ namespace VRPen {
             currentLine.localIndex = graphicIndex;
             currentLine.obj = obj;
             currentLine.mr = mr;
-            currentLine.localIndex = player.localGraphicIndex;
-            player.localGraphicIndex++;
             currentLine.canvasId = canvas.canvasId;
             canvas.graphics.Add(currentLine);
 

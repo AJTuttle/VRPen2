@@ -25,6 +25,8 @@ namespace VRPen {
 
     public class NetworkManager : MonoBehaviour {
 
+        //instance
+        public static NetworkManager s_instance;
 
         //scripts
         [System.NonSerialized]
@@ -95,6 +97,11 @@ namespace VRPen {
 
         //
         Queue<byte[]> onConnectPacketQueue = new Queue<byte[]>();
+        
+        
+        //local graphic index
+        [System.NonSerialized]
+        public int localGraphicIndex = 0;
 
 
 		/// <summary>
@@ -102,6 +109,9 @@ namespace VRPen {
 		/// </summary>
 		private void Start() {
 
+            //set instnace
+            s_instance = this;
+            
             //set the start time
             instanceStartTime = DateTime.Now.Ticks;
 
@@ -507,7 +517,7 @@ namespace VRPen {
 
         }
 
-        public void sendStamp(int stampIndex, float x, float y, float size, float rot, byte canvasId, byte deviceIndex) {
+        public void sendStamp(int stampIndex, float x, float y, float size, float rot, byte canvasId, int graphicIndex) {
 
             //dont do anything in offline mode
             if (VectorDrawing.OfflineMode) return;
@@ -524,7 +534,7 @@ namespace VRPen {
             sendBufferList.AddRange(BitConverter.GetBytes(size));
             sendBufferList.AddRange(BitConverter.GetBytes(rot));
             sendBufferList.Add(canvasId);
-            sendBufferList.Add(deviceIndex);
+            sendBufferList.AddRange(BitConverter.GetBytes(graphicIndex));
             
             // convert to an array
             byte[] sendBuffer = sendBufferList.ToArray();
@@ -862,13 +872,13 @@ namespace VRPen {
             float size = ReadFloat(packet, ref offset);
             float rot = ReadFloat(packet, ref offset);
             byte canvasId = ReadByte(packet, ref offset);
-            byte deviceIndex = ReadByte(packet, ref offset);
+            int graphicIndex = ReadInt(packet, ref offset);
 
             //get stamptexture
             Texture2D text = PersistantData.getStampTexture(stampIndex);
 
             //add stamp
-            vectorMan.stamp(text, stampIndex, player, deviceIndex, x, y, size, rot, canvasId, false);
+            vectorMan.stamp(text, stampIndex, player, graphicIndex, x, y, size, rot, canvasId, false);
             
         }
 
