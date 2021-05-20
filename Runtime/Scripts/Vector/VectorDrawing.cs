@@ -272,13 +272,13 @@ namespace VRPen {
         }
 
         //non networked stamps use a stamp index of -1 (for example when stamping is used for the background)
-        public void stamp(Texture stampTex, int stampIndex, NetworkedPlayer player, int graphicIndex, float x, float y, float size, float rotation, byte canvasId, bool localInput) {
+        public VectorStamp stamp(Texture stampTex, int stampIndex, NetworkedPlayer player, int graphicIndex, float x, float y, float size, float rotation, byte canvasId, bool localInput) {
             
             //get canvas
             VectorCanvas canvas = getCanvas(canvasId);
             if (canvas == null) {
                 Debug.LogError("No canvas found for draw input");
-                return;
+                return null;
             }
 
             //make stamp
@@ -295,6 +295,9 @@ namespace VRPen {
                 if (stampIndex == -1) Debug.LogError("Tried to network a non-networkable stamp (stamp index == -1)");
                 else network.sendStamp(stampIndex, x, y, size, rotation, canvasId, graphicIndex);
             }
+            
+            //return
+            return stamp;
 
         }
 
@@ -403,6 +406,8 @@ namespace VRPen {
                 //StartCoroutine(canvas.renderGraphic(device.currentGraphic, device));
 
                 //instead of just rendering the 1 line, we rerender the whole canvas so that we can make use of various post processed effects
+                //also make sure to edit lock the graphic so that after the render ends it cant be edited.
+                currentGraphic.editLock = true;
                 currentGraphic = null;
                 StartCoroutine(canvas.rerenderCanvas());
 

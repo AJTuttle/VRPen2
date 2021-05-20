@@ -445,7 +445,7 @@ namespace VRPen {
 
             //turn back on the current Graphics for each user
             foreach (VectorGraphic graphic in graphics) {
-                if (graphic.editLock) graphic.mr.enabled = true;
+                if (!graphic.editLock) graphic.mr.enabled = true;
             }
 
         }
@@ -459,7 +459,7 @@ namespace VRPen {
             }
             
             stamp.obj.transform.localPosition = pos;
-            StartCoroutine(renderGraphic(stamp));
+            StartCoroutine(renderSingleGraphic(stamp));
 
         }
 
@@ -508,8 +508,10 @@ namespace VRPen {
 
         }
 
-        public IEnumerator renderGraphic(VectorGraphic graphic) {
+        public IEnumerator renderSingleGraphic(VectorGraphic graphic) {
 			
+            Debug.Log("fdsfdsfasfdsfdsfdasfdsafsdafd");
+            
             //turn on the edit lock since we dont want it to change now that its been / is being rendered
             graphic.editLock = true;
 
