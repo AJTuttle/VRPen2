@@ -606,7 +606,7 @@ namespace VRPen {
             }
         }
 
-        public void sendInputVisualEvent(byte deviceId, Color32 color, VRPenInput.ToolState state) {
+        public void sendInputVisualEvent(int uniqueDeviceIdentifier, Color32 color, VRPenInput.ToolState state) {
 
             //dont do anything in offline mode
             if (VectorDrawing.OfflineMode) return;
@@ -619,7 +619,7 @@ namespace VRPen {
             sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
 
             //add data
-            sendBufferList.Add(deviceId);
+            sendBufferList.AddRange(BitConverter.GetBytes(uniqueDeviceIdentifier));
             sendBufferList.Add((byte)state);
             sendBufferList.Add(color.r);
             sendBufferList.Add(color.g);
@@ -909,15 +909,17 @@ namespace VRPen {
         void unpackInputVisualEvent(NetworkedPlayer player, byte[] packet, ref int offset) {
             
             //get data
-            byte deviceId = ReadByte(packet, ref offset);
+            int uniqueID = ReadInt(packet, ref offset);
             VRPenInput.ToolState state = (VRPenInput.ToolState)ReadByte(packet, ref offset);
             Color32 col = new Color32(ReadByte(packet, ref offset), ReadByte(packet, ref offset), ReadByte(packet, ref offset), 255);
 
             //update device
-            // if (player.inputDevices[deviceId].visuals != null) {
-            //     player.inputDevices[deviceId].visuals.updateModel(state, false);
-            //     player.inputDevices[deviceId].visuals.updateColorIndicators(col, false);
-            // }
+            foreach (InputVisuals device in FindObjectsOfType<InputVisuals>()) {
+                if (device.ownerID == player.connectionId && device.uniqueIdentifier == uniqueID) {
+                    device.updateModel(state, false);
+                    device.updateColorIndicators(col, false);
+                }
+            }
         }
 
         void unpackUIState(byte[] packet, ref int offset) {

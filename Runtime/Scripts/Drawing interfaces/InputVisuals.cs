@@ -28,12 +28,20 @@ namespace VRPen {
 
         protected  Color32 currentColor = new Color32(0, 0, 0, 255);
 
+        [Header("Optional Vars for Network Syncing Visuals")] 
+        [Space(10)]
+        public bool syncVisuals;
+        [Tooltip("The playerID of the person who owns the device (must match the one used in the networking system)")]
+        public ulong ownerID;
+        [Tooltip("Any unique identifier for the device (only needs to be unique for the owner's devices)")]
+        public int uniqueIdentifier;
+
 
         //state
         public enum ToolState {
             NORMAL, EYEDROPPER, ERASE
         }
-        //[System.NonSerialized]
+        [System.NonSerialized]
         public ToolState state = ToolState.NORMAL;
 
         protected void Start() {
@@ -59,7 +67,7 @@ namespace VRPen {
             if (eyedropperModel != null) eyedropperModel.SetActive(newState == ToolState.EYEDROPPER);
 
             //network
-            //if (localInput) network.sendInputVisualEvent(deviceData.deviceIndex, currentColor, newState);
+            if (localInput) network.sendInputVisualEvent(uniqueIdentifier, currentColor, newState);
         }
 
 		public void updateColorIndicators(Color32 color, bool localInput) {
@@ -75,7 +83,7 @@ namespace VRPen {
                 i.color = color;
             }
 
-            //if (localInput) network.sendInputVisualEvent(deviceData.deviceIndex, color, state);
+            if (localInput) network.sendInputVisualEvent(uniqueIdentifier, color, state);
 		}
 	}
 }
