@@ -5,6 +5,8 @@ using UnityEngine;
 namespace VRPen {
 	public class RemoteMarker : InputVisuals {
 
+		[Header("Remote Marker Params")]
+		[Space(10)]
 		public Transform snappedTo;
 		protected float raycastDistance = 0.2f;
 		public Transform modelParent;

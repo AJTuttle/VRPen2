@@ -468,7 +468,7 @@ namespace VRPen {
         public void clear(bool localInput) {
 
             //deal with players data structures
-            foreach (VRPenInput input in FindObjectsOfType<VRPenInput>()){
+            foreach (VRPenInput input in VectorDrawing.s_instance.localInputDevices){
                 if (input.currentLine != null && input.currentLine.canvasId == canvasId) input.currentLine = null;
                 input.undoStack.RemoveAll(x => x.canvasId == canvasId);
             }

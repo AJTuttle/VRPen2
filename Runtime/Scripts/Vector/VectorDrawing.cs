@@ -475,7 +475,7 @@ namespace VRPen {
             
             //if local undo then remove from undo queue
             if (localInput) {
-                foreach (VRPenInput input in FindObjectsOfType<VRPenInput>()) {
+                foreach (VRPenInput input in localInputDevices) {
                     input.undoStack.Remove(undid);
                 }
             }

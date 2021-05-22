@@ -69,6 +69,9 @@ namespace VRPen {
 
         protected void Start() {
 
+            //add to input list
+            VectorDrawing.s_instance.localInputDevices.Add(this);
+            
             //base
             base.Start();
 

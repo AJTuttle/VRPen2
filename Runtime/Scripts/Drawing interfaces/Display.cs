@@ -134,7 +134,7 @@ namespace VRPen {
         public void swapCurrentCanvas(byte canvasId, bool localInput) {
 
             //end local drawing if it is drawing
-            foreach (VRPenInput input in FindObjectsOfType<VRPenInput>()){
+            foreach (VRPenInput input in VectorDrawing.s_instance.localInputDevices){
                 if (input.currentLine != null &&
                     input.currentLine.ownerId == network.getLocalPlayer().connectionId) {
                     vectorMan.endLineEvent(network.getLocalPlayer(), input.currentLine.localIndex, input.currentLine.canvasId,true);
