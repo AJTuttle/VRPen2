@@ -7,12 +7,7 @@ namespace VRPen {
 
 	public class InputVisuals : MonoBehaviour {
 
-
-        //script refs
-        protected VectorDrawing vectorMan;
-        protected NetworkManager network;
-        
-        [Header("Optional Visual Parameters")]
+		[Header("Optional Visual Parameters")]
         [Space(10)]
         public GameObject markerModel;
         public GameObject eyedropperModel;
@@ -30,7 +25,7 @@ namespace VRPen {
 
         [Header("Optional Vars for Network Syncing Visuals")] 
         [Space(10)]
-        public bool syncVisuals;
+        public bool sendVisualUpdates;
         [Tooltip("The playerID of the person who owns the device (must match the one used in the networking system)")]
         public ulong ownerID;
         [Tooltip("Any unique identifier for the device (only needs to be unique for the owner's devices)")]
@@ -46,15 +41,20 @@ namespace VRPen {
 
         protected void Start() {
 
-            //grab refs
-            vectorMan = FindObjectOfType<VectorDrawing>();
-            network = FindObjectOfType<NetworkManager>();
-            
-            //set colors
+	        //add to input list
+	        VectorDrawing.s_instance.localInputDevices.Add(this);
+
+	        //set color indicators
             updateColorIndicators(currentColor, false);
 
         }
 
+        public void updateColor(Color32 color, bool localInput) {
+	        
+	        currentColor = color;
+	        updateColorIndicators(color, localInput);
+	        
+        }
 
         public void updateModel(VRPen.VRPenInput.ToolState newState, bool localInput) {
 
@@ -67,10 +67,10 @@ namespace VRPen {
             if (eyedropperModel != null) eyedropperModel.SetActive(newState == ToolState.EYEDROPPER);
 
             //network
-            if (localInput && syncVisuals) network.sendInputVisualEvent(uniqueIdentifier, currentColor, newState);
+            if (localInput && sendVisualUpdates) NetworkManager.s_instance.sendInputVisualEvent(uniqueIdentifier, currentColor, newState);
         }
 
-		public void updateColorIndicators(Color32 color, bool localInput) {
+		private void updateColorIndicators(Color32 color, bool localInput) {
 			if (colorIndicatorRenderers.Count != colorIndicatorRenderersIndex.Count) {
 				Debug.Log("There is not the same ammount of color indicators as there are indices.");
 				return;
@@ -83,8 +83,9 @@ namespace VRPen {
                 i.color = color;
             }
 
+            
             //network
-            if (localInput && syncVisuals) network.sendInputVisualEvent(uniqueIdentifier, color, state);
+            if (localInput && sendVisualUpdates) NetworkManager.s_instance.sendInputVisualEvent(uniqueIdentifier, color, state);
 		}
 	}
 }

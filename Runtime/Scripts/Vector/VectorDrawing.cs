@@ -32,8 +32,9 @@ namespace VRPen {
         [Space(5)]
         [Tooltip("Make sure to add any displays in the scene here")]
         public List<Display> displays = new List<Display>();
-        [Tooltip("Input devices here will automatically be added to code base, any local devices not here will need to be added using addLocalInputDevice()")]
-        public List<VRPenInput> localInputDevices = new List<VRPenInput>();
+        //[Tooltip("Input devices here will automatically be added to code base, any local devices not here will need to be added using addLocalInputDevice()")]
+        [System.NonSerialized]
+        public List<InputVisuals> localInputDevices = new List<InputVisuals>();
         [Tooltip("A constant background that gets spawned with certain canvas IDs (the canvas ID is the index of this array). Don't fret if this list doesnt match the length of canvases.")]
         public Texture[] canvasBackgrounds;
         [Tooltip("In build, canvases will autosave on applicationQuit and scenechange event.")]
@@ -101,12 +102,13 @@ namespace VRPen {
         } 
 
 
-
+        private void Awake() {
+            //set instnace
+            s_instance = this;
+        }
 
         private void Start() {
             
-            //set instance
-            s_instance = this;
 
             //get scripts
             tablet = GetComponent<StarTablet>();
@@ -475,8 +477,8 @@ namespace VRPen {
             
             //if local undo then remove from undo queue
             if (localInput) {
-                foreach (VRPenInput input in localInputDevices) {
-                    input.undoStack.Remove(undid);
+                foreach (InputVisuals input in localInputDevices) {
+                    if (input is VRPenInput) ((VRPenInput)input).undoStack.Remove(undid);
                 }
             }
 

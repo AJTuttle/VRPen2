@@ -104,13 +104,16 @@ namespace VRPen {
         public int localGraphicIndex = 0;
 
 
-		/// <summary>
+        private void Awake() {
+            //set instnace
+            s_instance = this;
+        }
+
+        /// <summary>
 		/// Start gets relevant scripts and also inits the local player's data
 		/// </summary>
 		private void Start() {
 
-            //set instnace
-            s_instance = this;
             
             //set the start time
             instanceStartTime = DateTime.Now.Ticks;
@@ -913,11 +916,13 @@ namespace VRPen {
             VRPenInput.ToolState state = (VRPenInput.ToolState)ReadByte(packet, ref offset);
             Color32 col = new Color32(ReadByte(packet, ref offset), ReadByte(packet, ref offset), ReadByte(packet, ref offset), 255);
 
+            //Debug.LogError(player.connectionId + " " + uniqueID);
+            
             //update device
-            foreach (InputVisuals device in FindObjectsOfType<InputVisuals>()) {
+            foreach (InputVisuals device in vectorMan.localInputDevices) {
                 if (device.ownerID == player.connectionId && device.uniqueIdentifier == uniqueID) {
                     device.updateModel(state, false);
-                    device.updateColorIndicators(col, false);
+                    device.updateColor(col, false);
                 }
             }
         }
