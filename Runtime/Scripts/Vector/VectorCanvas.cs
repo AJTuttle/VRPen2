@@ -469,8 +469,11 @@ namespace VRPen {
 
             //deal with players data structures
             foreach (InputVisuals input in VectorDrawing.s_instance.localInputDevices){
-                if (input is VRPenInput && ((VRPenInput)input).currentLine != null && ((VRPenInput)input).currentLine.canvasId == canvasId) ((VRPenInput)input).currentLine = null;
-                ((VRPenInput)input).undoStack.RemoveAll(x => x.canvasId == canvasId);
+                if (input is VRPenInput && ((VRPenInput) input).currentLine != null &&
+                    ((VRPenInput) input).currentLine.canvasId == canvasId) {
+                    ((VRPenInput)input).currentLine = null;
+                    ((VRPenInput)input).undoStack.RemoveAll(x => x.canvasId == canvasId);
+                }
             }
             graphics.Clear();
             
@@ -502,8 +505,7 @@ namespace VRPen {
 			
 			//set background
 			if (drawingMan.canvasBackgrounds.Length > canvasId && drawingMan.canvasBackgrounds[canvasId] != null) {
-				//TODO - bring back backgrounds
-				//drawingMan.stamp(drawingMan.canvasBackgrounds[canvasId], -1, drawingMan.facilitativeDevice.owner, drawingMan.facilitativeDevice.deviceIndex, 0, 0, 1, 0.5f, canvasId, false);
+				drawingMan.stamp(drawingMan.canvasBackgrounds[canvasId], -1, ulong.MaxValue, canvasId, 0, 0, 1, 0.5f, canvasId, false);
 			}
 
         }

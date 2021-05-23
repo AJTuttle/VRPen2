@@ -131,28 +131,6 @@ namespace VRPen {
             if (enableHotkeys) hotkeys();
         }
 
-        // //Todo: add networking to this so that they can be added after connecting
-        // public void addLocalInputDevice(VRPenInput inputDevice) {
-        //     if (network.sentConnect) {
-        //         Debug.LogError("Input device addition denied: Adding a local input device after NetworkManager.sendConnect() has been called will cause errors for multiplayer (other users dont get the instantiation)");
-        //         return;
-        //     }
-        //     else {
-        //         Debug.Log("Adding local input device (this must happen before NetworkManager.sendConnect() is called)");
-        //
-        //         NetworkedPlayer localPlayer = network.getLocalPlayer();
-        //         InputDevice device = new InputDevice();
-        //         byte deviceIndex = (byte)localPlayer.inputDevices.Count;
-        //
-        //         inputDevice.deviceData = device;
-        //         device.type = inputDevice.deviceType;
-        //         localPlayer.inputDevices.Add(deviceIndex, device);
-        //         device.owner = network.getLocalPlayer();
-        //         device.deviceIndex = deviceIndex;
-        //         device.visuals = inputDevice;
-        //         
-        //     }
-        // }
 
         private void OnSceneChange(Scene oldScene, Scene newScene) {
             #if !UNITY_EDITOR
@@ -274,7 +252,7 @@ namespace VRPen {
         }
 
         //non networked stamps use a stamp index of -1 (for example when stamping is used for the background)
-        public VectorStamp stamp(Texture stampTex, int stampIndex, NetworkedPlayer player, int graphicIndex, float x, float y, float size, float rotation, byte canvasId, bool localInput) {
+        public VectorStamp stamp(Texture stampTex, int stampIndex, ulong ownerId, int graphicIndex, float x, float y, float size, float rotation, byte canvasId, bool localInput) {
             
             //get canvas
             VectorCanvas canvas = getCanvas(canvasId);
@@ -284,7 +262,7 @@ namespace VRPen {
             }
 
             //make stamp
-            VectorStamp stamp = createStamp(stampTex, canvas, player, graphicIndex, size, rotation, localInput);
+            VectorStamp stamp = createStamp(stampTex, canvas, ownerId, graphicIndex, size, rotation, localInput);
 
             //got vector pos
             Vector3 drawPoint = new Vector3(x, 0, y);
@@ -303,7 +281,7 @@ namespace VRPen {
 
         }
 
-        VectorStamp createStamp(Texture stampTex, VectorCanvas canvas, NetworkedPlayer player, int graphicIndex, float size, float rotation, bool isLocal) {
+        VectorStamp createStamp(Texture stampTex, VectorCanvas canvas, ulong ownerId, int graphicIndex, float size, float rotation, bool isLocal) {
 
             //make obj
             //GameObject obj = Instantiate(stampTest) ;
@@ -329,17 +307,12 @@ namespace VRPen {
             //stamp data struct and player data structs
             VectorStamp currentStamp = new VectorStamp();
             currentStamp.mesh = currentMesh;
-			if (player != null) {
-				currentStamp.ownerId = player.connectionId;
-				currentStamp.localIndex = network.localGraphicIndex;
-                network.localGraphicIndex++;
-				canvas.graphics.Add(currentStamp);
-			}
 			currentStamp.obj = obj;
             currentStamp.mr = mr;
             currentStamp.createdLocally = isLocal;
-            currentStamp.ownerId = player.connectionId;
+            currentStamp.ownerId = ownerId;
             currentStamp.localIndex = graphicIndex;
+            canvas.graphics.Add(currentStamp);
 
 
             //set shader

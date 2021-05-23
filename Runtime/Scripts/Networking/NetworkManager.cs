@@ -881,7 +881,7 @@ namespace VRPen {
             Texture2D text = PersistantData.getStampTexture(stampIndex);
 
             //add stamp
-            vectorMan.stamp(text, stampIndex, player, graphicIndex, x, y, size, rot, canvasId, false);
+            vectorMan.stamp(text, stampIndex, player.connectionId, graphicIndex, x, y, size, rot, canvasId, false);
             
         }
 
