@@ -103,11 +103,15 @@ namespace VRPen {
 
         protected void input() {
 
-            //stampIndicator.SetActive(false);
-
+            
             //raycast and retrieve data from cast
             InputData data = getInputData();
             hover = data.hover;
+            
+            Debug.Log(data.pressure + "    ppp" );
+            
+            //cancel if no canvas
+            if (data.display.currentLocalCanvas == null) return;
 
             //if currently grabbing a uigrabbable
             if (grabbed != null && data.hover != HoverState.NONE) {
@@ -360,6 +364,7 @@ namespace VRPen {
 
         void endLine() {
             if (currentLine != null) {
+                Debug.Log("fdasdfdfasdfasasdf");
                 VectorDrawing.s_instance.endLineEvent(NetworkManager.s_instance.getLocalPlayer(), currentLine.localIndex, currentLine.canvasId, true);
             }
             currentLine = null;

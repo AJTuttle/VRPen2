@@ -552,9 +552,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30aa0945ad768554d86bd64a5d3a1979, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pixelWidth: 200
-  pixelHeight: 120
-  initialCanvasIsPrivate: 1
+  fullAccess: 0
+  shaderOverride: {fileID: 0}
+  pixelWidth: 2000
+  pixelHeight: 1200
+  initialCanvasIsPrivate: 0
   UIMan: {fileID: 3048407086474039643}
   canvasParent: {fileID: 6991333035018763483}
 --- !u!1 &7338822297756497635
@@ -647,9 +649,9 @@ MeshCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_Enabled: 1
-  serializedVersion: 3
+  serializedVersion: 4
   m_Convex: 0
-  m_CookingOptions: 14
+  m_CookingOptions: 30
   m_Mesh: {fileID: 10210, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1 &7338822297846306449
 GameObject:

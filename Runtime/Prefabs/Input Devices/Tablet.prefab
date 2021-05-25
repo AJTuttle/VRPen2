@@ -895,7 +895,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4841722501247574818}
   m_Layer: 0
-  m_Name: UI
+  m_Name: old UI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1039,7 +1039,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6602496471316704817
 Transform:
   m_ObjectHideFlags: 0
@@ -1938,14 +1938,71 @@ MonoBehaviour:
   colorIndicatorUIImages: []
   colorIndicatorRenderers: []
   colorIndicatorRenderersIndex: 
+  sendVisualUpdates: 0
+  ownerID: 0
+  uniqueIdentifier: 0
   deviceType: 1
-  UIClickDown: 0
   stampPrefab: {fileID: 2441548749050361720, guid: cbb90edd4f2d39f4abac245a76f78a78,
     type: 3}
   tablet: {fileID: 4246681378663867920}
   localCursor: {fileID: 3235478784702896914}
   localDisplay: {fileID: 680105190234456749}
-  colorIndicator: {fileID: 0}
+  pressureCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: -0.0061836243
+      value: 0.039611816
+      inSlope: 0.954486
+      outSlope: 0.954486
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 1
+      value: 1
+      inSlope: 0.954486
+      outSlope: 0.954486
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0.33333334
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  buttonRenderers:
+  - {fileID: 4162737612779822468}
+  - {fileID: 4162737612779822474}
+  - {fileID: 4162737612779822466}
+  - {fileID: 4162737612779822470}
+  - {fileID: 4162737612779822494}
+  - {fileID: 4162737612779822492}
+  wheelTransform: {fileID: 4162737612777529206}
+  wheelLeftEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  wheelRightEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  button0Event:
+    m_PersistentCalls:
+      m_Calls: []
+  button1Event:
+    m_PersistentCalls:
+      m_Calls: []
+  button2Event:
+    m_PersistentCalls:
+      m_Calls: []
+  button3Event:
+    m_PersistentCalls:
+      m_Calls: []
+  button4Event:
+    m_PersistentCalls:
+      m_Calls: []
+  button5Event:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!114 &4246681378663867920
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3033,9 +3090,51 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b56ae4427ae57c143999630ec22cbf94, type: 3}
+--- !u!23 &4162737612779822474 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2300006, guid: b56ae4427ae57c143999630ec22cbf94,
+    type: 3}
+  m_PrefabInstance: {fileID: 4162737612777653740}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &4162737612779822492 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2300016, guid: b56ae4427ae57c143999630ec22cbf94,
+    type: 3}
+  m_PrefabInstance: {fileID: 4162737612777653740}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &4162737612779822466 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2300014, guid: b56ae4427ae57c143999630ec22cbf94,
+    type: 3}
+  m_PrefabInstance: {fileID: 4162737612777653740}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &4162737612779822470 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2300010, guid: b56ae4427ae57c143999630ec22cbf94,
+    type: 3}
+  m_PrefabInstance: {fileID: 4162737612777653740}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &4162737612779822468 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2300008, guid: b56ae4427ae57c143999630ec22cbf94,
+    type: 3}
+  m_PrefabInstance: {fileID: 4162737612777653740}
+  m_PrefabAsset: {fileID: 0}
+--- !u!23 &4162737612779822494 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 2300018, guid: b56ae4427ae57c143999630ec22cbf94,
+    type: 3}
+  m_PrefabInstance: {fileID: 4162737612777653740}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &4162737612777529200 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400028, guid: b56ae4427ae57c143999630ec22cbf94,
+    type: 3}
+  m_PrefabInstance: {fileID: 4162737612777653740}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &4162737612777529206 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 400026, guid: b56ae4427ae57c143999630ec22cbf94,
     type: 3}
   m_PrefabInstance: {fileID: 4162737612777653740}
   m_PrefabAsset: {fileID: 0}
@@ -3105,7 +3204,7 @@ PrefabInstance:
         type: 3}
       propertyPath: display
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 680105190234456749}
     - target: {fileID: 4403628793261774314, guid: 2a8f4263f6ac653428056abb9e469392,
         type: 3}
       propertyPath: m_Name

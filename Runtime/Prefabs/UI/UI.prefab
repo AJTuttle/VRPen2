@@ -9564,8 +9564,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc06493e3e3fe624382f71f94172e96d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  vectorMan: {fileID: 0}
-  network: {fileID: 0}
   grabbablesAddedOnStart:
   - {fileID: 6598031056284007514}
   - {fileID: 2648551383338758531}

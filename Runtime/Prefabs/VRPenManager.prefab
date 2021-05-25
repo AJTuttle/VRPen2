@@ -79,8 +79,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   autoConnect: 0
   syncCurrentCanvas: 1
-  syncDisplayUIs: 0
-  UI_SYNC_PERIOD: 0
+  syncDisplayUIs: 1
+  UI_SYNC_PERIOD: 0.1
   spawnRemoteDevicesLocation: {x: 0, y: 0, z: 0}
   cachePackets: 0
   remoteMarkerPrefab: {fileID: 8217082110612787815, guid: f929d31bb578d7349baa4813213b4f55,
@@ -103,7 +103,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   displays:
   - {fileID: 0}
-  localInputDevices:
   - {fileID: 0}
   - {fileID: 0}
   canvasBackgrounds:
@@ -113,7 +112,7 @@ MonoBehaviour:
   - {fileID: 2800000, guid: b66c08fb97815864f9da35e71880d80d, type: 3}
   autoSavePNGOnExit: 0
   MAX_CANVAS_COUNT: 6
-  renderAreaOrigin: {x: 0, y: -5, z: 0}
+  renderAreaOrigin: {x: 0, y: -5900, z: 0}
   initalPublicCanvasPixelWidth: 2000
   initalPublicCanvasPixelHeight: 1200
   pressureCurve:
@@ -149,8 +148,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+  enableHotkeys: 0
   minDistanceDelta: 0.005
-  minCuspAngle: 0
+  minCuspAngle: 110
   lineDataStepSize: 50
   quadPrefab: {fileID: 5229868460911306089, guid: 78c7fe814c087254fa5566c0b51e29f3,
     type: 3}

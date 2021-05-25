@@ -21,12 +21,6 @@ namespace VRPen {
         bool[] packetHeaderToSync;
         UIGrabbable[] packetHeaderGrabbables;
 
-		[Header("Will autofill")]
-		public VectorDrawing vectorMan;
-		public NetworkManager network;
-
-
-        [Header("Will not autofill")]
 
         public List<UIGrabbable> grabbablesAddedOnStart;
         public Toggle newCanvasIsPrivateToggle;
@@ -75,9 +69,6 @@ namespace VRPen {
 
 		private void Awake() {
             
-            //grab scripts if not in prefab
-            if (vectorMan == null) vectorMan = FindObjectOfType<VectorDrawing>();
-			if (network == null) network = FindObjectOfType<NetworkManager>();
 
             //create arrays for syncing
             packetHeaderToSync = new bool[Enum.GetValues(typeof(PacketHeader)).Length];
@@ -304,7 +295,7 @@ namespace VRPen {
         public void packState() {
 
             //dont do anything if we dont wanna sync
-            if (!network.syncDisplayUIs) return;
+            if (!NetworkManager.s_instance.syncDisplayUIs) return;
 
             //pack data
             List<byte> data = new List<byte>();
@@ -355,7 +346,7 @@ namespace VRPen {
             if (data.Count == 0) return;
 
             //send data
-            network.sendUIState(display.DisplayId, data.ToArray());
+            NetworkManager.s_instance.sendUIState(display.DisplayId, data.ToArray());
 
             //get rid of state sync queue since it was just sent
             dequeueState();
@@ -460,7 +451,7 @@ namespace VRPen {
             
             //undo
             VectorGraphic curr = input.undoStack[input.undoStack.Count - 1];
-            vectorMan.undo(curr.ownerId, curr.localIndex, curr.canvasId, true);
+            VectorDrawing.s_instance.undo(curr.ownerId, curr.localIndex, curr.canvasId, true);
         }
 
         public void savePassthrough() {
