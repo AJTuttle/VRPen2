@@ -9594,7 +9594,7 @@ MonoBehaviour:
   colorPanel: {fileID: 6699010744595825366}
   grayPanel: {fileID: 1061053881362672594}
   addCanvasButton: {fileID: 9212808432155567018}
-  additionalUIWindow: {fileID: 0}
+  additionalUIWindow: {fileID: 1681746909758046531}
 --- !u!114 &946095300793835445
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21432,3 +21432,15 @@ RectTransform:
     type: 3}
   m_PrefabInstance: {fileID: 5724915547192862559}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1681746909758046531 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6351271454435698204, guid: 01ed96d783f91be46afac9527b9f40b2,
+    type: 3}
+  m_PrefabInstance: {fileID: 5724915547192862559}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8ae1555b4e9a5ce4f9fab41745ea2196, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

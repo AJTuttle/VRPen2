@@ -23,7 +23,7 @@ namespace VRPen {
         private const float topBarThickness = 25;
         private const float contentPadding = 10;
         
-        void Start() {
+        void Awake() {
             thisRect = GetComponent<RectTransform>();
             thisCol = bg.GetComponent<BoxCollider>();
             
