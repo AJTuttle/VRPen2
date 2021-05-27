@@ -108,8 +108,6 @@ namespace VRPen {
             InputData data = getInputData();
             hover = data.hover;
             
-            Debug.Log(data.pressure + "    ppp" );
-            
             //cancel if no canvas
             if (data.display.currentLocalCanvas == null) return;
 

@@ -65,6 +65,8 @@ namespace VRPen {
         public GameObject addCanvasButton;
         //public GameObject addCanvasToggle;
 
+        //additional ui that the user of vrpen can define
+        public AdditionalUIWindow additionalUIWindow;
 
 
 		private void Awake() {
@@ -519,6 +521,7 @@ namespace VRPen {
             obj.transform.GetChild(0).GetComponent<Button>().onClick.AddListener(() => closeMenus(true));
         }
 
+        
         int ReadInt(byte[] buf, ref int offset) {
             int val = BitConverter.ToInt32(buf, offset);
             offset += sizeof(Int32);
