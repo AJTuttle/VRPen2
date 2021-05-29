@@ -285,9 +285,6 @@ namespace VRPen {
             canvasIds = new byte[0];
             localGraphicIndices = new int[0];
 
-			//cache
-			cachePacket(sendBuffer, localPlayer.connectionId);
-
             //return packet
             return sendBuffer;
 
@@ -689,66 +686,71 @@ namespace VRPen {
                 Debug.LogWarning("Packets are being recieved before the local player was assigned an ID, this could cause errors.");
             }
 
-            //if the packet is from the local player
-            if (connectionId == localPlayer.connectionId) {
-                if (timeSent < instanceStartTime) {
-                    //Debug.Log("A local catchup packet has been recieved, allowing it through.");
-                }
-                else {
-                    //Debug.Log("A local NON-catchup packet has been recieved, NOT allowing it through.");
-                    return;
-                }
-            }
-			else {
-				cachePacket(packet, connectionId);
-			}
-
             //manage connection id                                        
             NetworkedPlayer player = players.Find(p => p.connectionId == connectionId);
             if (player == null && header != PacketType.Connect) {
                 Debug.LogError("Player is null in a non-connection packet    " + connectionId + "   " + players.Count);
             }
 
-
-            if (header == PacketType.PenData) {
-                unpackPenData(player, packet, ref offset);
-            }
-
-            else if (header == PacketType.Clear) {
-                unpackClear(packet, ref offset);
-            }
-
-            else if (header == PacketType.AddCanvas) {
-                unpackCanvasAddition(packet, ref offset);
-				AddedCanvas.Invoke();
-            }
-
-            else if (header == PacketType.Connect) {
-                unpackConnect(player, packet, connectionId, ref offset);
-            }
+            //ignore this packet
+            bool ignorePacket = false;
             
-            else if (header == PacketType.Undo) {
-                unpackUndo(packet, ref offset);
+            //if the packet is from the local player
+            if (connectionId == localPlayer.connectionId) {
+                //catchup packet
+                if (timeSent < instanceStartTime) {
+                }
+                //non-catchup packet
+                else {
+                    //ignore packets sent by self unless it is a visual event (so that if you have a local-remote version it still works)
+                    if (header != PacketType.InputVisualsEvent) ignorePacket = true;
+                }
             }
 
-			else if (header == PacketType.UIState) {
-                unpackUIState(packet, ref offset);
-            }
+            //if not ignored
+            if (!ignorePacket) {
 
-            else if (header == PacketType.Stamp) {
-                unpackStamp(player, packet, ref offset);
-            }
+                if (header == PacketType.PenData) {
+                    unpackPenData(player, packet, ref offset);
+                }
 
-            else if (header == PacketType.CanvasSwitch) {
-                unpackCanvasSwitch(packet, ref offset);
-            }
+                else if (header == PacketType.Clear) {
+                    unpackClear(packet, ref offset);
+                }
 
-            else if (header == PacketType.InputVisualsEvent) {
-                unpackInputVisualEvent(player, packet, ref offset);
-            }
+                else if (header == PacketType.AddCanvas) {
+                    unpackCanvasAddition(packet, ref offset);
+                    AddedCanvas.Invoke();
+                }
 
-            else {
-                Debug.LogError("Packet type not recognized, ID = " + header);
+                else if (header == PacketType.Connect) {
+                    unpackConnect(player, packet, connectionId, ref offset);
+                }
+
+                else if (header == PacketType.Undo) {
+                    unpackUndo(packet, ref offset);
+                }
+
+                else if (header == PacketType.UIState) {
+                    unpackUIState(packet, ref offset);
+                }
+
+                else if (header == PacketType.Stamp) {
+                    unpackStamp(player, packet, ref offset);
+                }
+
+                else if (header == PacketType.CanvasSwitch) {
+                    unpackCanvasSwitch(packet, ref offset);
+                }
+
+                else if (header == PacketType.InputVisualsEvent) {
+                    unpackInputVisualEvent(player, packet, ref offset);
+                }
+
+                else {
+                    Debug.LogError("Packet type not recognized, ID = " + header);
+                }
+
             }
 
         }
