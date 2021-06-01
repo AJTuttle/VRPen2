@@ -27,9 +27,9 @@ namespace VRPen {
         const float PRESSURE_UPDATE_MINIMUM_DELTA = 0.01f; //the min amount that pressure has to change to be considered worth updated the mesh
 
         //public vars
-        [Space(5)]
-        [Header("       Important variables to set")]
-        [Space(5)]
+        [Space(5)] [Header("Important variables to set")] [Space(5)]
+        [Tooltip("StartInOfflineMode")]
+        public bool startInOfflineMode;
         [Tooltip("Make sure to add any displays in the scene here")]
         public List<Display> displays = new List<Display>();
         //[Tooltip("Input devices here will automatically be added to code base, any local devices not here will need to be added using addLocalInputDevice()")]
@@ -59,7 +59,7 @@ namespace VRPen {
 
 
         [Space(5)]
-        [Header("       Line Smoothing and compression parameters")]
+        [Header("Line Smoothing and compression parameters")]
         [Space(15)]
         [Tooltip("Minimum distance from the last drawn point before a new one is registered, this primarilly is used for performance but also helps a bit with smoothing.")]
         [Range(0f, 0.1f)]
@@ -69,7 +69,7 @@ namespace VRPen {
         public float minCuspAngle;
 
         [Space(5)]
-        [Header("       Optimization Parameters")]
+        [Header("Optimization Parameters")]
         [Space(15)]
         [Tooltip("How many points are allocated at a time in the line data structure (ie. if this is 50 then every 50 points in a line, 50 new spaces will be allocated. " +
             "This is used to avoid having to copy array values into a new longer array every single time a new point is allocated)")]
@@ -77,7 +77,7 @@ namespace VRPen {
 
 
         [Space(5)]
-        [Header("       Variables that don't need to be changed")]
+        [Header("Variables that don't need to be changed")]
         [Space(15)]
         public GameObject quadPrefab;
         public Shader depthShaderColor;
@@ -105,6 +105,9 @@ namespace VRPen {
         private void Awake() {
             //set instnace
             s_instance = this;
+            
+            //start in offline mode
+            if (startInOfflineMode) offlineMode = true;
         }
 
         private void Start() {

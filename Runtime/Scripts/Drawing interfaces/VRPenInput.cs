@@ -362,7 +362,6 @@ namespace VRPen {
 
         void endLine() {
             if (currentLine != null) {
-                Debug.Log("fdasdfdfasdfasasdf");
                 VectorDrawing.s_instance.endLineEvent(NetworkManager.s_instance.getLocalPlayer(), currentLine.localIndex, currentLine.canvasId, true);
             }
             currentLine = null;
