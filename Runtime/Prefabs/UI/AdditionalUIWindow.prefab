@@ -626,7 +626,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57661977724c19041ac7c421303a1aa2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  notNetworked: 0
+  notNetworked: 1
   type: 5
   parent: {fileID: 6227715490023097184}
   man: {fileID: 0}
