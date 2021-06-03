@@ -40,6 +40,10 @@ namespace VRPen {
             parent.SetActive(true);
         }
 
+        public bool isEnabled() {
+            return parent.activeInHierarchy;
+        }
+
         public void setContent(GameObject prefab) {
             
             //destory old content
