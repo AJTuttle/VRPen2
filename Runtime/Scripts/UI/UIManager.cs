@@ -66,8 +66,9 @@ namespace VRPen {
         //public GameObject addCanvasToggle;
 
         //additional ui that the user of vrpen can define
-        public AdditionalUIWindow additionalUIWindow;
-
+        public Transform additionalUIWindowParent;
+        public GameObject additionalUIWindowPrefab;
+        private List<AdditionalUIWindow> additionalUIWindows = new List<AdditionalUIWindow>();
 
 		private void Awake() {
             
@@ -456,6 +457,23 @@ namespace VRPen {
             VectorDrawing.s_instance.undo(curr.ownerId, curr.localIndex, curr.canvasId, true);
         }
 
+        public AdditionalUIWindow addAdditionalUI() {
+            GameObject obj = GameObject.Instantiate(additionalUIWindowPrefab, additionalUIWindowParent);
+            AdditionalUIWindow additionalUIWindow = obj.GetComponent<AdditionalUIWindow>();
+            additionalUIWindows.Add(additionalUIWindow);
+            return additionalUIWindow;
+        }
+
+        public AdditionalUIWindow getAdditionalUI(int index) {
+            return additionalUIWindows[index];
+        }
+
+        public void removeAdditionalUI(int index) {
+            AdditionalUIWindow additionalUIWindow = additionalUIWindows[index];
+            Destroy(additionalUIWindow.gameObject);
+            additionalUIWindows.Remove(additionalUIWindow);
+        }
+        
         public void savePassthrough() {
             display.savePassthrough();
         }

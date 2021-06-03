@@ -9,6 +9,7 @@ namespace VRPen {
         //priv vars
         private RectTransform thisRect;
         private BoxCollider thisCol;
+        private RectTransform contentRect;
         
         //pub vars
         public GameObject parent;
@@ -29,11 +30,11 @@ namespace VRPen {
         }
 
 
-        void enable() {
+        public void enable() {
             parent.SetActive(true);
         }
 
-        void disable() {
+        public void disable() {
             parent.SetActive(true);
         }
 
@@ -46,16 +47,16 @@ namespace VRPen {
 
             //add new contnnt
             GameObject content = GameObject.Instantiate(prefab, contentParent);
-            RectTransform contentRect = content.GetComponent<RectTransform>();
+            contentRect = content.GetComponent<RectTransform>();
             contentRect.anchorMin = new Vector2(.5f, .5f);
             contentRect.anchorMax = new Vector2(.5f, .5f);
-            contentRect.localPosition = Vector3.zero;
+            
+            //set pos to default
+            setWindowPos(Vector3.zero);
             
             //set size
             setWindowSize(contentRect.sizeDelta.x + contentPadding, contentRect.sizeDelta.y + contentPadding);
             
-            //en
-            enable();
 
         }
 
@@ -70,6 +71,10 @@ namespace VRPen {
             topBarGrab.sizeDelta = new Vector2(width, topBarThickness);
             topBarGrabCol.size = new Vector3(width, topBarThickness, .001f);
             
+        }
+
+        public void setWindowPos(Vector3 pos) {
+            contentRect.localPosition = pos;
         }
         
     }
