@@ -37,7 +37,7 @@ namespace VRPen {
         }
 
         public void disable() {
-            parent.SetActive(true);
+            parent.SetActive(false);
         }
 
         public bool isEnabled() {
