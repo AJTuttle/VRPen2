@@ -460,6 +460,7 @@ namespace VRPen {
         public AdditionalUIWindow addAdditionalUI() {
             GameObject obj = GameObject.Instantiate(additionalUIWindowPrefab, additionalUIWindowParent);
             AdditionalUIWindow additionalUIWindow = obj.GetComponent<AdditionalUIWindow>();
+            additionalUIWindow.uiMan = this;
             additionalUIWindows.Add(additionalUIWindow);
             return additionalUIWindow;
         }

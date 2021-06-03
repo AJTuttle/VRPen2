@@ -1,12 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI ;
 
 namespace VRPen {
 
     public class AdditionalUIWindow : MonoBehaviour {
 
         //priv vars
+        public UIManager uiMan;
         private RectTransform thisRect;
         private BoxCollider thisCol;
         private RectTransform contentRect;
@@ -57,6 +59,11 @@ namespace VRPen {
             //set size
             setWindowSize(contentRect.sizeDelta.x + contentPadding, contentRect.sizeDelta.y + contentPadding);
             
+            //add highlight listener to buttons
+            foreach (Button b in content.GetComponentsInChildren<Button>()) {
+                b.onClick.AddListener(delegate { uiMan.highlightTimer(.2f); });
+            }
+
 
         }
 
