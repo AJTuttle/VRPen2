@@ -56,8 +56,8 @@ namespace VRPen {
             //set pos to default
             setWindowPos(Vector3.zero);
             
-            //set size
-            setWindowSize(contentRect.sizeDelta.x + contentPadding, contentRect.sizeDelta.y + contentPadding);
+            //set window size
+            computeWindowSize();
             
             //add highlight listener to buttons
             foreach (Button b in content.GetComponentsInChildren<Button>()) {
@@ -65,6 +65,12 @@ namespace VRPen {
             }
 
 
+        }
+
+        public void computeWindowSize() {
+            
+            //set size
+            setWindowSize(contentRect.sizeDelta.x + contentPadding, contentRect.sizeDelta.y + contentPadding);
         }
 
         void setWindowSize(float width, float height) {
