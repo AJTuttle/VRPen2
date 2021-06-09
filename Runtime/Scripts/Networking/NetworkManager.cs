@@ -20,7 +20,8 @@ namespace VRPen {
 		UIState,
 		CanvasSwitch,
         InputVisualsEvent,
-        AddStampFile
+        AddStampFile,
+        SharedDeviceOwnershipTransfer
     }
 
     public class NetworkManager : MonoBehaviour {
@@ -665,6 +666,9 @@ namespace VRPen {
 
         }
 
+        public void sendSharedDeviceOwnershipTransfer() {
+            
+        }
 
         /// <summary>
         /// Packets recieved get pushed into here to be sorted out to the correct methods
