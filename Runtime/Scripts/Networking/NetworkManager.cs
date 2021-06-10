@@ -666,7 +666,32 @@ namespace VRPen {
 
         }
 
-        public void sendSharedDeviceOwnershipTransfer() {
+        public void sendSharedDeviceOwnershipTransfer(int uniqueIdentifier) {
+            
+            //dont do anything in offline mode
+            if (VectorDrawing.OfflineMode) return;
+
+            //dont send if you havent connected to the other users yet
+            if (!sentConnect) {
+                Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
+                return;
+            }
+
+            //mmake buffer list
+            List<byte> sendBufferList = new List<byte>();
+
+            // header
+            sendBufferList.Add((byte)PacketType.SharedDeviceOwnershipTransfer);
+            sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
+            
+            //add data
+            sendBufferList.AddRange(BitConverter.GetBytes(uniqueIdentifier));
+            
+            // convert to an array
+            byte[] sendBuffer = sendBufferList.ToArray();
+
+            //send
+            vrpenEvent?.Invoke(sendBuffer);
             
         }
 
@@ -750,6 +775,10 @@ namespace VRPen {
                 else if (header == PacketType.InputVisualsEvent) {
                     unpackInputVisualEvent(player, packet, ref offset);
                 }
+                
+                else if (header == PacketType.SharedDeviceOwnershipTransfer) {
+                    unpackSharedDeviceOwnershipTransfer(player, packet, ref offset);
+                }
 
                 else {
                     Debug.LogError("Packet type not recognized, ID = " + header);
@@ -759,6 +788,23 @@ namespace VRPen {
 
         }
 
+
+        void unpackSharedDeviceOwnershipTransfer(NetworkedPlayer player, byte[] packet, ref int offset) {
+
+            //get data
+            int uniqueIdentifier = ReadInt(packet, ref offset);
+            
+            //change ownership
+            foreach (SharedMarker sharedMarker in vectorMan.sharedDevices) {
+                if (uniqueIdentifier == sharedMarker.uniqueIdentifier) {
+                    //assuming this is not the player that took ownership, ownership should be relinquished
+                    if (player.connectionId != localPlayer.connectionId) {
+                        sharedMarker.relinquishOwnership();
+                    }
+                }
+            }
+            
+        }
 
         /// <summary>
         /// If the packet was pen data, this method unpacks it and converts it into drawings
@@ -922,10 +968,8 @@ namespace VRPen {
             VRPenInput.ToolState state = (VRPenInput.ToolState)ReadByte(packet, ref offset);
             Color32 col = new Color32(ReadByte(packet, ref offset), ReadByte(packet, ref offset), ReadByte(packet, ref offset), 255);
 
-            //Debug.LogError(player.connectionId + " " + uniqueID);
-            
             //update device
-            foreach (InputVisuals device in vectorMan.localInputDevices) {
+            foreach (InputVisuals device in vectorMan.inputDevices) {
                 if (device.ownerID == player.connectionId && device.uniqueIdentifier == uniqueID) {
                     device.updateModel(state, false);
                     device.updateColor(col, false);

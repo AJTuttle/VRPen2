@@ -468,13 +468,13 @@ namespace VRPen {
         public void clear(bool localInput) {
 
             //deal with players data structures
-            foreach (InputVisuals input in VectorDrawing.s_instance.localInputDevices){
+            foreach (InputVisuals input in VectorDrawing.s_instance.inputDevices){
                 if (input is VRPenInput && ((VRPenInput) input).currentLine != null &&
                     ((VRPenInput) input).currentLine.canvasId == canvasId) {
                     ((VRPenInput)input).currentLine = null;
-                    ((VRPenInput)input).undoStack.RemoveAll(x => x.canvasId == canvasId);
                 }
             }
+            VectorDrawing.s_instance.undoStack.RemoveAll(x => x.canvasId == canvasId);
             graphics.Clear();
             
             //delete Graphics

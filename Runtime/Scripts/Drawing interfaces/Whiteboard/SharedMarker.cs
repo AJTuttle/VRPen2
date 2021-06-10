@@ -12,11 +12,9 @@ public class SharedMarker : MonoBehaviour {
     public RemoteMarker remoteMarker;
     
     //override parameters
-    [Header("Override buttons")]
+    [Header("Override values")]
     [Space(10)]
-    [Tooltip("The playerID of the person who owns the device (must match the one used in the networking system)")]
-    public ulong ownerID;
-    [Tooltip("Any unique identifier for the device (only needs to be unique for the owner's devices)")]
+    [Tooltip("Any unique identifier for the device (only needs to be unique for the shared devices)")]
     public int uniqueIdentifier;
 
     //shared marker specific
@@ -25,17 +23,28 @@ public class SharedMarker : MonoBehaviour {
     private void Awake() {
         
         //set overrides
-        localMarker.ownerID = ownerID;
+        localMarker.sendVisualUpdates = true;
+        localMarker.ownerID = ulong.MaxValue; //reserved owner id for when there is no owner
         localMarker.uniqueIdentifier = uniqueIdentifier;
-        remoteMarker.ownerID = ownerID;
+        remoteMarker.sendVisualUpdates = false;
+        remoteMarker.ownerID = ulong.MaxValue; //reserved owner id for when there is no owner
         remoteMarker.uniqueIdentifier = uniqueIdentifier;
         
+    }
+
+    private void Start() {
+        
+        //add to input list
+        VectorDrawing.s_instance.sharedDevices.Add(this);
     }
 
     public void takeOwnership() {
         
         //check if already in correct state
         if (isOwner) return;
+        
+        //set owner
+        isOwner = true;
 
         //object
         localMarker.gameObject.SetActive(true);
@@ -48,7 +57,11 @@ public class SharedMarker : MonoBehaviour {
         //check if already in correct state
         if (!isOwner) return;
         
+        //set owner
+        isOwner = false;
+        
         //finish line
+        localMarker.forceEndLine();
         
         //object
         localMarker.gameObject.SetActive(false);

@@ -448,12 +448,11 @@ namespace VRPen {
         public void undoPassthrough(VRPenInput input) {
             
             //do nothing if nothing to undo
-            if (input.undoStack.Count == 0) return;
-            
+            if (VectorDrawing.s_instance.undoStack.Count == 0) return;
             
             
             //undo
-            VectorGraphic curr = input.undoStack[input.undoStack.Count - 1];
+            VectorGraphic curr = VectorDrawing.s_instance.undoStack[VectorDrawing.s_instance.undoStack.Count - 1];
             VectorDrawing.s_instance.undo(curr.ownerId, curr.localIndex, curr.canvasId, true);
         }
 

@@ -42,7 +42,7 @@ namespace VRPen {
         protected void Start() {
 
 	        //add to input list
-	        VectorDrawing.s_instance.localInputDevices.Add(this);
+	        VectorDrawing.s_instance.inputDevices.Add(this);
 
 	        //set color indicators
             updateColorIndicators(currentColor, false);

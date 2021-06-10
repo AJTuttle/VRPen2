@@ -61,8 +61,10 @@ namespace VRPen {
         //current line
         //[System.NonSerialized]
         public VectorLine currentLine;
-        [System.NonSerialized]
-        public List<VectorGraphic> undoStack = new List<VectorGraphic>();
+        
+        //undo stack
+        //[System.NonSerialized]
+        //public List<VectorGraphic> undoStack = new List<VectorGraphic>();
         
 
 		
@@ -108,8 +110,8 @@ namespace VRPen {
             InputData data = getInputData();
             hover = data.hover;
             
-            //cancel if no canvas
-            if (data.display.currentLocalCanvas == null) return;
+            //cancel if no canvas or display
+            if (data.display == null || data.display.currentLocalCanvas == null) return;
 
             //if currently grabbing a uigrabbable
             if (grabbed != null && data.hover != HoverState.NONE) {
@@ -289,7 +291,7 @@ namespace VRPen {
                         currentLine = VectorDrawing.s_instance.createNewLine(NetworkManager.s_instance.getLocalPlayer(), currentColor, NetworkManager.s_instance.localGraphicIndex,
                             data.display.currentLocalCanvas, true);
                         NetworkManager.s_instance.localGraphicIndex++;
-                        undoStack.Add(currentLine);
+                        VectorDrawing.s_instance.undoStack.Add(currentLine);
                     }
                     
                     VectorDrawing.s_instance.draw(NetworkManager.s_instance.getLocalPlayer(), currentLine.localIndex, false, currentColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
@@ -331,7 +333,7 @@ namespace VRPen {
                         currentLine = VectorDrawing.s_instance.createNewLine(NetworkManager.s_instance.getLocalPlayer(), data.display.currentLocalCanvas.bgColor, NetworkManager.s_instance.localGraphicIndex,
                             data.display.currentLocalCanvas, true);
                         NetworkManager.s_instance.localGraphicIndex++;
-                        undoStack.Add(currentLine);
+                        VectorDrawing.s_instance.undoStack.Add(currentLine);
                     }
                     
                     VectorDrawing.s_instance.draw(NetworkManager.s_instance.getLocalPlayer(), currentLine.localIndex, false, data.display.currentLocalCanvas.bgColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
@@ -360,7 +362,7 @@ namespace VRPen {
             endLine();
         }
 
-        void endLine() {
+        protected void endLine() {
             if (currentLine != null) {
                 VectorDrawing.s_instance.endLineEvent(NetworkManager.s_instance.getLocalPlayer(), currentLine.localIndex, currentLine.canvasId, true);
             }

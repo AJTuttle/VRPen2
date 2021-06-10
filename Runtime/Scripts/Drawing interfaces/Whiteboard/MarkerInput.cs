@@ -158,6 +158,10 @@ namespace VRPen {
 
         }
 
+		public void forceEndLine() {
+			endLine();
+		}
+
     }
 
 }
