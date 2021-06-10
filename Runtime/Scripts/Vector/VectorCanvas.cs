@@ -505,7 +505,7 @@ namespace VRPen {
 			
 			//set background
 			if (drawingMan.canvasBackgrounds.Length > canvasId && drawingMan.canvasBackgrounds[canvasId] != null) {
-				drawingMan.stamp(drawingMan.canvasBackgrounds[canvasId], -1, ulong.MaxValue, canvasId, 0, 0, 1, 0.5f, canvasId, false);
+				drawingMan.stamp(StampType.image, null, drawingMan.canvasBackgrounds[canvasId], -1, ulong.MaxValue, canvasId, 0, 0, 1, 0.5f, canvasId, false);
 			}
 
         }

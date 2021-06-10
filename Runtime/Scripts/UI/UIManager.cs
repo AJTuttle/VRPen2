@@ -491,9 +491,13 @@ namespace VRPen {
             display.markerPassthrough(input);
         }
 
-        public void stampPassthrough(VRPenInput input, int stampId) {
+        public void stampPassthrough(int stampId) {
             stampExplorerToggle(true);
-            display.stampPassthrough(input, stampUIParent, stampId);
+            display.newStamp(StampType.image, stampUIParent, stampId, null);
+        }
+        
+        public void stampPassthrough(string text) {
+            display.newStamp(StampType.text, stampUIParent, -1, text);
         }
         
 

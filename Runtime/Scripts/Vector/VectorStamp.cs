@@ -4,9 +4,8 @@ using UnityEngine;
 
 namespace VRPen {
 
-    public class VectorStamp : VectorGraphic{
-
-
+    public class VectorStamp : VectorGraphic {
+        public StampType type;
 
     }
 }

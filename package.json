@@ -7,6 +7,9 @@
   "keywords": [
     "drawing"
   ],
+  "dependencies": {
+    "com.unity.textmeshpro": "2.0.1"
+  },
   "author": {
     "name": "AJ Tuttle",
     "email": "alexander.tuttle@uga.edu"

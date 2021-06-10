@@ -38,6 +38,12 @@ namespace VRPen {
         public NetworkManager network;
         [System.NonSerialized]
         public VectorCanvas currentLocalCanvas;
+        
+        
+        //stamp
+        public GameObject stampPrefab;
+        [System.NonSerialized]
+        public StampGenerator currentStamp;
 
         private void Awake() {
             vectorMan = FindObjectOfType<VectorDrawing>();
@@ -123,8 +129,21 @@ namespace VRPen {
             if (input.state != VRPenInput.ToolState.NORMAL) input.switchTool(VRPenInput.ToolState.NORMAL);
         }
 
-        public void stampPassthrough(VRPenInput input, Transform parent, int stampIndex) {
-            input.newStamp(parent, this, stampIndex);
+        
+        
+        public void newStamp(StampType type, Transform parent, int stampIndex, string text) {
+            if (currentStamp != null) currentStamp.close();
+
+            GameObject obj = Instantiate(stampPrefab, parent);
+            currentStamp = obj.GetComponent<StampGenerator>();
+            if (type == StampType.image) {
+                currentStamp.instantiate(VectorDrawing.s_instance, NetworkManager.s_instance.getLocalPlayer(), this,
+                    stampIndex);
+            }
+            else {
+                currentStamp.instantiate(VectorDrawing.s_instance, NetworkManager.s_instance.getLocalPlayer(), this,
+                    text);
+            }
         }
         
         public void clearCanvas() {

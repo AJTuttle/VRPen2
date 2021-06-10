@@ -559,6 +559,8 @@ MonoBehaviour:
   initialCanvasIsPrivate: 0
   UIMan: {fileID: 3048407086474039643}
   canvasParent: {fileID: 6991333035018763483}
+  stampPrefab: {fileID: 2441548749050361720, guid: cbb90edd4f2d39f4abac245a76f78a78,
+    type: 3}
 --- !u!1 &7338822297756497635
 GameObject:
   m_ObjectHideFlags: 0

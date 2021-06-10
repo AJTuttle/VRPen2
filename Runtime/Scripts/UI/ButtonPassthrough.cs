@@ -40,7 +40,7 @@ namespace VRPen {
                     UI.erasePassthrough(clickedBy);
                     break;
                 case 3:
-                    UI.stampPassthrough(clickedBy, stampIndex);
+                    UI.stampPassthrough(stampIndex);
                     break;
                 case 4:
                     UI.undoPassthrough(clickedBy);

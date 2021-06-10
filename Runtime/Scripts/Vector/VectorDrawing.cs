@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using TMPro;
 using UnityEngine.SceneManagement;
 
 namespace VRPen {
@@ -90,6 +91,7 @@ namespace VRPen {
         public Shader depthShaderTexture;
         public GameObject canvasPrefab;
         public Transform canvasParent;
+        public GameObject textStampPrefab;
 
 
         //acting as a remote client restricts the things that the client can do. Things like making new canvases.
@@ -261,7 +263,7 @@ namespace VRPen {
         }
 
         //non networked stamps use a stamp index of -1 (for example when stamping is used for the background)
-        public VectorStamp stamp(Texture stampTex, int stampIndex, ulong ownerId, int graphicIndex, float x, float y, float size, float rotation, byte canvasId, bool localInput) {
+        public VectorStamp stamp(StampType type, string text, Texture stampTex, int stampIndex, ulong ownerId, int graphicIndex, float x, float y, float size, float rotation, byte canvasId, bool localInput) {
             
             //get canvas
             VectorCanvas canvas = getCanvas(canvasId);
@@ -271,7 +273,13 @@ namespace VRPen {
             }
 
             //make stamp
-            VectorStamp stamp = createStamp(stampTex, canvas, ownerId, graphicIndex, size, rotation, localInput);
+            VectorStamp stamp;
+            if (type == StampType.image) {
+                stamp = createStamp(stampTex, canvas, ownerId, graphicIndex, size, rotation, localInput);
+            }
+            else {
+                stamp = createStamp(text, canvas, ownerId, graphicIndex, size, rotation, localInput);
+            }
 
             //got vector pos
             Vector3 drawPoint = new Vector3(x, 0, y);
@@ -310,11 +318,10 @@ namespace VRPen {
             MeshFilter mf = obj.AddComponent<MeshFilter>();
 			Mesh currentMesh = generateStampQuad((float)stampTex.width/stampTex.height, 1);
             mf.mesh = currentMesh;
-
-
-
+            
             //stamp data struct and player data structs
             VectorStamp currentStamp = new VectorStamp();
+            currentStamp.type = StampType.image;
             currentStamp.mesh = currentMesh;
 			currentStamp.obj = obj;
             currentStamp.mr = mr;
@@ -336,7 +343,46 @@ namespace VRPen {
 
         }
 
-		Mesh generateStampQuad(float width, float height) {
+        VectorStamp createStamp(string text, VectorCanvas canvas, ulong ownerId,
+            int graphicIndex, float size, float rotation, bool isLocal) {
+            //make obj
+            //GameObject obj = Instantiate(stampTest) ;
+            GameObject obj = GameObject.Instantiate(textStampPrefab);
+            obj.transform.parent = canvas.vectorParent;
+            obj.transform.localPosition = Vector3.zero;
+
+            //convert from [0,1] to [-180,180]
+            float rotValue = rotation* 360;
+            rotValue -= 180;
+
+            obj.transform.localRotation = Quaternion.Euler(90,rotValue,0);
+            obj.transform.localScale = obj.transform.localScale * size * 0.01f;
+
+            
+            //stamp data struct and player data structs
+            VectorStamp currentStamp = new VectorStamp();
+            currentStamp.type = StampType.text;
+            currentStamp.mesh = null;
+            currentStamp.obj = obj;
+            currentStamp.mr = obj.GetComponent<MeshRenderer>();
+            currentStamp.createdLocally = isLocal;
+            currentStamp.ownerId = ownerId;
+            currentStamp.localIndex = graphicIndex;
+            canvas.graphics.Add(currentStamp);
+
+            
+            //tmp
+            TextMeshPro tmp = obj.GetComponent<TextMeshPro>();
+            tmp.text = text;
+            tmp.fontMaterial.renderQueue = canvas.renderQueueCounter;
+            canvas.renderQueueCounter++;
+
+
+
+            return currentStamp;
+        }
+
+        Mesh generateStampQuad(float width, float height) {
 
 			Mesh m = new Mesh();
 

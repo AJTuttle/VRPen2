@@ -101,6 +101,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fc54dc0f8c0b2041bc421af44831579, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  startInOfflineMode: 0
   displays:
   - {fileID: 0}
   - {fileID: 0}
@@ -159,6 +160,8 @@ MonoBehaviour:
   canvasPrefab: {fileID: 4493597344066582299, guid: 5829e2701877af64bad27fca4b6e0e4b,
     type: 3}
   canvasParent: {fileID: 6656644162230625143}
+  textStampPrefab: {fileID: 5661452091500829190, guid: 660d3ab9f47884b4cbfdbe5cda2ab4c9,
+    type: 3}
 --- !u!114 &8524224495831895956
 MonoBehaviour:
   m_ObjectHideFlags: 0
