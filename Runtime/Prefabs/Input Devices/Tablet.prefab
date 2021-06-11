@@ -1920,6 +1920,8 @@ MonoBehaviour:
   initialCanvasIsPrivate: 0
   UIMan: {fileID: 5679094274534007793}
   canvasParent: {fileID: 1507458689}
+  stampPrefab: {fileID: 2441548749050361720, guid: cbb90edd4f2d39f4abac245a76f78a78,
+    type: 3}
 --- !u!114 &2496159444085833350
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1942,8 +1944,6 @@ MonoBehaviour:
   ownerID: 0
   uniqueIdentifier: 0
   deviceType: 1
-  stampPrefab: {fileID: 2441548749050361720, guid: cbb90edd4f2d39f4abac245a76f78a78,
-    type: 3}
   tablet: {fileID: 4246681378663867920}
   localCursor: {fileID: 3235478784702896914}
   localDisplay: {fileID: 680105190234456749}
@@ -2015,30 +2015,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 122c43d698894ee49b0ea84319bd72d8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  penTracker: {fileID: 0}
-  tabletTracker: {fileID: 0}
   tipOffset: {x: 0, y: 0, z: -0.15}
-  tabletTransform:
-    e00: 0
-    e01: 0
-    e02: 0
-    e03: 0
-    e10: 0
-    e11: 0
-    e12: 0
-    e13: 0
-    e20: 0
-    e21: 0
-    e22: 0
-    e23: 0
-    e30: 0
-    e31: 0
-    e32: 0
-    e33: 0
   penTrackerTransforms: []
   tabletTrackerTransforms: []
   tabletPoints: []
-  calibrationPointPrefab: {fileID: 0}
 --- !u!1 &4162737612390480429
 GameObject:
   m_ObjectHideFlags: 0

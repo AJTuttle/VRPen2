@@ -31,7 +31,15 @@ namespace VRPen {
         Vector3 snappedPos;
         bool snappedPosExists;
 
+        public TriggerListener triggers;
+        
 		new void Start() {
+			
+			//set triggers
+			triggers.triggerEnter.AddListener(triggerEnter);
+			triggers.triggerStay.AddListener(triggerStay);
+			triggers.triggerExit.AddListener(triggerExit);
+			
             base.Start();
         }
 
@@ -119,7 +127,7 @@ namespace VRPen {
 
         
 
-        private void OnTriggerEnter(Collider other) {
+        private void triggerEnter(Collider other) {
             Tag tag;
             if ((tag = other.gameObject.GetComponent<Tag>()) != null) {
                 //if (tag.tag.Equals("marker-visible")) visuals.SetActive(true);
@@ -133,11 +141,11 @@ namespace VRPen {
             }
         }
 
-		private void OnTriggerStay(Collider other) {
+        private void triggerStay(Collider other) {
 			if (snappedTo != null && other.transform == snappedTo) snappedToChecker = true;
 		}
 
-		private void OnTriggerExit(Collider other) {
+		private void triggerExit(Collider other) {
 
             Tag tag;
             if ((tag = other.gameObject.GetComponent<Tag>()) != null) {
