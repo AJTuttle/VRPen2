@@ -36,7 +36,17 @@ public class SharedMarker : MonoBehaviour {
         
         //add to input list
         VectorDrawing.s_instance.sharedDevices.Add(this);
+        
+        //turn off local marker (it should be on at start to give it a chance to add itself to the data structs)
+        StartCoroutine(turnOffLocalAfterFrame());
+
     }
+
+    IEnumerator turnOffLocalAfterFrame() {
+        yield return null;
+        localMarker.gameObject.SetActive(false);
+    }
+    
 
     public void takeOwnership() {
         

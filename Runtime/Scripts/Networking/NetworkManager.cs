@@ -607,7 +607,7 @@ namespace VRPen {
             }
         }
 
-        public void sendInputVisualEvent(int uniqueDeviceIdentifier, Color32 color, VRPenInput.ToolState state) {
+        public void sendInputVisualEvent(ulong ownerId, int uniqueDeviceIdentifier, Color32 color, VRPenInput.ToolState state) {
 
             //dont do anything in offline mode
             if (VectorDrawing.OfflineMode) return;
@@ -620,6 +620,7 @@ namespace VRPen {
             sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
 
             //add data
+            sendBufferList.AddRange(BitConverter.GetBytes(ownerId));
             sendBufferList.AddRange(BitConverter.GetBytes(uniqueDeviceIdentifier));
             sendBufferList.Add((byte)state);
             sendBufferList.Add(color.r);
@@ -964,13 +965,14 @@ namespace VRPen {
         void unpackInputVisualEvent(NetworkedPlayer player, byte[] packet, ref int offset) {
             
             //get data
+            ulong ownerID = ReadULong(packet, ref offset);
             int uniqueID = ReadInt(packet, ref offset);
             VRPenInput.ToolState state = (VRPenInput.ToolState)ReadByte(packet, ref offset);
             Color32 col = new Color32(ReadByte(packet, ref offset), ReadByte(packet, ref offset), ReadByte(packet, ref offset), 255);
 
             //update device
             foreach (InputVisuals device in vectorMan.inputDevices) {
-                if (device.ownerID == player.connectionId && device.uniqueIdentifier == uniqueID) {
+                if (device.ownerID == ownerID && device.uniqueIdentifier == uniqueID) {
                     device.updateModel(state, false);
                     device.updateColor(col, false);
                 }

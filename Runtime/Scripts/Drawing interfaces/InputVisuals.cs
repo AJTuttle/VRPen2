@@ -67,7 +67,7 @@ namespace VRPen {
             if (eyedropperModel != null) eyedropperModel.SetActive(newState == ToolState.EYEDROPPER);
 
             //network
-            if (localInput && sendVisualUpdates) NetworkManager.s_instance.sendInputVisualEvent(uniqueIdentifier, currentColor, newState);
+            if (localInput && sendVisualUpdates) NetworkManager.s_instance.sendInputVisualEvent(ownerID, uniqueIdentifier, currentColor, newState);
         }
 
 		private void updateColorIndicators(Color32 color, bool localInput) {
@@ -85,7 +85,7 @@ namespace VRPen {
 
             
             //network
-            if (localInput && sendVisualUpdates) NetworkManager.s_instance.sendInputVisualEvent(uniqueIdentifier, color, state);
+            if (localInput && sendVisualUpdates) NetworkManager.s_instance.sendInputVisualEvent(ownerID, uniqueIdentifier, color, state);
 		}
 	}
 }
