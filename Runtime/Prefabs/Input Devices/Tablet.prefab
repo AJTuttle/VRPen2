@@ -1876,7 +1876,7 @@ GameObject:
   - component: {fileID: 4162737611858156918}
   - component: {fileID: 680105190234456749}
   - component: {fileID: 2496159444085833350}
-  - component: {fileID: 4246681378663867920}
+  - component: {fileID: 7650657234739025889}
   m_Layer: 0
   m_Name: Tablet
   m_TagString: Untagged
@@ -1944,7 +1944,7 @@ MonoBehaviour:
   ownerID: 0
   uniqueIdentifier: 0
   deviceType: 1
-  tablet: {fileID: 4246681378663867920}
+  tablet: {fileID: 7650657234739025889}
   localCursor: {fileID: 3235478784702896914}
   localDisplay: {fileID: 680105190234456749}
   pressureCurve:
@@ -2003,7 +2003,7 @@ MonoBehaviour:
   button5Event:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &4246681378663867920
+--- !u!114 &7650657234739025889
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2012,13 +2012,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 4162737611858156914}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 122c43d698894ee49b0ea84319bd72d8, type: 3}
+  m_Script: {fileID: 11500000, guid: 5216e404204b16c47ac980f40338bf99, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tipOffset: {x: 0, y: 0, z: -0.15}
-  penTrackerTransforms: []
-  tabletTrackerTransforms: []
-  tabletPoints: []
 --- !u!1 &4162737612390480429
 GameObject:
   m_ObjectHideFlags: 0

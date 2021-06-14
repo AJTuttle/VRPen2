@@ -12,7 +12,7 @@ namespace VRPen {
         //scripts
         [Header("Tablet Parameters")]
         [Space(10)]
-        public StarTablet tablet;
+        public StarTablet2 tablet;
 
         //public vars
         public GameObject localCursor;
@@ -20,8 +20,8 @@ namespace VRPen {
         public AnimationCurve pressureCurve;
 
         //private vars
-        StarTablet.PenSample currentSample = null;
-        StarTablet.PenSample lastSample = null;
+        StarTablet2.PenSample currentSample = null;
+        StarTablet2.PenSample lastSample = null;
         float raycastDistance = 0.01f;
         private const float maxNullPressure = 0.0001f;
 
@@ -101,24 +101,24 @@ namespace VRPen {
             //clear data
             tablet.penSamples.Clear();
             
-            //button events
-            if (tablet.getButtonDown(0)) button0Event.Invoke();
-            if (tablet.getButtonDown(1)) button1Event.Invoke();
-            if (tablet.getButtonDown(2)) button2Event.Invoke();
-            if (tablet.getButtonDown(3)) button3Event.Invoke();
-            if (tablet.getButtonDown(4)) button4Event.Invoke();
-            if (tablet.getButtonDown(5)) button5Event.Invoke();
-            
-            //wheel events
-            int wheel = tablet.getWheel();
-            if (wheel < -1) {
-                wheelLeftEvent.Invoke();
-                tablet.resetWheelMag();
-            }
-            else if (wheel > 1) {
-                wheelRightEvent.Invoke();
-                tablet.resetWheelMag();
-            }
+            // //button events
+            // if (tablet.getButtonDown(0)) button0Event.Invoke();
+            // if (tablet.getButtonDown(1)) button1Event.Invoke();
+            // if (tablet.getButtonDown(2)) button2Event.Invoke();
+            // if (tablet.getButtonDown(3)) button3Event.Invoke();
+            // if (tablet.getButtonDown(4)) button4Event.Invoke();
+            // if (tablet.getButtonDown(5)) button5Event.Invoke();
+            //
+            // //wheel events
+            // int wheel = tablet.getWheel();
+            // if (wheel < -1) {
+            //     wheelLeftEvent.Invoke();
+            //     tablet.resetWheelMag();
+            // }
+            // else if (wheel > 1) {
+            //     wheelRightEvent.Invoke();
+            //     tablet.resetWheelMag();
+            // }
 
 
         }
