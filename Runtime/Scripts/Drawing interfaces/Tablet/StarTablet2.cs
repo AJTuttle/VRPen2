@@ -124,7 +124,7 @@ namespace VRPen {
 
         private void OnDisable() {
             #if UNITY_ANDROID && !UNITY_EDITOR
-				plugin.CallStatic("stopTablet");
+				androidPlugin.CallStatic("stopTablet");
             #endif
         }
 
