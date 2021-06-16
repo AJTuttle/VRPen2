@@ -86,7 +86,7 @@ namespace VRPen {
 				        penValues = androidPlugin.CallStatic<int[]>("getTabletValues");
 				        if (penValues != null)
 				        {
-                            Vector2 point = new Vector2(1-penValues[0]/50800f, 1-penValues[1]/30480f);
+                            Vector2 point = new Vector2(1-penValues[0]/50800f, penValues[1]/30480f);
                             float pressure = penValues[2] / 8192f;
                             PenState state = (PenState)penValues[3];
                             penSamples.Add(new PenSample(point, pressure, state));
