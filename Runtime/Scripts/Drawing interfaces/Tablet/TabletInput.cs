@@ -101,24 +101,24 @@ namespace VRPen {
             //clear data
             tablet.penSamples.Clear();
             
-            // //button events
-            // if (tablet.getButtonDown(0)) button0Event.Invoke();
-            // if (tablet.getButtonDown(1)) button1Event.Invoke();
-            // if (tablet.getButtonDown(2)) button2Event.Invoke();
-            // if (tablet.getButtonDown(3)) button3Event.Invoke();
-            // if (tablet.getButtonDown(4)) button4Event.Invoke();
-            // if (tablet.getButtonDown(5)) button5Event.Invoke();
-            //
-            // //wheel events
-            // int wheel = tablet.getWheel();
-            // if (wheel < -1) {
-            //     wheelLeftEvent.Invoke();
-            //     tablet.resetWheelMag();
-            // }
-            // else if (wheel > 1) {
-            //     wheelRightEvent.Invoke();
-            //     tablet.resetWheelMag();
-            // }
+            //button events
+            if (tablet.getButtonDown(0)) button0Event.Invoke();
+            if (tablet.getButtonDown(1)) button1Event.Invoke();
+            if (tablet.getButtonDown(2)) button2Event.Invoke();
+            if (tablet.getButtonDown(3)) button3Event.Invoke();
+            if (tablet.getButtonDown(4)) button4Event.Invoke();
+            if (tablet.getButtonDown(5)) button5Event.Invoke();
+            
+            //wheel events
+            int wheel = tablet.getWheel();
+            if (wheel < -1) {
+                wheelLeftEvent.Invoke();
+                tablet.resetWheelMag();
+            }
+            else if (wheel > 1) {
+                wheelRightEvent.Invoke();
+                tablet.resetWheelMag();
+            }
 
 
         }
