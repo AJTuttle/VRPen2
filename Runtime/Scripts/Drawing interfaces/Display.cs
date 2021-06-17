@@ -60,16 +60,6 @@ namespace VRPen {
             //wait one frame so that canvas0 can be spawned first if this diplay is in the scene at start
             yield return null;
             
-            //there is no initial canvas made as a remote client
-            if (!VectorDrawing.actSynchronously) {
-                yield break;
-            }
-
-            //wait until connect to create initial canvas
-            while (!vectorMan.startInOfflineMode && !network.connectedAndCaughtUp) {
-                yield return null;
-            }
-
             if (initialCanvasIsPrivate) {
 
                 //make sure the initial canvas isnt too high

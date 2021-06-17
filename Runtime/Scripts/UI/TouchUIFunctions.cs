@@ -27,7 +27,6 @@ namespace VRPen {
         public Transform stampUIParent;
 
         void Start() {
-            if (!VectorDrawing.actSynchronously) uiMan.removeAddCanvasButtons();
             setStampUIParentSize();
         }
 

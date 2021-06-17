@@ -95,7 +95,6 @@ namespace VRPen {
 
 
         //acting as a remote client restricts the things that the client can do. Things like making new canvases.
-        public static bool actSynchronously = true;
         private static bool offlineMode = false;
         public static bool OfflineMode {
             get {
@@ -532,11 +531,6 @@ namespace VRPen {
 
             if (getCanvas(canvasId) != null) return;
 
-            //if the canvas addition is a remote preset, ignore it if not acting async.
-            if (!localInput && isPreset && actSynchronously) {
-                return;
-            }
-
             //ERROR CASES
             //if too many canvses
             if (getCanvasListCount() >= MAX_CANVAS_COUNT) {
@@ -595,7 +589,7 @@ namespace VRPen {
             }
 
             //if local
-            if (localInput) {
+            if (localInput && !isPreset) {
 
                 //network it (make sure you dont send the default board)
                 network.sendCanvasAddition(isPublic, originDisplayID, pixelWidth, pixelHeight, isPreset,canvasId);
