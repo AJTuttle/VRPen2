@@ -278,13 +278,13 @@ namespace VRPen {
                     
                     //add new line if need new one
                     if (currentLine == null) {
-                        currentLine = VectorDrawing.s_instance.createNewLine(NetworkManager.s_instance.getLocalPlayer(), currentColor, NetworkManager.s_instance.localGraphicIndex,
+                        currentLine = VectorDrawing.s_instance.createNewLine(NetworkManager.s_instance.getLocalPlayerID(), currentColor, NetworkManager.s_instance.localGraphicIndex,
                             data.display.currentLocalCanvas, true);
                         NetworkManager.s_instance.localGraphicIndex++;
                         VectorDrawing.s_instance.undoStack.Add(currentLine);
                     }
                     
-                    VectorDrawing.s_instance.draw(NetworkManager.s_instance.getLocalPlayer(), currentLine.localIndex, false, currentColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
+                    VectorDrawing.s_instance.draw(NetworkManager.s_instance.getLocalPlayerID(), currentLine.localIndex, false, currentColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
                     
                     break;
 
@@ -320,13 +320,13 @@ namespace VRPen {
 
                     //add new line if need new one
                     if (currentLine == null) {
-                        currentLine = VectorDrawing.s_instance.createNewLine(NetworkManager.s_instance.getLocalPlayer(), data.display.currentLocalCanvas.bgColor, NetworkManager.s_instance.localGraphicIndex,
+                        currentLine = VectorDrawing.s_instance.createNewLine(NetworkManager.s_instance.getLocalPlayerID(), data.display.currentLocalCanvas.bgColor, NetworkManager.s_instance.localGraphicIndex,
                             data.display.currentLocalCanvas, true);
                         NetworkManager.s_instance.localGraphicIndex++;
                         VectorDrawing.s_instance.undoStack.Add(currentLine);
                     }
                     
-                    VectorDrawing.s_instance.draw(NetworkManager.s_instance.getLocalPlayer(), currentLine.localIndex, false, data.display.currentLocalCanvas.bgColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
+                    VectorDrawing.s_instance.draw(NetworkManager.s_instance.getLocalPlayerID(), currentLine.localIndex, false, data.display.currentLocalCanvas.bgColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
                     break;
 
                 //case ToolState.STAMP:
@@ -354,7 +354,7 @@ namespace VRPen {
 
         protected void endLine() {
             if (currentLine != null) {
-                VectorDrawing.s_instance.endLineEvent(NetworkManager.s_instance.getLocalPlayer(), currentLine.localIndex, currentLine.canvasId, true);
+                VectorDrawing.s_instance.endLineEvent(NetworkManager.s_instance.getLocalPlayerID(), currentLine.localIndex, currentLine.canvasId, true);
             }
             currentLine = null;
         }

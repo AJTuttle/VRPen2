@@ -13,7 +13,6 @@ namespace VRPen {
     enum PacketType : byte {
         PenData,
         Clear,
-        Connect,
         AddCanvas,
         Undo,
         Stamp,
@@ -37,9 +36,6 @@ namespace VRPen {
         [Space(5)]
         [Header("       Important variables to set")]
         [Space(5)]
-        [Tooltip("If enabled, this script will attempt to invoke an event for sending a connection packet shortly after start " +
-            "instead of waited for the sendConnect method to be called")]
-        public bool autoConnect;
         [Tooltip("If enabled, when one personn switches canvas, the canvas on the same display will auto switch for other users as well")]
         public bool syncCurrentCanvas;
         [Tooltip("If enabled, ui elements will sync")]
@@ -53,20 +49,30 @@ namespace VRPen {
 
 
         //other players data
-        public List<NetworkedPlayer> players = new List<NetworkedPlayer>();
-        private NetworkedPlayer localPlayer;
         bool localPlayerHasID = false;
+        private ulong localPlayerId;
 
         //other vars
         long instanceStartTime; //used to differentiate catchup packets and current instance packets
         [NonSerialized]
-        public bool sentConnect = false;
+        public bool connectedAndCaughtUp = false;
 
 
+        //vrpenpacket data struct
+        public class VRPenPacket {
+            public byte[] data;
+            public ulong sender;
+            public VRPenPacket(byte[] data, ulong sender) {
+                this.data = data;
+                this.sender = sender;
+            }
+        }
+        
         //cache packets
-        private List<byte[]> packetCache = new List<byte[]>();
-        private List<ulong> packetSenders = new List<ulong>();
-        public bool cachePackets;
+        private List<VRPenPacket> cachePackets = new List<VRPenPacket>();
+        
+        //packets received before connected and caught up
+        private List<VRPenPacket> packetsReceivedPreCatchup = new List<VRPenPacket>();
 
         //prefabs
         [Space(5)]
@@ -124,14 +130,15 @@ namespace VRPen {
             UIMan = FindObjectOfType<UIManager>();
             vectorMan = GetComponent<VectorDrawing>();
 
-            //instantiate local player if it doesnt already exist
-            getLocalPlayer();
-
-            if(autoConnect) Invoke(nameof(sendConnect), 0.05f);
-
 
         }
-        
+
+        public ulong getLocalPlayerID() {
+            if (!localPlayerHasID) {
+                Debug.LogError("Local player id used before being set");
+            }
+            return localPlayerId;
+        }
 
         /// <summary>
         /// A method that input scripts can access to add the drawing data necesarry to be sent to other clients.
@@ -187,38 +194,23 @@ namespace VRPen {
             localGraphicIndices = tempLocalGraphicIndices;
 
         }
-
-        public NetworkedPlayer getNetworkedPlayer(ulong connectionId) {
-            NetworkedPlayer player = players.Find(p => p.connectionId == connectionId);
-            return player;
-        }
-
-        public NetworkedPlayer getLocalPlayer() {
-            if (localPlayer == null) {
-                localPlayer = new NetworkedPlayer();
-                localPlayer.connectionId = 0;
-                players.Add(localPlayer);
-            }
-            return localPlayer;
-        }
-
-        public void setLocalId(ulong ID) {
-            if (localPlayer == null) {
-                Debug.Log("Local player needs to be setup before adding the ID");
-                return;
-            }
-            localPlayer.connectionId = ID;
+        
+        public void connect(ulong localID, bool isFirstUser) {
+            
+            //set id
+            localPlayerId = localID;
             localPlayerHasID = true;
             
             //find all graphics added before connection and set their owner id to be correct
             foreach (VectorCanvas canvas in vectorMan.canvases) {
                 foreach (VectorGraphic graphic in canvas.graphics) {
-                    if (graphic.createdLocally) graphic.ownerId = ID;
+                    if (graphic.createdLocally) graphic.ownerId = localID;
                 }
             }
+            
+            //if the user is the first in the server, then no need to seek catch up packet
+            if (isFirstUser) connectedAndCaughtUp = true;
         }
-
-     
 
         /// <summary>
         /// Packe pen data take all data accumulted since the last time it was called and returns it in a packet
@@ -230,7 +222,7 @@ namespace VRPen {
             if (VectorDrawing.OfflineMode) return null;
 
             //dont send if you havent connected to the other users yet
-            if (!sentConnect) {
+            if (!connectedAndCaughtUp) {
                 Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
                 return null;
             }
@@ -293,11 +285,7 @@ namespace VRPen {
         }
 
 		void cachePacket(byte[] data, ulong connectionId) {
-
-            if (cachePackets) {
-				packetCache.Add(data);
-				packetSenders.Add(connectionId);
-			}
+            cachePackets.Add(new VRPenPacket(data, connectionId));
 		}
 
         void sendCache() {
@@ -308,20 +296,20 @@ namespace VRPen {
 
 			//size
 			int size = 0;
-			foreach (byte[] arr in packetCache) {
-				size += arr.Length;
+			foreach (VRPenPacket packet in cachePackets) {
+				size += packet.data.Length;
 			}
-			size += packetSenders.Count * 8;   //8 bytes for the sender id for each packet
-			size += packetCache.Count * 4;     //4 bytes for the length of each packet
+			size += cachePackets.Count * 8;   //8 bytes for the sender id for each packet
+			size += cachePackets.Count * 4;     //4 bytes for the length of each packet
 
 			//make the packet
 			byte[] bigboy = new byte[size];
 			int offset = 0;
-			for (int x = 0; x < packetCache.Count; x++) {
-				PackULong(packetSenders[x], bigboy, ref offset);
-				PackInt32(packetCache[x].Length, bigboy, ref offset);
-				for (int y = 0; y < packetCache[x].Length; y++) {
-					PackByte(packetCache[x][y], bigboy, ref offset); 
+			for (int x = 0; x < cachePackets.Count; x++) {
+				PackULong(cachePackets[x].sender, bigboy, ref offset);
+				PackInt32(cachePackets[x].data.Length, bigboy, ref offset);
+				for (int y = 0; y < cachePackets[x].data.Length; y++) {
+					PackByte(cachePackets[x].data[y], bigboy, ref offset); 
 				}
 			}
 			return bigboy;
@@ -350,7 +338,15 @@ namespace VRPen {
 
 			}
 
-		}
+            //all caught up now
+            connectedAndCaughtUp = true;
+            
+            //unpack packets received before fully connected
+            for (int x = 0; x < packetsReceivedPreCatchup.Count; x++) {
+                unpackPacket(packetsReceivedPreCatchup[x].sender, packetsReceivedPreCatchup[x].data);
+            }
+
+        }
 
 
         /// <summary>
@@ -363,7 +359,7 @@ namespace VRPen {
             if (VectorDrawing.OfflineMode) return;
 
             //dont send if you havent connected to the other users yet
-            if (!sentConnect) {
+            if (!connectedAndCaughtUp) {
                 Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
                 return;
             }
@@ -393,7 +389,7 @@ namespace VRPen {
             if (VectorDrawing.OfflineMode) return;
 
             //dont send if you havent connected to the other users yet
-            if (!sentConnect) {
+            if (!connectedAndCaughtUp) {
                 Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
                 return;
             }
@@ -433,7 +429,7 @@ namespace VRPen {
             if (VectorDrawing.OfflineMode) return;
 
             //dont send if you havent connected to the other users yet
-            if (!sentConnect) {
+            if (!connectedAndCaughtUp) {
                 Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
                 return;
             }
@@ -463,6 +459,12 @@ namespace VRPen {
             //dont do anything in offline mode
             if (VectorDrawing.OfflineMode) return;
 
+            //dont send if you havent connected to the other users yet
+            if (!connectedAndCaughtUp) {
+                Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
+                return;
+            }
+            
             //mmake buffer list
             List<byte> sendBufferList = new List<byte>();
 
@@ -481,7 +483,7 @@ namespace VRPen {
             byte[] sendBuffer = sendBufferList.ToArray();
 
             //send or queue
-            if (!sentConnect) {
+            if (!connectedAndCaughtUp) {
                 onConnectPacketQueue.Enqueue(sendBuffer);
             }
             else {
@@ -499,7 +501,7 @@ namespace VRPen {
             }
 
             //dont send if you havent connected to the other users yet
-            if (!sentConnect) {
+            if (!connectedAndCaughtUp) {
                 Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
                 return;
             }
@@ -528,6 +530,12 @@ namespace VRPen {
             //dont do anything in offline mode
             if (VectorDrawing.OfflineMode) return;
             
+            //dont send if you havent connected to the other users yet
+            if (!connectedAndCaughtUp) {
+                Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
+                return;
+            }
+            
             //mmake buffer list
             List<byte> sendBufferList = new List<byte>();
 
@@ -546,7 +554,7 @@ namespace VRPen {
             byte[] sendBuffer = sendBufferList.ToArray();
 
             //send or queue
-            if (!sentConnect) {
+            if (!connectedAndCaughtUp) {
                 onConnectPacketQueue.Enqueue(sendBuffer);
             }
             else {
@@ -555,53 +563,10 @@ namespace VRPen {
 
         }
 		
+        
 
-        public void sendConnect() {
-            sendConnect(true);
-        }
-
-        public void sendConnect(bool requestReply) {
-
-            //dont do anything in offline mode
-            if (VectorDrawing.OfflineMode) return;
-
-            //if local player has no id, send out warning
-            if (!localPlayerHasID) {
-                Debug.LogWarning("Connection packet is being sent without assigned a local player ID first, this could cause errors.");
-            }
-            
-            //mmake buffer list
-            List<byte> sendBufferList = new List<byte>();
-
-            // header
-            sendBufferList.Add((byte)PacketType.Connect);
-            sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
-
-            //add data
-            sendBufferList.Add(requestReply ? (byte)1 : (byte)0); //request reply?
-            
-            // convert to an array
-            byte[] sendBuffer = sendBufferList.ToArray();
-
-            //if initial connection
-            if (!sentConnect) {
-                //start syncing displays
-                if (syncDisplayUIs) {
-                    foreach (Display dis in vectorMan.displays) {
-                        dis.UIMan.startPackingState(UI_SYNC_PERIOD);
-                    }
-                }
-            }
-
-            //send
-            sentConnect = true;
-            vrpenEvent?.Invoke(sendBuffer);
-
-            //send on connect packet queue
-            sendOnConnectPacketQueue();
-            
-        }
-
+        //for when the user draws before connecting, potentially deprecating as i dont believe the user should be able
+        //to draw without being connected
         void sendOnConnectPacketQueue() {
 
             //dont do anything in offline mode
@@ -617,6 +582,12 @@ namespace VRPen {
             //dont do anything in offline mode
             if (VectorDrawing.OfflineMode) return;
 
+            //dont send if you havent connected to the other users yet
+            if (!connectedAndCaughtUp) {
+                Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
+                return;
+            }
+            
             //mmake buffer list
             List<byte> sendBufferList = new List<byte>();
 
@@ -637,7 +608,6 @@ namespace VRPen {
             
 
             //send
-            sentConnect = true;
             vrpenEvent?.Invoke(sendBuffer);
 
         }
@@ -648,7 +618,7 @@ namespace VRPen {
             if (VectorDrawing.OfflineMode) return;
 
             //dont send if you havent connected to the other users yet
-            if (!sentConnect) {
+            if (!connectedAndCaughtUp) {
                 Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
                 return;
             }
@@ -678,7 +648,7 @@ namespace VRPen {
             if (VectorDrawing.OfflineMode) return;
 
             //dont send if you havent connected to the other users yet
-            if (!sentConnect) {
+            if (!connectedAndCaughtUp) {
                 Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
                 return;
             }
@@ -711,6 +681,13 @@ namespace VRPen {
             //dont do anything in offline mode
             if (VectorDrawing.OfflineMode) return;
 
+            //if not connected yet, add to list of packets to process after fully connected
+            if (!connectedAndCaughtUp) {
+                packetsReceivedPreCatchup.Add(new VRPenPacket(packet, connectionId));
+                return;
+            }
+            
+            //offset
             int offset = 0;
 
             PacketType header = (PacketType)ReadByte(packet, ref offset);
@@ -721,15 +698,11 @@ namespace VRPen {
                 Debug.LogWarning("Packets are being recieved before the local player was assigned an ID, this could cause errors.");
             }
 
-            //manage connection id                                        
-            NetworkedPlayer player = players.Find(p => p.connectionId == connectionId);
-            if (player == null && header != PacketType.Connect) {
-                Debug.LogError("Player is null in a non-connection packet    " + connectionId + "   " + players.Count);
-            }
-
             //add packet to cache
             if (header == PacketType.PenData || header == PacketType.Clear || header == PacketType.AddCanvas ||
-                header == PacketType.Undo || header == PacketType.Stamp) {
+                header == PacketType.Undo || header == PacketType.Stamp ) {
+                
+                //Debug.LogError("Cache " + connectionId + header);
                 cachePacket(packet, connectionId);
             }
             
@@ -737,7 +710,7 @@ namespace VRPen {
             bool ignorePacket = false;
             
             //if the packet is from the local player
-            if (connectionId == localPlayer.connectionId) {
+            if (connectionId == localPlayerId) {
                 //catchup packet
                 if (timeSent < instanceStartTime) {
                 }
@@ -752,7 +725,7 @@ namespace VRPen {
             if (!ignorePacket) {
 
                 if (header == PacketType.PenData) {
-                    unpackPenData(player, packet, ref offset);
+                    unpackPenData(connectionId, packet, ref offset);
                 }
 
                 else if (header == PacketType.Clear) {
@@ -764,9 +737,6 @@ namespace VRPen {
                     AddedCanvas.Invoke();
                 }
 
-                else if (header == PacketType.Connect) {
-                    unpackConnect(player, packet, connectionId, ref offset);
-                }
 
                 else if (header == PacketType.Undo) {
                     unpackUndo(packet, ref offset);
@@ -777,7 +747,7 @@ namespace VRPen {
                 }
 
                 else if (header == PacketType.Stamp) {
-                    unpackStamp(player, packet, ref offset);
+                    unpackStamp(connectionId, packet, ref offset);
                 }
 
                 else if (header == PacketType.CanvasSwitch) {
@@ -785,11 +755,11 @@ namespace VRPen {
                 }
 
                 else if (header == PacketType.InputVisualsEvent) {
-                    unpackInputVisualEvent(player, packet, ref offset);
+                    unpackInputVisualEvent(connectionId, packet, ref offset);
                 }
                 
                 else if (header == PacketType.SharedDeviceOwnershipTransfer) {
-                    unpackSharedDeviceOwnershipTransfer(player, packet, ref offset);
+                    unpackSharedDeviceOwnershipTransfer(connectionId, packet, ref offset);
                 }
 
                 else {
@@ -801,7 +771,7 @@ namespace VRPen {
         }
 
 
-        void unpackSharedDeviceOwnershipTransfer(NetworkedPlayer player, byte[] packet, ref int offset) {
+        void unpackSharedDeviceOwnershipTransfer(ulong connectionId, byte[] packet, ref int offset) {
 
             //get data
             int uniqueIdentifier = ReadInt(packet, ref offset);
@@ -810,7 +780,7 @@ namespace VRPen {
             foreach (SharedMarker sharedMarker in vectorMan.sharedDevices) {
                 if (uniqueIdentifier == sharedMarker.uniqueIdentifier) {
                     //assuming this is not the player that took ownership, ownership should be relinquished
-                    if (player.connectionId != localPlayer.connectionId) {
+                    if (connectionId != localPlayerId) {
                         sharedMarker.relinquishOwnership();
                     }
                 }
@@ -823,7 +793,7 @@ namespace VRPen {
         /// </summary>
         /// <param name="player">netowrked player who sent data</param>
         /// <param name="packet">data</param>
-        void unpackPenData(NetworkedPlayer player, byte[] packet, ref int offset) {
+        void unpackPenData(ulong connectionId, byte[] packet, ref int offset) {
 
            
             //data
@@ -845,12 +815,12 @@ namespace VRPen {
                 //end line or draw
                 if (endLine == 1) {
                     
-                    vectorMan.endLineEvent(player, localGraphicIndex, canvasId, false);
+                    vectorMan.endLineEvent(connectionId, localGraphicIndex, canvasId, false);
                 }
                 else {
 
                     if (pressure > 0) {
-                        vectorMan.draw(player, localGraphicIndex, (endLine == 1) ? true : false, color, xFloat, yFloat, pressure, canvasId, false);
+                        vectorMan.draw(connectionId, localGraphicIndex, (endLine == 1) ? true : false, color, xFloat, yFloat, pressure, canvasId, false);
                     }
 
                     else {
@@ -929,7 +899,7 @@ namespace VRPen {
 
         }
 
-        void unpackStamp(NetworkedPlayer player, byte[] packet, ref int offset) {
+        void unpackStamp(ulong connectionId, byte[] packet, ref int offset) {
             
 
             //data
@@ -973,7 +943,7 @@ namespace VRPen {
             
         }
 
-        void unpackInputVisualEvent(NetworkedPlayer player, byte[] packet, ref int offset) {
+        void unpackInputVisualEvent(ulong connectionId, byte[] packet, ref int offset) {
             
             //get data
             ulong ownerID = ReadULong(packet, ref offset);
@@ -1006,26 +976,6 @@ namespace VRPen {
 			//update state
 			display.UIMan.unpackState(choppedPacket);
 
-        }
-
-        void unpackConnect(NetworkedPlayer player, byte[] packet, ulong connectionId, ref int offset) {
-            
-            //reply
-            if (ReadByte(packet, ref offset) == 1) {
-                sendConnect(false);
-                //sendCache();
-            }
-
-            if (player != null) {
-                Debug.Log("Player already initialized, this connect packet is ignored");
-                return;
-            }
-            
-            player = new NetworkedPlayer();
-            player.connectionId = connectionId;
-            players.Add(player);
-            
-            
         }
 
         #region Serialization

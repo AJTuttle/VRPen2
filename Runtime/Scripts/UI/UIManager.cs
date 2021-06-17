@@ -47,6 +47,8 @@ namespace VRPen {
 
 		const float RESIZE_SPEED = .1f;
 
+        private bool sendingStateOverNetwork = false;
+
         //used to set default slider values
         //public Slider stampSizeSlider;
         //const float DEFAULT_STAMP_SIZE = 0.1f;
@@ -99,6 +101,10 @@ namespace VRPen {
 
 		}
 
+        private void Update() {
+            //start packing data
+            if(!sendingStateOverNetwork && NetworkManager.s_instance.connectedAndCaughtUp) startPackingState(NetworkManager.s_instance.UI_SYNC_PERIOD);
+        }
 
 
         public void openSideMenu(bool localInput) {
@@ -292,6 +298,7 @@ namespace VRPen {
         }
 
         public void startPackingState(float period) {
+            sendingStateOverNetwork = true;
             InvokeRepeating(nameof(packState), 1.0f, period);
         }
 

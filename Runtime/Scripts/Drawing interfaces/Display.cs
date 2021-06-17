@@ -59,12 +59,16 @@ namespace VRPen {
 
             //wait one frame so that canvas0 can be spawned first if this diplay is in the scene at start
             yield return null;
-
+            
             //there is no initial canvas made as a remote client
             if (!VectorDrawing.actSynchronously) {
                 yield break;
             }
 
+            //wait until connect to create initial canvas
+            while (!vectorMan.startInOfflineMode && !network.connectedAndCaughtUp) {
+                yield return null;
+            }
 
             if (initialCanvasIsPrivate) {
 
@@ -137,11 +141,11 @@ namespace VRPen {
             GameObject obj = Instantiate(stampPrefab, parent);
             currentStamp = obj.GetComponent<StampGenerator>();
             if (type == StampType.image) {
-                currentStamp.instantiate(VectorDrawing.s_instance, NetworkManager.s_instance.getLocalPlayer(), this,
+                currentStamp.instantiate(VectorDrawing.s_instance, NetworkManager.s_instance.getLocalPlayerID(), this,
                     stampIndex);
             }
             else {
-                currentStamp.instantiate(VectorDrawing.s_instance, NetworkManager.s_instance.getLocalPlayer(), this,
+                currentStamp.instantiate(VectorDrawing.s_instance, NetworkManager.s_instance.getLocalPlayerID(), this,
                     text);
             }
         }
@@ -155,8 +159,8 @@ namespace VRPen {
             //end local drawing if it is drawing
             foreach (InputVisuals input in VectorDrawing.s_instance.inputDevices){
                 if (input is VRPenInput && ((VRPenInput)input).currentLine != null &&
-                    ((VRPenInput)input).currentLine.ownerId == network.getLocalPlayer().connectionId) {
-                    vectorMan.endLineEvent(network.getLocalPlayer(), ((VRPenInput)input).currentLine.localIndex, ((VRPenInput)input).currentLine.canvasId,true);
+                    ((VRPenInput)input).currentLine.ownerId == network.getLocalPlayerID()) {
+                    vectorMan.endLineEvent(network.getLocalPlayerID(), ((VRPenInput)input).currentLine.localIndex, ((VRPenInput)input).currentLine.canvasId,true);
                 }
             }
 

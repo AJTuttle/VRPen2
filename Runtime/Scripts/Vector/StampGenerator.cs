@@ -16,7 +16,7 @@ namespace VRPen {
         public StampType type;
         
         VectorDrawing vectorMan;
-        NetworkedPlayer player;
+        ulong playerId;
         Display display;
 
         
@@ -36,14 +36,14 @@ namespace VRPen {
         
 
         //image instantiate
-        public void instantiate(VectorDrawing man, NetworkedPlayer player, Display display, int stampIndex) {
+        public void instantiate(VectorDrawing man, ulong playerId, Display display, int stampIndex) {
 
             //set type
             type = StampType.image;
             image.gameObject.SetActive(true);
             
             vectorMan = man;
-            this.player = player;
+            this.playerId = playerId;
             this.display = display;
             this.stampIndex = stampIndex;
 
@@ -59,14 +59,14 @@ namespace VRPen {
         }
 
         //text instantiate
-        public void instantiate(VectorDrawing man, NetworkedPlayer player, Display display, string text) {
+        public void instantiate(VectorDrawing man, ulong playerId, Display display, string text) {
             
             //set type
             type = StampType.text;
             textObj.gameObject.SetActive(true);
             
             vectorMan = man;
-            this.player = player;
+            this.playerId = playerId;
             this.display = display;
 
 
@@ -114,7 +114,7 @@ namespace VRPen {
             
             Vector3 pos = display.canvasParent.InverseTransformPoint(transform.position);
             VectorStamp stamp = null;
-            stamp = vectorMan.stamp(type, textObj.text, imageMat != null ? imageMat.mainTexture: null, stampIndex, player.connectionId,
+            stamp = vectorMan.stamp(type, textObj.text, imageMat != null ? imageMat.mainTexture: null, stampIndex, playerId,
                 NetworkManager.s_instance.localGraphicIndex,
                 -pos.x * display.canvasParent.transform.parent.localScale.x /
                 display.canvasParent.transform.parent.localScale.y, -pos.y, size, rot,

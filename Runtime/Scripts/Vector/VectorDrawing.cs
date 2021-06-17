@@ -190,11 +190,11 @@ namespace VRPen {
             return canvases.Count;
         }
 
-        public void endLineEvent(NetworkedPlayer player, int graphicIndex, byte canvasId, bool localInput) {
-            draw(player, graphicIndex, true, Color.black, 0, 0, 0, canvasId, localInput);
+        public void endLineEvent(ulong playerId, int graphicIndex, byte canvasId, bool localInput) {
+            draw(playerId, graphicIndex, true, Color.black, 0, 0, 0, canvasId, localInput);
         }
 
-        public void draw(NetworkedPlayer player, int graphicIndex, bool endLine, Color32 color, float x, float y, float pressure, byte canvasId, bool localInput) {
+        public void draw(ulong playerId, int graphicIndex, bool endLine, Color32 color, float x, float y, float pressure, byte canvasId, bool localInput) {
 
             //get canvas
             VectorCanvas canvas = getCanvas(canvasId);
@@ -209,15 +209,15 @@ namespace VRPen {
             //end line or draw
             if (endLine) {
 
-                endLineData(player.connectionId, graphicIndex, canvas);
+                endLineData(playerId, graphicIndex, canvas);
                 if (localInput) network.addToDataOutbox(endLine, color, x, y, pressure, canvasId, graphicIndex);
                 
             }
             else {
 
                 //get line
-                VectorGraphic currentGraphic = canvas.findGraphic(player.connectionId, graphicIndex);
-                if (currentGraphic == null) currentGraphic = createNewLine(player, color, graphicIndex, canvas, localInput);
+                VectorGraphic currentGraphic = canvas.findGraphic(playerId, graphicIndex);
+                if (currentGraphic == null) currentGraphic = createNewLine(playerId, color, graphicIndex, canvas, localInput);
                 if (!(currentGraphic is VectorLine)) {
                     Debug.LogError("Trying tp draw onto a non-line graphic");
                     return;
@@ -448,7 +448,7 @@ namespace VRPen {
 
         }
         
-        public VectorLine createNewLine(NetworkedPlayer player, Color32 color, int graphicIndex, VectorCanvas canvas, bool isLocal) {
+        public VectorLine createNewLine(ulong playerId, Color32 color, int graphicIndex, VectorCanvas canvas, bool isLocal) {
             
             //make obj
             GameObject obj = new GameObject();
@@ -466,7 +466,7 @@ namespace VRPen {
             //vector line data struct and player data structs
             VectorLine currentLine = new VectorLine();
             currentLine.mesh = currentMesh;
-            currentLine.ownerId = player.connectionId;
+            currentLine.ownerId = playerId;
             currentLine.createdLocally = isLocal;
             currentLine.localIndex = graphicIndex;
             currentLine.obj = obj;
