@@ -89,6 +89,7 @@ namespace VRPen {
         //event
         public delegate void VRPenEvent(byte[] packet);
         public event VRPenEvent vrpenEvent;
+        public event VRPenEvent cacheEvent;
 		public delegate void remoteInputDeviceSpawned(GameObject obj, int deviceIndex);
 		public event remoteInputDeviceSpawned remoteSpawn;
 		
@@ -299,7 +300,11 @@ namespace VRPen {
 			}
 		}
 
-		public byte[] getCache() {
+        void sendCache() {
+            cacheEvent?.Invoke(getCache());
+        }
+        
+		byte[] getCache() {
 
 			//size
 			int size = 0;
@@ -722,6 +727,12 @@ namespace VRPen {
                 Debug.LogError("Player is null in a non-connection packet    " + connectionId + "   " + players.Count);
             }
 
+            //add packet to cache
+            if (header == PacketType.PenData || header == PacketType.Clear || header == PacketType.AddCanvas ||
+                header == PacketType.Undo || header == PacketType.Stamp) {
+                cachePacket(packet, connectionId);
+            }
+            
             //ignore this packet
             bool ignorePacket = false;
             
@@ -999,9 +1010,10 @@ namespace VRPen {
 
         void unpackConnect(NetworkedPlayer player, byte[] packet, ulong connectionId, ref int offset) {
             
-
+            //reply
             if (ReadByte(packet, ref offset) == 1) {
                 sendConnect(false);
+                //sendCache();
             }
 
             if (player != null) {
