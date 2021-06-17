@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 using System.Text;
 using UnityEngine.Events;
 
@@ -241,8 +242,12 @@ namespace VRPen {
             sendBufferList.Add((byte)PacketType.PenData);
             sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
 
-            //laser state                                                                TO-DO
-            sendBufferList.Add(0);
+            //identify if this entire packet only effects one canvas
+            //this will be used for quickly identifying which packets can be removed from cache on a canvas clear event
+            bool onlyOneCanvasID = canvasIds.Distinct().Count() == 1;
+            sendBufferList.Add(onlyOneCanvasID ? (byte) 1 : (byte) 0);
+            if (onlyOneCanvasID) sendBufferList.Add(canvasIds[0]);
+            
 
             //add list length
             sendBufferList.AddRange(BitConverter.GetBytes(xFloats.Length));
@@ -289,6 +294,37 @@ namespace VRPen {
 		void cachePacket(byte[] data, ulong connectionId) {
             cachePackets.Add(new VRPenPacket(data, connectionId));
 		}
+
+        void reduceCacheByCanvasClear(byte canvasId) {
+            
+            //NOTE: NOT ALL DRAWING DATA FROM THIS CANVAS WILL BE CLEARED
+            //only drawing packets that have ONLY this canvas in the list of updates will be removed
+            //updates with data from this canvas as well as other canvases will be kept
+            cachePackets.RemoveAll(packet => {
+                
+                //check if draw packet
+                PacketType type = (PacketType) packet.data[0];
+                if (type == PacketType.PenData) {
+                    
+                    //check if theres is only one canvas update in packet
+                    bool onlyOneCanvasID = packet.data[9] == 1;
+                    if (onlyOneCanvasID) {
+                        
+                        //delete if that only canvas is the one cleared
+                        byte singularCanvasID = packet.data[10];
+                        if (singularCanvasID == canvasId) {
+                            Debug.Log("removed packet");
+                            return true;
+                        }
+                        else Debug.Log("other packet");
+                    }
+                    else Debug.Log("multiple canvas packet");
+
+                } 
+                return false;
+                
+            });
+        }
 
         void sendCache(ulong receiverId) {
             cacheEvent?.Invoke(getCache(), receiverId);
@@ -403,6 +439,9 @@ namespace VRPen {
             //send
             vrpenEvent?.Invoke(sendBuffer);
             
+            //remove from cache
+            reduceCacheByCanvasClear(canvasId);
+
 
         }
 
@@ -833,9 +872,11 @@ namespace VRPen {
         /// <param name="packet">data</param>
         void unpackPenData(ulong connectionId, byte[] packet, ref int offset) {
 
-           
-            //data
-            bool laserState = ReadByte(packet, ref offset) != 0;
+            //identify if this entire packet only effects one canvas
+            //this will be used for quickly identifying which packets can be removed from cache on a canvas clear event
+            bool onlyOneCanvasID = ReadByte(packet, ref offset) == 1;
+            byte singularCanvasID;
+            if (onlyOneCanvasID) singularCanvasID = ReadByte(packet, ref offset);
 
             //pen samples
             int length = ReadInt(packet, ref offset);
@@ -887,6 +928,9 @@ namespace VRPen {
 
             //clear
             vectorMan.getCanvas(canvasId).clear(false);
+            
+            //clear from cache
+            reduceCacheByCanvasClear(canvasId);
 
         }
 
