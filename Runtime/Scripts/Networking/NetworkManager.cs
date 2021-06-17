@@ -20,7 +20,8 @@ namespace VRPen {
 		CanvasSwitch,
         InputVisualsEvent,
         AddStampFile,
-        SharedDeviceOwnershipTransfer
+        SharedDeviceOwnershipTransfer,
+        CacheRequest
     }
 
     public class NetworkManager : MonoBehaviour {
@@ -95,7 +96,8 @@ namespace VRPen {
         //event
         public delegate void VRPenEvent(byte[] packet);
         public event VRPenEvent vrpenEvent;
-        public event VRPenEvent cacheEvent;
+        public delegate void VRPenCacheEvent(byte[] packet, ulong receiverID);
+        public event VRPenCacheEvent cacheEvent;
 		public delegate void remoteInputDeviceSpawned(GameObject obj, int deviceIndex);
 		public event remoteInputDeviceSpawned remoteSpawn;
 		
@@ -288,8 +290,8 @@ namespace VRPen {
             cachePackets.Add(new VRPenPacket(data, connectionId));
 		}
 
-        void sendCache() {
-            cacheEvent?.Invoke(getCache());
+        void sendCache(ulong receiverId) {
+            cacheEvent?.Invoke(getCache(), receiverId);
         }
         
 		byte[] getCache() {
@@ -348,6 +350,27 @@ namespace VRPen {
 
         }
 
+        public void sendCacheRequest(ulong requestFromID) {
+            
+            //dont do anything in offline mode
+            if (VectorDrawing.OfflineMode) return;
+
+            //mmake buffer list
+            List<byte> sendBufferList = new List<byte>();
+
+            // header
+            sendBufferList.Add((byte)PacketType.CacheRequest);
+            sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
+
+            //canvas id
+            sendBufferList.AddRange(BitConverter.GetBytes(requestFromID));
+
+            // convert to an array
+            byte[] sendBuffer = sendBufferList.ToArray();
+
+            //send
+            vrpenEvent?.Invoke(sendBuffer);
+        }
 
         /// <summary>
         /// Invokes and event for clearing the board and clears locally
@@ -761,6 +784,10 @@ namespace VRPen {
                 else if (header == PacketType.SharedDeviceOwnershipTransfer) {
                     unpackSharedDeviceOwnershipTransfer(connectionId, packet, ref offset);
                 }
+                
+                else if (header == PacketType.CacheRequest) {
+                    unpackCacheRequest(connectionId, packet, ref offset);
+                }
 
                 else {
                     Debug.LogError("Packet type not recognized, ID = " + header);
@@ -770,6 +797,17 @@ namespace VRPen {
 
         }
 
+        void unpackCacheRequest(ulong connectionId, byte[] packet, ref int offset) {
+            
+            //get data
+            ulong responderId = ReadULong(packet, ref offset);
+            
+            //send cache if this user is the responder
+            if (responderId == localPlayerId) {
+                sendCache(connectionId);
+            }
+            
+        }
 
         void unpackSharedDeviceOwnershipTransfer(ulong connectionId, byte[] packet, ref int offset) {
 
