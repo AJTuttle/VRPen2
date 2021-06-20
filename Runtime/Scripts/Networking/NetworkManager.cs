@@ -198,7 +198,7 @@ namespace VRPen {
 
         }
         
-        public void connect(ulong localID, bool isFirstUser) {
+        public void connect(ulong localID, bool waitForCache) {
             
             //set id
             localPlayerId = localID;
@@ -212,7 +212,7 @@ namespace VRPen {
             }
             
             //if the user is the first in the server, then no need to seek catch up packet
-            if (isFirstUser) connectedAndCaughtUp = true;
+            if (!waitForCache) connectedAndCaughtUp = true;
         }
 
         /// <summary>
