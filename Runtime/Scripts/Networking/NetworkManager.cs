@@ -53,6 +53,7 @@ namespace VRPen {
         //other players data
         bool localPlayerHasID = false;
         private ulong localPlayerId;
+        int localPacketIndex = 0;
 
         //other vars
         long instanceStartTime; //used to differentiate catchup packets and current instance packets
@@ -64,9 +65,11 @@ namespace VRPen {
         public class VRPenPacket {
             public byte[] data;
             public ulong sender;
-            public VRPenPacket(byte[] data, ulong sender) {
+            public int senderPacketIndex;
+            public VRPenPacket(byte[] data, ulong sender, int senderPacketIndex) {
                 this.data = data;
                 this.sender = sender;
+                this.senderPacketIndex = senderPacketIndex;
             }
         }
         
@@ -243,6 +246,10 @@ namespace VRPen {
             //header
             sendBufferList.Add((byte)PacketType.PenData);
             sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
+            //add packet index to header
+            sendBufferList.AddRange(BitConverter.GetBytes(localPacketIndex));
+            localPacketIndex++;
+            
 
             //identify if this entire packet only effects one canvas
             //this will be used for quickly identifying which packets can be removed from cache on a canvas clear event
@@ -293,8 +300,8 @@ namespace VRPen {
 
         }
 
-		void cachePacket(byte[] data, ulong connectionId) {
-            cachePackets.Add(new VRPenPacket(data, connectionId));
+		void cachePacket(byte[] data, ulong connectionId, int packetIndex) {
+            cachePackets.Add(new VRPenPacket(data, connectionId, packetIndex));
 		}
 
         void reduceCacheByCanvasClear(byte canvasId) {
@@ -309,11 +316,11 @@ namespace VRPen {
                 if (type == PacketType.PenData) {
                     
                     //check if theres is only one canvas update in packet
-                    bool onlyOneCanvasID = packet.data[9] == 1;
+                    bool onlyOneCanvasID = packet.data[13] == 1;
                     if (onlyOneCanvasID) {
                         
                         //delete if that only canvas is the one cleared
-                        byte singularCanvasID = packet.data[10];
+                        byte singularCanvasID = packet.data[14];
                         if (singularCanvasID == canvasId) {
                             Debug.Log("removed packet");
                             return true;
@@ -374,7 +381,7 @@ namespace VRPen {
 				offset += length;
 
 				//push data through
-				unpackPacket(connectionId, packet);
+				unpackPacket(connectionId, packet, true);
 
 			}
 
@@ -399,6 +406,9 @@ namespace VRPen {
             // header
             sendBufferList.Add((byte)PacketType.CacheRequest);
             sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
+            //add packet index to header
+            sendBufferList.AddRange(BitConverter.GetBytes(localPacketIndex));
+            localPacketIndex++;
 
             //canvas id
             sendBufferList.AddRange(BitConverter.GetBytes(requestFromID));
@@ -431,6 +441,9 @@ namespace VRPen {
             // header
             sendBufferList.Add((byte)PacketType.Clear);
             sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
+            //add packet index to header
+            sendBufferList.AddRange(BitConverter.GetBytes(localPacketIndex));
+            localPacketIndex++;
 
             //canvas id
             sendBufferList.Add(canvasId);
@@ -464,6 +477,9 @@ namespace VRPen {
             // header
             sendBufferList.Add((byte)PacketType.AddStampFile);
             sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
+            //add packet index to header
+            sendBufferList.AddRange(BitConverter.GetBytes(localPacketIndex));
+            localPacketIndex++;
 
             //data
             sendBufferList.Add(index);
@@ -504,6 +520,9 @@ namespace VRPen {
             // header
             sendBufferList.Add((byte)PacketType.Undo);
             sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
+            //add packet index to header
+            sendBufferList.AddRange(BitConverter.GetBytes(localPacketIndex));
+            localPacketIndex++;
             
             //add data
             sendBufferList.AddRange(BitConverter.GetBytes(playerId));
@@ -535,6 +554,11 @@ namespace VRPen {
             // header
             sendBufferList.Add((byte)PacketType.AddCanvas);
             sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
+            //add packet index to header
+            sendBufferList.AddRange(BitConverter.GetBytes(localPacketIndex));
+            localPacketIndex++;
+            
+            //data
             sendBufferList.Add(isPublic?(byte)1:(byte)0);
             sendBufferList.Add(originDisplayID);
             sendBufferList.AddRange(BitConverter.GetBytes(width));
@@ -577,6 +601,11 @@ namespace VRPen {
             // header
             sendBufferList.Add((byte)PacketType.CanvasSwitch);
             sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
+            //add packet index to header
+            sendBufferList.AddRange(BitConverter.GetBytes(localPacketIndex));
+            localPacketIndex++;
+            
+            //data
             sendBufferList.Add(displayIndex);
             sendBufferList.Add(canvasIndex);
 
@@ -606,6 +635,11 @@ namespace VRPen {
             // header
             sendBufferList.Add((byte)PacketType.Stamp);
             sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
+            //add packet index to header
+            sendBufferList.AddRange(BitConverter.GetBytes(localPacketIndex));
+            localPacketIndex++;
+            
+            //data
             sendBufferList.AddRange(BitConverter.GetBytes(stampIndex));
             sendBufferList.AddRange(BitConverter.GetBytes(x));
             sendBufferList.AddRange(BitConverter.GetBytes(y));
@@ -631,6 +665,7 @@ namespace VRPen {
 
         //for when the user draws before connecting, potentially deprecating as i dont believe the user should be able
         //to draw without being connected
+        //todo figure out what to do wiht
         void sendOnConnectPacketQueue() {
 
             //dont do anything in offline mode
@@ -658,6 +693,9 @@ namespace VRPen {
             // header
             sendBufferList.Add((byte)PacketType.InputVisualsEvent);
             sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
+            //add packet index to header
+            sendBufferList.AddRange(BitConverter.GetBytes(localPacketIndex));
+            localPacketIndex++;
 
             //add data
             sendBufferList.AddRange(BitConverter.GetBytes(ownerId));
@@ -693,6 +731,9 @@ namespace VRPen {
             // header
             sendBufferList.Add((byte)PacketType.UIState);
             sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
+            //add packet index to header
+            sendBufferList.AddRange(BitConverter.GetBytes(localPacketIndex));
+            localPacketIndex++;
 
             //add data
             sendBufferList.Add(displayId);
@@ -723,6 +764,9 @@ namespace VRPen {
             // header
             sendBufferList.Add((byte)PacketType.SharedDeviceOwnershipTransfer);
             sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
+            //add packet index to header
+            sendBufferList.AddRange(BitConverter.GetBytes(localPacketIndex));
+            localPacketIndex++;
             
             //add data
             sendBufferList.AddRange(BitConverter.GetBytes(uniqueIdentifier));
@@ -740,22 +784,31 @@ namespace VRPen {
         /// </summary>
         /// <param name="connectionId">who sent it, must be unique</param>
         /// <param name="packet">the data</param>
-        public void unpackPacket(ulong connectionId, byte[] packet) {
+        /// <param name="isCache">is this a catchup packet?</param>
+        public void unpackPacket(ulong connectionId, byte[] packet, bool isCache = false) {
 
             //dont do anything in offline mode
             if (VectorDrawing.OfflineMode) return;
-
-            //if not connected yet, add to list of packets to process after fully connected
-            if (!connectedAndCaughtUp) {
-                packetsReceivedPreCatchup.Add(new VRPenPacket(packet, connectionId));
-                return;
-            }
             
             //offset
             int offset = 0;
 
             PacketType header = (PacketType)ReadByte(packet, ref offset);
             long timeSent = ReadLong(packet, ref offset);
+            int packetIndex = ReadInt(packet, ref offset);
+            
+            //if packet was already received (stored in cache) dont continue to use it
+            //this will most likely happen during connection while the user is getting caught up
+            if (cachePackets.Exists(x => x.sender == connectionId && x.senderPacketIndex == packetIndex)) {
+                Debug.Log("Packet already received... ignoring... [user=" + connectionId + ", index=" + packetIndex +"]");
+                return;
+            }
+            
+            //if not connected yet, add to list of packets to process after fully connected
+            if (!connectedAndCaughtUp && !isCache) {
+                packetsReceivedPreCatchup.Add(new VRPenPacket(packet, connectionId, packetIndex));
+                return;
+            }
 
             //if local player has no id, send out warning
             if (!localPlayerHasID) {
@@ -765,9 +818,7 @@ namespace VRPen {
             //add packet to cache
             if (header == PacketType.PenData || header == PacketType.Clear || header == PacketType.AddCanvas ||
                 header == PacketType.Undo || header == PacketType.Stamp ) {
-                
-                //Debug.LogError("Cache " + connectionId + header);
-                cachePacket(packet, connectionId);
+                cachePacket(packet, connectionId, packetIndex);
             }
             
             //ignore this packet
