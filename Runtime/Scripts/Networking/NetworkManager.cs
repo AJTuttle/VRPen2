@@ -212,7 +212,9 @@ namespace VRPen {
             }
             
             //if the user is the first in the server, then no need to seek catch up packet
-            if (!waitForCache) connectedAndCaughtUp = true;
+            if (!waitForCache) {
+                connectedAndCaughtUp = true;
+            }
         }
 
         /// <summary>
