@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using System.Linq;
 using System.Text;
+using TMPro;
 using UnityEngine.Events;
 
 namespace VRPen {
@@ -75,6 +76,26 @@ namespace VRPen {
         
         //cache packets
         private List<VRPenPacket> cachePackets = new List<VRPenPacket>();
+        private long _cacheByteSize = 0;
+        private long CacheByteSize
+        {
+            get { return _cacheByteSize; }
+            set {
+                _cacheByteSize = value;
+                foreach (TextMeshPro tmp in cacheSizeDisplay) {
+                    if (_cacheByteSize >= 1000000) {
+                        tmp.text = (_cacheByteSize/1000000f).ToString(".###") + " MB";
+                    }
+                    else if (_cacheByteSize >= 1000) {
+                        tmp.text = (_cacheByteSize/1000f).ToString(".###") + " KB";
+                    }
+                    else {
+                        tmp.text = _cacheByteSize + " Bytes";
+                    }
+                }
+            }
+        }
+        public List<TextMeshPro> cacheSizeDisplay;
         
         //packets received before connected and caught up
         private List<VRPenPacket> packetsReceivedPreCatchup = new List<VRPenPacket>();
@@ -300,9 +321,11 @@ namespace VRPen {
 
         }
 
-		void cachePacket(byte[] data, ulong connectionId, int packetIndex) {
+		void addPacketToCache(byte[] data, ulong connectionId, int packetIndex) {
             cachePackets.Add(new VRPenPacket(data, connectionId, packetIndex));
+            CacheByteSize += data.Length + 12; //12 is the byte count for connid and packetindex
 		}
+
 
         void reduceCacheByCanvasClear(byte canvasId) {
             
@@ -322,12 +345,13 @@ namespace VRPen {
                         //delete if that only canvas is the one cleared
                         byte singularCanvasID = packet.data[14];
                         if (singularCanvasID == canvasId) {
-                            Debug.Log("removed packet");
+                            //Debug.Log("removed packet");
+                            CacheByteSize -= (packet.data.Length + 12);
                             return true;
                         }
-                        else Debug.Log("other packet");
+                        //else Debug.Log("other packet");
                     }
-                    else Debug.Log("multiple canvas packet");
+                    //else Debug.Log("multiple canvas packet");
 
                 } 
                 return false;
@@ -818,7 +842,7 @@ namespace VRPen {
             //add packet to cache
             if (header == PacketType.PenData || header == PacketType.Clear || header == PacketType.AddCanvas ||
                 header == PacketType.Undo || header == PacketType.Stamp ) {
-                cachePacket(packet, connectionId, packetIndex);
+                addPacketToCache(packet, connectionId, packetIndex);
             }
             
             //ignore this packet
