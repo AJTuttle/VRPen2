@@ -107,7 +107,7 @@ namespace VRPen {
 			//make sure not offline
 			if (VRPen.VectorDrawing.OfflineMode) return;
 
-			Debug.Log("Loading Cache, size = " + packet.Length + " bytes");
+			//unpack
 			vrpenNetwork.loadCache(packet);
 		}
 
