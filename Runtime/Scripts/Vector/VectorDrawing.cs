@@ -12,10 +12,6 @@ namespace VRPen {
         //instance
         public static VectorDrawing s_instance;
 
-        //scripts
-        StarTablet tablet;
-        NetworkManager network;
-
         //non serialized / private vars
         [System.NonSerialized]
         public List<VectorCanvas> canvases = new List<VectorCanvas>();
@@ -26,13 +22,10 @@ namespace VRPen {
         [System.NonSerialized]
         public List<SharedMarker> sharedDevices = new List<SharedMarker>();
         [System.NonSerialized]
+        public List<Display> displays = new List<Display>();
+        [System.NonSerialized]
         public List<VectorGraphic> undoStack = new List<VectorGraphic>();
         
-
-        [System.NonSerialized]
-        public int initialPublicCanvasId = -1;
-        [System.NonSerialized]
-        public const byte INITIAL_PUBLIC_CANVAS_DISPLAY_ID = 255;
 
         const float PRESSURE_UPDATE_MINIMUM_DELTA = 0.01f; //the min amount that pressure has to change to be considered worth updated the mesh
 
@@ -40,8 +33,6 @@ namespace VRPen {
         [Space(5)] [Header("Important variables to set")] [Space(5)]
         [Tooltip("StartInOfflineMode")]
         public bool startInOfflineMode;
-        [Tooltip("Make sure to add any displays in the scene here")]
-        public List<Display> displays = new List<Display>();
         [Tooltip("A constant background that gets spawned with certain canvas IDs (the canvas ID is the index of this array). Don't fret if this list doesnt match the length of canvases.")]
         public Texture[] canvasBackgrounds;
         [Tooltip("In build, canvases will autosave on applicationQuit and scenechange event.")]
@@ -50,16 +41,7 @@ namespace VRPen {
         public int MAX_CANVAS_COUNT;
         [Tooltip("The render area is where the meshs for the drawing is constructed and rendered, this var sets its location in the scene")]
         public Vector3 renderAreaOrigin;
-        [Tooltip("Width of inital public canvas")]
-        public int initalPublicCanvasPixelWidth;
-        [Tooltip("Height of initial public canvas")]
-        public int initalPublicCanvasPixelHeight;
-        public float initalPublicCanvasAspectRatio {
-            get {
-                return ((float)initalPublicCanvasPixelWidth / (float)initalPublicCanvasPixelHeight);
-            }
-        }
-        [Tooltip("Height of initial public canvas")]
+        [Tooltip("Pressure Curve")]
         public AnimationCurve pressureCurve;
         [Tooltip("Are default hotkeys enabled")]
         public bool enableHotkeys;
@@ -119,22 +101,26 @@ namespace VRPen {
 
         private void Start() {
             
-
-            //get scripts
-            tablet = GetComponent<StarTablet>();
-            network = GetComponent<NetworkManager>();
-
-
-			//set up deisplay ids
-			for(byte x = 0; x < displays.Count; x++) {
-				displays[x].DisplayId = x;
-                displays[x].init();
-			}
-            
-
+            //scene management
             SceneManager.activeSceneChanged += OnSceneChange;
 
-		}
+            //init displays
+            StartCoroutine(initializeDisplays());
+
+        }
+
+        IEnumerator initializeDisplays() {
+            
+            //wait one frame to make sure that all displays have added themselves to display list
+            yield return null;
+            
+            //do it in order based on display ID's to make sure that player's canvases allign with correct displays
+            displays.Sort((a, b) => a.uniqueIdentifier.CompareTo(b.uniqueIdentifier));
+            for (int x = 0; x < displays.Count; x++) {
+                displays[x].init();
+            }
+            
+        }
         
 
         private void Update() {
@@ -182,7 +168,7 @@ namespace VRPen {
             return canvases.Find(x => x.canvasId == canvasId);
         }
 		public Display getDisplay(byte displayId) { 
-            return displays.Find(x => x.DisplayId == displayId);
+            return displays.Find(x => x.uniqueIdentifier == displayId);
         }
 
         public int getCanvasListCount() {
@@ -209,7 +195,7 @@ namespace VRPen {
             if (endLine) {
 
                 endLineData(playerId, graphicIndex, canvas);
-                if (localInput) network.addToDataOutbox(endLine, color, x, y, pressure, canvasId, graphicIndex);
+                if (localInput) NetworkManager.s_instance.addToDataOutbox(endLine, color, x, y, pressure, canvasId, graphicIndex);
                 
             }
             else {
@@ -242,7 +228,7 @@ namespace VRPen {
                     canvas.addToLine(currentLine, drawPoint, pressure, !isCusp);
 
                     //network it
-                    if (localInput) network.addToDataOutbox(endLine, color, x, y, pressure, canvasId, graphicIndex);
+                    if (localInput) NetworkManager.s_instance.addToDataOutbox(endLine, color, x, y, pressure, canvasId, graphicIndex);
 
                 }
                 else {
@@ -252,7 +238,7 @@ namespace VRPen {
                         canvas.updatePointThickness(currentLine, pressure);
 
                         //network it
-                        if (localInput) network.addToDataOutbox(endLine, color, x, y, pressure, canvasId, graphicIndex);
+                        if (localInput) NetworkManager.s_instance.addToDataOutbox(endLine, color, x, y, pressure, canvasId, graphicIndex);
                     }
 
                     //to do add line prediction stuff
@@ -289,7 +275,7 @@ namespace VRPen {
             //network
             if (localInput) {
                 if (stampIndex == -1) Debug.LogError("Tried to network a non-networkable stamp (stamp index == -1)");
-                else network.sendStamp(stampIndex, x, y, size, rotation, canvasId, graphicIndex);
+                else NetworkManager.s_instance.sendStamp(stampIndex, x, y, size, rotation, canvasId, graphicIndex);
             }
             
             //return
@@ -517,88 +503,79 @@ namespace VRPen {
             StartCoroutine(canvas.rerenderCanvas());
 
             //network
-            if (localInput) network.sendUndo(playerId, graphicIndex, canvasId);
+            if (localInput) NetworkManager.s_instance.sendUndo(playerId, graphicIndex, canvasId);
             
         }
 
-        //if originDisplay is null, this is the initial public canvas
-        //if origindisplayID is 255, it is the initial public canvas
-        //the canvas id should only be used for remote additions (255 is null state)
-        public void addCanvas(bool localInput, bool isPublic, byte originDisplayID, int pixelWidth, int pixelHeight, bool isPreset, byte canvasId) {
-
-            //if there is no canvasId, give it the most recent
-            if (canvasId == 255) canvasId = (byte)canvases.Count;
-
-            if (getCanvas(canvasId) != null) return;
-
+        
+        public void addCanvas(bool localInput, byte originDisplayID, int pixelWidth, int pixelHeight, bool isPreset, byte canvasId) {
+            
             //ERROR CASES
+            //already exists error
+            if (getCanvas(canvasId) != null) {
+                Debug.LogError("Canvas addition event for canvas ID that already exists");
+                return;
+            }
             //if too many canvses
             if (getCanvasListCount() >= MAX_CANVAS_COUNT) {
                 Debug.LogWarning("Failed to add a canvas when max canvas count reached already");
                 return;
             }
-            //if a canvas is added as the inital public canvs, but one has already been instantiated
-            if (originDisplayID == INITIAL_PUBLIC_CANVAS_DISPLAY_ID && initialPublicCanvasId != -1) {
-                Debug.LogWarning("Failed to add a canvas when there is no originDisplay (the only time this works is when the initial public canvas is added)");
-                return;
-            }
             
-
-            //if this is the inital public canvas
-            if (originDisplayID == INITIAL_PUBLIC_CANVAS_DISPLAY_ID) {
-                initialPublicCanvasId = canvasId;
-            }
 
             //make canvas
             VectorCanvas temp = GameObject.Instantiate(canvasPrefab, canvasParent).GetComponent<VectorCanvas>();
-            temp.instantiate(this, network, canvasId, pixelWidth, pixelHeight);
+            temp.instantiate(this, NetworkManager.s_instance, canvasId, pixelWidth, pixelHeight);
             temp.GetComponent<Renderer>().enabled = false;
-            temp.isPublic = isPublic;
 
-            
             //add to list
             canvases.Add(temp);
             
             //make copys of texture
             foreach (Display display in displays) {
                 
-                if (!isPublic && display.DisplayId != originDisplayID && !display.fullAccess) continue;
+                //determing if display can show canvas
+                if (display.fullAccess || display.uniqueIdentifier == originDisplayID) {
+                    
+                    //make obj
+                    GameObject quad = Instantiate(quadPrefab);
+                    Destroy(quad.GetComponent<Collider>());
+                    quad.transform.parent = display.canvasParent;
+                    quad.transform.localPosition = Vector3.zero;
+                    quad.transform.localRotation = Quaternion.identity;
+                    quad.transform.localScale = Vector3.one;
+                    quad.name = "" + canvasId;
+                    quad.GetComponent<Renderer>().material = temp.GetComponent<Renderer>().material;
+                    if (display.shaderOverride != null)
+                        quad.GetComponent<Renderer>().material.shader = display.shaderOverride;
 
-	            GameObject quad = Instantiate(quadPrefab);
-				Destroy(quad.GetComponent<Collider>());
-                quad.transform.parent = display.canvasParent;
-                quad.transform.localPosition = Vector3.zero;
-                quad.transform.localRotation = Quaternion.identity;
-                quad.transform.localScale = Vector3.one;
-                quad.name = "" + canvasId;
-                quad.GetComponent<Renderer>().material = temp.GetComponent<Renderer>().material;
-                if (display.shaderOverride != null) quad.GetComponent<Renderer>().material.shader = display.shaderOverride;
+                    //turn off renderer
+                    quad.GetComponent<Renderer>().enabled = false;
 
-                //turn off renderer
-                quad.GetComponent<Renderer>().enabled = false;
+                    //update ui
+                    display.UIMan.addCanvas(canvasId);
 
-                //update ui
-                display.UIMan.addCanvas(canvasId);
+                    //add the actual obj to display's list
+                    display.canvasObjs.Add(canvasId, quad);
 
-                //add the actual obj to display's list
-                display.canvasObjs.Add(canvasId, quad);
+                    //if theres not canvas on the display, switch
+                    if (display.currentLocalCanvas == null) display.swapCurrentCanvas(canvasId, false);
+                    
+                }
 
-                //if theres not canvas on the display, switch
-                if (display.currentLocalCanvas == null) display.swapCurrentCanvas(canvasId, false);
-                
             }
 
             //if local
             if (localInput && !isPreset) {
 
                 //network it (make sure you dont send the default board)
-                network.sendCanvasAddition(isPublic, originDisplayID, pixelWidth, pixelHeight, isPreset,canvasId);
+                NetworkManager.s_instance.sendCanvasAddition(originDisplayID, pixelWidth, pixelHeight, isPreset, canvasId);
             }
             
         }
 
-        public void addCanvas(bool localInput, bool isPublic, byte originDisplayID, int pixelWidth, int pixelHeight, bool isPreset) {
-            addCanvas(localInput, isPublic, originDisplayID, pixelWidth, pixelHeight, isPreset, 255);
+        public void addCanvas(bool localInput, byte originDisplayID, int pixelWidth, int pixelHeight, bool isPreset) {
+            addCanvas(localInput, originDisplayID, pixelWidth, pixelHeight, isPreset, (byte)getCanvasListCount());
         }
 
         public void saveImage(byte canvasId) {

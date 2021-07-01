@@ -552,11 +552,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30aa0945ad768554d86bd64a5d3a1979, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uniqueIdentifier: 0
+  syncDisplay: 1
+  spawnCanvasOnStart: 1
   fullAccess: 0
-  shaderOverride: {fileID: 0}
   pixelWidth: 2000
   pixelHeight: 1200
-  initialCanvasIsPrivate: 0
+  shaderOverride: {fileID: 0}
   UIMan: {fileID: 3048407086474039643}
   canvasParent: {fileID: 6991333035018763483}
   stampPrefab: {fileID: 2441548749050361720, guid: cbb90edd4f2d39f4abac245a76f78a78,

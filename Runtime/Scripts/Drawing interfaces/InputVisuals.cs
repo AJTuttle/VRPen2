@@ -17,11 +17,13 @@ namespace VRPen {
         public List<Renderer> colorIndicatorRenderers;
 		public List<int> colorIndicatorRenderersIndex;
 
+		public Color32 defaultColor;
+		public ToolState defaultState;
 
         //[System.NonSerialized]
         //public InputDevice deviceData;
 
-        protected  Color32 currentColor = new Color32(0, 0, 0, 255);
+        protected Color32 currentColor = new Color32(0, 0, 0, 255);
 
         [Header("Optional Vars for Network Syncing Visuals")] 
         [Space(10)]
@@ -44,13 +46,17 @@ namespace VRPen {
 	        //add to input list
 	        VectorDrawing.s_instance.inputDevices.Add(this);
 
-	        //set color indicators
-            updateColorIndicators(currentColor, false);
+	        //set default stuff
+	        updateColor(defaultColor, false);
+            updateModel(defaultState, false);
 
         }
 
+        private void OnDestroy() {
+	        VectorDrawing.s_instance.inputDevices.Remove(this);
+        }
+        
         public void updateColor(Color32 color, bool localInput) {
-	        
 	        currentColor = color;
 	        updateColorIndicators(color, localInput);
 	        

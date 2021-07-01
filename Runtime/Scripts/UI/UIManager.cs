@@ -23,7 +23,6 @@ namespace VRPen {
 
 
         public List<UIGrabbable> grabbablesAddedOnStart;
-        public Toggle newCanvasIsPrivateToggle;
 		public GameObject slidingParent;
 		public GameObject SlideMenu;
 		public GameObject SlideMenuParent;
@@ -102,8 +101,8 @@ namespace VRPen {
 		}
 
         private void Update() {
-            //start packing data
-            if(!sendingStateOverNetwork && NetworkManager.s_instance.connectedAndCaughtUp) startPackingState(NetworkManager.s_instance.UI_SYNC_PERIOD);
+            //start packing data todo: bring back
+            //if(!sendingStateOverNetwork && NetworkManager.s_instance.connectedAndCaughtUp) startPackingState(NetworkManager.s_instance.UI_SYNC_PERIOD);
         }
 
 
@@ -305,7 +304,7 @@ namespace VRPen {
         public void packState() {
 
             //dont do anything if we dont wanna sync
-            if (!NetworkManager.s_instance.syncDisplayUIs) return;
+            if (!display.syncDisplay) return;
 
             //pack data
             List<byte> data = new List<byte>();
@@ -356,7 +355,7 @@ namespace VRPen {
             if (data.Count == 0) return;
 
             //send data
-            NetworkManager.s_instance.sendUIState(display.DisplayId, data.ToArray());
+            NetworkManager.s_instance.sendUIState(display.uniqueIdentifier, data.ToArray());
 
             //get rid of state sync queue since it was just sent
             dequeueState();
@@ -449,7 +448,7 @@ namespace VRPen {
             #region Passthroughs
 
         public void addCanvasPassthrough() {
-            display.addCanvasPassthrough(!newCanvasIsPrivateToggle.isOn);
+            display.addCanvasPassthrough();
         }
 
         public void undoPassthrough(VRPenInput input) {

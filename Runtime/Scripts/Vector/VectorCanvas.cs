@@ -15,8 +15,6 @@ namespace VRPen {
         public byte canvasId;
         public int renderQueueCounter = 1;
         public float aspectRatio;
-        
-        public bool isPublic;
 
         //render texture stuff
         public RenderTexture renderTexturePresets;

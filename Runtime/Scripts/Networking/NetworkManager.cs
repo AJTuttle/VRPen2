@@ -31,25 +31,6 @@ namespace VRPen {
         //instance
         public static NetworkManager s_instance;
 
-        //scripts
-        [System.NonSerialized]
-        public VectorDrawing vectorMan;
-        UIManager UIMan;
-
-        [Space(5)]
-        [Header("       Important variables to set")]
-        [Space(5)]
-        [Tooltip("If enabled, when one personn switches canvas, the canvas on the same display will auto switch for other users as well")]
-        public bool syncCurrentCanvas;
-        [Tooltip("If enabled, ui elements will sync")]
-        public bool syncDisplayUIs;
-        [Tooltip("Period of ui syncing (does not do anything if uisync is disabled")]
-        public float UI_SYNC_PERIOD;
-        [Tooltip("Where to put the spawned remote devices in global space")]
-        public Vector3 spawnRemoteDevicesLocation;
-        //[Tooltip("Should networkMan instantiate remote input device or simple make a data struct")]
-        //public bool instantiateRemoteInputDevices;
-
 
         //other players data
         bool localPlayerHasID = false;
@@ -98,6 +79,8 @@ namespace VRPen {
         private List<VRPenPacket> cacheHistoricalPackets = new List<VRPenPacket>(); 
         //non historical packets are for when the history doesnt matter (ie. UI state)
         private List<VRPenPacket> cacheNonHistoricalPackets = new List<VRPenPacket>(); 
+        [Header("Optional")]
+        [Space(10)]
         public List<TextMeshPro> cacheSizeDisplays;
         private const int cachePacketMaxSendingSize = 10000; //max ammount of bytes to be sent in one cache packet
         
@@ -109,9 +92,8 @@ namespace VRPen {
         private List<VRPenPacket> packetsReceivedPreCatchup = new List<VRPenPacket>();
 
         //prefabs
-        [Space(5)]
-        [Header("       Variables that don't need to be changed")]
-        [Space(15)]
+        [Header("Variables that don't need to be changed")]
+        [Space(10)]
         public GameObject remoteMarkerPrefab;
         public GameObject remoteTabletPrefab;
         public GameObject remoteMousePrefab;
@@ -155,10 +137,6 @@ namespace VRPen {
 
             //set the start time
             instanceStartTime = DateTime.Now.Ticks;
-
-            //scripts
-            UIMan = FindObjectOfType<UIManager>();
-            vectorMan = GetComponent<VectorDrawing>();
 
             //display cache size
             InvokeRepeating(nameof(displayCacheSize), 1f, 0.5f);
@@ -265,7 +243,7 @@ namespace VRPen {
             localPlayerHasID = true;
             
             //find all graphics added before connection and set their owner id to be correct
-            foreach (VectorCanvas canvas in vectorMan.canvases) {
+            foreach (VectorCanvas canvas in VectorDrawing.s_instance.canvases) {
                 foreach (VectorGraphic graphic in canvas.graphics) {
                     if (graphic.createdLocally) graphic.ownerId = localID;
                 }
@@ -364,12 +342,49 @@ namespace VRPen {
         void addPacketToNonHistoricalCache(VRPenPacket packet) {
             
             //remove old packets
-            foreach (VRPenPacket nonHistoricalPacket in cacheNonHistoricalPackets) {
-                if (packet.type == PacketType.InputDeviceState) {
-                    //if (packet.data)
+            cacheNonHistoricalPackets.RemoveAll(nonHistoricalPacket => {
+
+                //input device state
+                if (packet.type == PacketType.InputDeviceState &&
+                    nonHistoricalPacket.type == PacketType.InputDeviceState) {
+
+                    //make sure data is set
+                    if (packet.additionalDataIsSet && nonHistoricalPacket.additionalDataIsSet) {
+
+                        //remove if the packets are describing states of same input devices
+                        if ((ulong)packet.additionalData[0] == (ulong)nonHistoricalPacket.additionalData[0] &&
+                            (int)packet.additionalData[1] == (int)nonHistoricalPacket.additionalData[1]) {
+                            return true;
+                        }
+                    }
+                    else {
+                        Debug.LogError("Input device packet does not have additional data var set");
+                    }
                 }
-            }
+                
+                //canvas change 
+                else if (packet.type == PacketType.CanvasSwitch &&
+                         nonHistoricalPacket.type == PacketType.CanvasSwitch) {
+                    
+                    //make sure data is set
+                    if (packet.additionalDataIsSet && nonHistoricalPacket.additionalDataIsSet) {
+
+                        //remove if the displayid is the same
+                        if ((byte)packet.additionalData[0] == (byte)nonHistoricalPacket.additionalData[0]) {
+                            return true;
+                        }
+                    }
+                    else {
+                        Debug.LogError("Display canvas change packet does not have additional data var set");
+                    }
+                    
+                }
+
+                return false;
+                
+            });
             
+            //add new packet
             cacheNonHistoricalPackets.Add(packet);
         }
         
@@ -420,19 +435,15 @@ namespace VRPen {
         }
         
 		List<byte[]> getCache() {
-
-            //no cache case
-            if (cacheHistoricalPackets.Count == 0) {
-                return new List<byte[]> { new byte[0]};
-            }
             
             //list of packets
             List<List<byte>> allCachePacketBatches = new List<List<byte>>();
             List<byte[]> allCachePacketBatchesArrays = new List<byte[]>();
             
-            //current batch
+            //current batch - historic packets
             List<byte> currentCachePacketBatch = new List<byte>();
             allCachePacketBatches.Add(currentCachePacketBatch);
+            currentCachePacketBatch.Add(1); //true: historic cache packets
             
             //iterate through packets
             for (int x = 0; x < cacheHistoricalPackets.Count; x++) {
@@ -444,12 +455,38 @@ namespace VRPen {
                     //new packet
                     currentCachePacketBatch = new List<byte>();
                     allCachePacketBatches.Add(currentCachePacketBatch);
+                    currentCachePacketBatch.Add(1); //true: historic cache packets
                 }
                 
                 //add data
                 currentCachePacketBatch.AddRange(BitConverter.GetBytes(cacheHistoricalPackets[x].sender));
                 currentCachePacketBatch.AddRange(BitConverter.GetBytes(cacheHistoricalPackets[x].data.Length));
                 currentCachePacketBatch.AddRange(cacheHistoricalPackets[x].data);
+                
+            }
+            
+            //current batch - non historic packets
+            currentCachePacketBatch = new List<byte>();
+            allCachePacketBatches.Add(currentCachePacketBatch);
+            currentCachePacketBatch.Add(0); //true: non historic cache packets
+            
+            //iterate through packets
+            for (int x = 0; x < cacheNonHistoricalPackets.Count; x++) {
+
+                //start new list if past max size
+                if (currentCachePacketBatch.Count != 0 &&
+                    (currentCachePacketBatch.Count + cacheNonHistoricalPackets[x].data.Length) >= cachePacketMaxSendingSize) {
+                    
+                    //new packet
+                    currentCachePacketBatch = new List<byte>();
+                    allCachePacketBatches.Add(currentCachePacketBatch);
+                    currentCachePacketBatch.Add(0); //true: historic cache packets
+                }
+                
+                //add data
+                currentCachePacketBatch.AddRange(BitConverter.GetBytes(cacheNonHistoricalPackets[x].sender));
+                currentCachePacketBatch.AddRange(BitConverter.GetBytes(cacheNonHistoricalPackets[x].data.Length));
+                currentCachePacketBatch.AddRange(cacheNonHistoricalPackets[x].data);
                 
             }
             
@@ -468,33 +505,15 @@ namespace VRPen {
 
 		public void loadCache(byte[] data) {
 
-            //no data case
-            if (data.Length == 0) {
-                Debug.Log("Empty cache packet received. This is intended IFF there was nothing to catch up on. Otherwise this is an error");
-                
-                //is caught up
-                connectedAndCaughtUp = true;
-                
-                //Debug
-                Debug.Log("Now processing packets received during connection process. Packet count: "+packetsReceivedPreCatchup.Count);
-
-                //unpack packets received before fully connected
-                for (int x = 0; x < packetsReceivedPreCatchup.Count; x++) {
-                    unpackPacket(packetsReceivedPreCatchup[x].sender, packetsReceivedPreCatchup[x].data);
-                }
-                //Debug
-                Debug.Log("VRPen instance fully caught up.");
-                
-                return;
-            }
-            
             //offset
             int offset = 0;
 
             //read batch index data
             int currentBatchIndex = ReadInt(data, ref offset);
             int batchCount = ReadInt(data, ref offset);
-            Debug.Log("Reading cache packet batch ["+(currentBatchIndex + 1) +"/"+batchCount+"]. " + data.Length + " Bytes.");
+            bool isHistoricBatch = ReadByte(data, ref offset) == 1;
+            Debug.Log("Reading "+ (isHistoricBatch? "historic" : "non-historic")+ " cache packet batch. Batch ["+
+                      (currentBatchIndex + 1) +"/"+batchCount+"]. " + data.Length + " Bytes.");
             
             //read and compute batch
             while (offset < data.Length - 1) {
@@ -677,7 +696,7 @@ namespace VRPen {
 
         }
 
-        public void sendCanvasAddition(bool isPublic, byte originDisplayID, int width, int height, bool isPreset, byte canvasId) {
+        public void sendCanvasAddition(byte originDisplayID, int width, int height, bool isPreset, byte canvasId) {
 
             //dont do anything in offline mode
             if (VectorDrawing.OfflineMode) return;
@@ -699,7 +718,6 @@ namespace VRPen {
             localPacketIndex++;
             
             //data
-            sendBufferList.Add(isPublic?(byte)1:(byte)0);
             sendBufferList.Add(originDisplayID);
             sendBufferList.AddRange(BitConverter.GetBytes(width));
             sendBufferList.AddRange(BitConverter.GetBytes(height));
@@ -723,10 +741,6 @@ namespace VRPen {
 
             //dont do anything in offline mode
             if (VectorDrawing.OfflineMode) return;
-
-            if (!syncCurrentCanvas) {
-                return;
-            }
 
             //dont send if you havent connected to the other users yet
             if (!connectedAndCaughtUp) {
@@ -959,15 +973,6 @@ namespace VRPen {
                 Debug.LogWarning("Packets are being recieved before the local player was assigned an ID, this could cause errors.");
             }
 
-            //add packet to caches
-            if (header == PacketType.PenData || header == PacketType.Clear || header == PacketType.AddCanvas ||
-                header == PacketType.Undo || header == PacketType.Stamp ) {
-                addPacketToHistoricalCache(packet);
-            }
-            else if (header == PacketType.InputDeviceState) {
-                addPacketToNonHistoricalCache(packet);
-            }
-            
             //ignore this packet
             bool ignorePacket = false;
             
@@ -1019,6 +1024,15 @@ namespace VRPen {
                 Debug.LogError("Packet type not recognized, ID = " + header);
             }
             
+            //add packet to caches
+            if (header == PacketType.PenData || header == PacketType.Clear || header == PacketType.AddCanvas ||
+                header == PacketType.Undo || header == PacketType.Stamp ) {
+                addPacketToHistoricalCache(packet);
+            }
+            else if (header == PacketType.InputDeviceState || header == PacketType.CanvasSwitch) {
+                addPacketToNonHistoricalCache(packet);
+            }
+            
         }
 
         void unpackCacheRequest(VRPenPacket packet, ref int offset, bool ignorePacket) {
@@ -1045,7 +1059,7 @@ namespace VRPen {
             int uniqueIdentifier = ReadInt(packet.data, ref offset);
             
             //change ownership
-            foreach (SharedMarker sharedMarker in vectorMan.sharedDevices) {
+            foreach (SharedMarker sharedMarker in VectorDrawing.s_instance.sharedDevices) {
                 if (uniqueIdentifier == sharedMarker.uniqueIdentifier) {
                     //assuming this is not the player that took ownership, ownership should be relinquished
                     if (packet.sender != localPlayerId) {
@@ -1091,21 +1105,16 @@ namespace VRPen {
                 //end line or draw
                 if (endLine == 1) {
                     
-                    vectorMan.endLineEvent(packet.sender, localGraphicIndex, canvasId, false);
+                    VectorDrawing.s_instance.endLineEvent(packet.sender, localGraphicIndex, canvasId, false);
                 }
                 else {
 
                     if (pressure > 0) {
-                        vectorMan.draw(packet.sender, localGraphicIndex, (endLine == 1) ? true : false, color, xFloat, yFloat, pressure, canvasId, false);
+                        VectorDrawing.s_instance.draw(packet.sender, localGraphicIndex, (endLine == 1) ? true : false, color, xFloat, yFloat, pressure, canvasId, false);
                     }
 
                     else {
-                        Debug.LogError("Received VRPen draw input packet with 0 pressure (not a newline event either)");
-                    }
-
-                    //update cursor at the last input
-                    if (x == length - 1) {
-                        //input.updateTabletCursor(player, xFloat, yFloat);
+                        Debug.LogError("Received VRPen draw input packet with 0 pressure (not a endline event either)");
                     }
 
                 }
@@ -1127,7 +1136,7 @@ namespace VRPen {
             byte canvasId = ReadByte(packet.data, ref offset);
 
             //clear
-            vectorMan.getCanvas(canvasId).clear(false);
+            VectorDrawing.s_instance.getCanvas(canvasId).clear(false);
             
             //clear from cache
             reduceCacheByCanvasClear(canvasId);
@@ -1140,11 +1149,11 @@ namespace VRPen {
         /// <param name="packet">data</param>
         void unpackCanvasAddition(VRPenPacket packet, ref int offset, bool ignorePacket) {
 
+            
             //ignore
             if (ignorePacket) return;
 
             //get data
-            bool isPublic = ReadByte(packet.data, ref offset) == 1;
             byte displayId = ReadByte(packet.data, ref offset);
             int width = ReadInt(packet.data, ref offset);
             int height = ReadInt(packet.data, ref offset);
@@ -1152,7 +1161,7 @@ namespace VRPen {
             byte canvasId = ReadByte(packet.data, ref offset);
 
             //add board
-            vectorMan.addCanvas(false, isPublic, displayId, width, height, isPreset, canvasId);
+            VectorDrawing.s_instance.addCanvas(false, displayId, width, height, isPreset, canvasId);
 
         }
 
@@ -1220,30 +1229,26 @@ namespace VRPen {
             byte canvasID = ReadByte(packet.data, ref offset);
             
             //apply undo
-            vectorMan.undo(playerId, graphixIndex, canvasID, false);
+            VectorDrawing.s_instance.undo(playerId, graphixIndex, canvasID, false);
         }
 
         void unpackCanvasSwitch(VRPenPacket packet, ref int offset, bool ignorePacket) {
 
-            //ignore
-            if (ignorePacket) return;
-
-            //not synced
-            if (!syncCurrentCanvas) {
-                return;
-            }
-
+            //unpack
             byte displayId = ReadByte(packet.data, ref offset);
             byte canvasId = ReadByte(packet.data, ref offset);
+            
+            //set additional data for use in the cache
+            packet.setAdditionalData(new List<object>(){displayId}, 1);
+            
+            //ignore after setting additional data but before applying any change
+            if (ignorePacket) return;
 
-            vectorMan.getDisplay(displayId).swapCurrentCanvas(canvasId, false);
+            VectorDrawing.s_instance.getDisplay(displayId).swapCurrentCanvas(canvasId, false);
             
         }
 
         void unpackInputVisualEvent(VRPenPacket packet, ref int offset, bool ignorePacket) {
-            
-            //ignore
-            if (ignorePacket) return;
 
             //get data
             ulong ownerID = ReadULong(packet.data, ref offset);
@@ -1251,8 +1256,15 @@ namespace VRPen {
             VRPenInput.ToolState state = (VRPenInput.ToolState)ReadByte(packet.data, ref offset);
             Color32 col = new Color32(ReadByte(packet.data, ref offset), ReadByte(packet.data, ref offset), ReadByte(packet.data, ref offset), 255);
 
+            
+            //set additional data for use in the cache
+            packet.setAdditionalData(new List<object>(){ownerID, uniqueID}, 12);
+            
+            //ignore (only after we make sure to set additional data)
+            if (ignorePacket) return;
+            
             //update device
-            foreach (InputVisuals device in vectorMan.inputDevices) {
+            foreach (InputVisuals device in VectorDrawing.s_instance.inputDevices) {
                 if (device.ownerID == ownerID && device.uniqueIdentifier == uniqueID) {
                     device.updateModel(state, false);
                     device.updateColor(col, false);
@@ -1265,12 +1277,9 @@ namespace VRPen {
             //ignore
             if (ignorePacket) return;
 
-            //return if not in sync state
-            if (!syncDisplayUIs) return;
-
 			//data
 			byte displayId = ReadByte(packet.data, ref offset);
-			Display display = vectorMan.getDisplay(displayId);
+			Display display = VectorDrawing.s_instance.getDisplay(displayId);
             byte[] choppedPacket = new byte[packet.data.Length - offset];
             for (int x = 0; x < choppedPacket.Length; x++) {
                 choppedPacket[x] = packet.data[x + offset];

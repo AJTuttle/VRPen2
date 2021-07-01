@@ -100,8 +100,8 @@ namespace VRPen {
             InputData data = getInputData();
             hover = data.hover;
             
-            //cancel if no canvas or display
-            if (data.display == null || data.display.currentLocalCanvas == null) return;
+            //cancel if no display
+            if (data.display == null) return;
 
             //if currently grabbing a uigrabbable
             if (grabbed != null && data.hover != HoverState.NONE) {
@@ -262,7 +262,11 @@ namespace VRPen {
 
         void canvasHover(InputData data) {
             
-            
+
+            //return if no canvas
+            if (data.display.currentLocalCanvas == null) {
+                return;
+            }
 
             //get vars from ray
             Transform canvas = data.hit.collider.transform;

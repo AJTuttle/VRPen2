@@ -16,6 +16,8 @@ public class SharedMarker : MonoBehaviour {
     [Space(10)]
     [Tooltip("Any unique identifier for the device (only needs to be unique for the shared devices)")]
     public int uniqueIdentifier;
+    public Color32 defaultColor;
+    public InputVisuals.ToolState defaultState;
 
     //shared marker specific
     bool isOwner = false;
@@ -26,9 +28,13 @@ public class SharedMarker : MonoBehaviour {
         localMarker.sendVisualUpdates = true;
         localMarker.ownerID = ulong.MaxValue; //reserved owner id for when there is no owner
         localMarker.uniqueIdentifier = uniqueIdentifier;
+        localMarker.defaultColor = defaultColor;
+        localMarker.defaultState = defaultState;
         remoteMarker.sendVisualUpdates = false;
         remoteMarker.ownerID = ulong.MaxValue; //reserved owner id for when there is no owner
         remoteMarker.uniqueIdentifier = uniqueIdentifier;
+        remoteMarker.defaultColor = defaultColor;
+        remoteMarker.defaultState = defaultState;
         
     }
 
@@ -41,6 +47,11 @@ public class SharedMarker : MonoBehaviour {
         StartCoroutine(turnOffLocalAfterFrame());
 
     }
+    
+    private void OnDestroy() {
+        VectorDrawing.s_instance.sharedDevices.Remove(this);
+    }
+
 
     IEnumerator turnOffLocalAfterFrame() {
         yield return null;
