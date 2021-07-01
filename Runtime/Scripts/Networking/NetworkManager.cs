@@ -959,7 +959,8 @@ namespace VRPen {
             //make packet obj
             VRPenPacket packet = new VRPenPacket(packetData, connectionId, packetIndex, header);
             
-            //only when unpacking the packets received during catchup
+            //Make sure this packet hasnt already been unpacked
+            //Only needa do this when unpacking non-cache packets received during catchup sequence
             if (cacheDownloaded && !connectedAndCaughtUp) {
                 //if packet was already received (stored in cache) dont continue to use it
                 if (cacheHistoricalPackets.Exists(x => x.sender == connectionId && x.senderPacketIndex == packetIndex) || 
