@@ -41,6 +41,7 @@ namespace VRPen {
         long instanceStartTime; //used to differentiate catchup packets and current instance packets
         [NonSerialized]
         public bool connectedAndCaughtUp = false;
+        private bool cacheDownloaded = false; //warning, if a cache is not needed (ie first player in server) this will be false always
 
 
         //vrpenpacket data struct
@@ -538,7 +539,7 @@ namespace VRPen {
             if (currentBatchIndex == batchCount - 1) {
                 
                 //set flag
-                connectedAndCaughtUp = true; 
+                cacheDownloaded = true; 
                 
                 //Debug
                 Debug.Log("Cache fully downloaded. Now processing packets received during connection process. Packet count: "+packetsReceivedPreCatchup.Count);
@@ -549,6 +550,9 @@ namespace VRPen {
                 }
                 //Debug
                 Debug.Log("VRPen instance fully caught up.");
+                
+                //set flag
+                connectedAndCaughtUp = true; 
                 
             }
 
@@ -955,19 +959,24 @@ namespace VRPen {
             //make packet obj
             VRPenPacket packet = new VRPenPacket(packetData, connectionId, packetIndex, header);
             
-            //if packet was already received (stored in cache) dont continue to use it
-            //this will most likely happen during connection while the user is getting caught up
-            if (cacheHistoricalPackets.Exists(x => x.sender == connectionId && x.senderPacketIndex == packetIndex)) {
-                Debug.Log("Packet already received... ignoring... [user=" + connectionId + ", index=" + packetIndex +"]");
-                return;
+            //only when unpacking the packets received during catchup
+            if (cacheDownloaded && !connectedAndCaughtUp) {
+                //if packet was already received (stored in cache) dont continue to use it
+                if (cacheHistoricalPackets.Exists(x => x.sender == connectionId && x.senderPacketIndex == packetIndex) || 
+                    cacheNonHistoricalPackets.Exists(x => x.sender == connectionId && x.senderPacketIndex == packetIndex) ) {
+                    Debug.Log("Packet already received... ignoring... [user=" + connectionId + ", index=" + packetIndex +"]");
+                    return;
+                }
             }
             
-            //if not connected yet, add to list of packets to process after fully connected
-            if (!connectedAndCaughtUp && !isCache) {
+            //if cache not downloaded yet, add to list of packets to process after fully connected
+            //the !connectedAndCaughtUp is needed for if when no cache is needed to be downloaded
+            if (!connectedAndCaughtUp && !cacheDownloaded && !isCache) {
                 packetsReceivedPreCatchup.Add(packet);
                 return;
             }
 
+            
             //if local player has no id, send out warning
             if (!localPlayerHasID) {
                 Debug.LogWarning("Packets are being recieved before the local player was assigned an ID, this could cause errors.");
