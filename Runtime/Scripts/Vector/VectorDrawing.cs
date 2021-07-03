@@ -104,25 +104,23 @@ namespace VRPen {
             //scene management
             SceneManager.activeSceneChanged += OnSceneChange;
 
-            //init displays
-            StartCoroutine(initializeDisplays());
+           //init displays
+           StartCoroutine(initDisplays());
 
         }
 
-        IEnumerator initializeDisplays() {
+        //wait a frame to init displays to give them a chance to add themselves to diplay list
+        IEnumerator initDisplays() {
             
-            //wait one frame to make sure that all displays have added themselves to display list
+            //wait
             yield return null;
             
-            //do it in order based on display ID's to make sure that player's canvases allign with correct displays
-            displays.Sort((a, b) => a.uniqueIdentifier.CompareTo(b.uniqueIdentifier));
+            //init displays
             for (int x = 0; x < displays.Count; x++) {
-                displays[x].init();
+                displays[x].startOfSceneInit();
             }
-            
         }
         
-
         private void Update() {
             if (enableHotkeys) hotkeys();
         }
@@ -508,7 +506,7 @@ namespace VRPen {
         }
 
         
-        public void addCanvas(bool localInput, byte originDisplayID, int pixelWidth, int pixelHeight, bool isPreset, byte canvasId) {
+        public void addCanvas(bool localInput, byte originDisplayID, int pixelWidth, int pixelHeight, byte canvasId) {
             
             //ERROR CASES
             //already exists error
@@ -525,7 +523,7 @@ namespace VRPen {
 
             //make canvas
             VectorCanvas temp = GameObject.Instantiate(canvasPrefab, canvasParent).GetComponent<VectorCanvas>();
-            temp.instantiate(this, NetworkManager.s_instance, canvasId, pixelWidth, pixelHeight);
+            temp.instantiate(this, NetworkManager.s_instance, canvasId, pixelWidth, pixelHeight, originDisplayID);
             temp.GetComponent<Renderer>().enabled = false;
 
             //add to list
@@ -537,45 +535,24 @@ namespace VRPen {
                 //determing if display can show canvas
                 if (display.fullAccess || display.uniqueIdentifier == originDisplayID) {
                     
-                    //make obj
-                    GameObject quad = Instantiate(quadPrefab);
-                    Destroy(quad.GetComponent<Collider>());
-                    quad.transform.parent = display.canvasParent;
-                    quad.transform.localPosition = Vector3.zero;
-                    quad.transform.localRotation = Quaternion.identity;
-                    quad.transform.localScale = Vector3.one;
-                    quad.name = "" + canvasId;
-                    quad.GetComponent<Renderer>().material = temp.GetComponent<Renderer>().material;
-                    if (display.shaderOverride != null)
-                        quad.GetComponent<Renderer>().material.shader = display.shaderOverride;
-
-                    //turn off renderer
-                    quad.GetComponent<Renderer>().enabled = false;
-
-                    //update ui
-                    display.UIMan.addCanvas(canvasId);
-
-                    //add the actual obj to display's list
-                    display.canvasObjs.Add(canvasId, quad);
-
-                    //if theres not canvas on the display, switch
-                    if (display.currentLocalCanvas == null) display.swapCurrentCanvas(canvasId, false);
+                    //add
+                    display.addCanvasToDisplay(temp);
                     
                 }
 
             }
 
             //if local
-            if (localInput && !isPreset) {
+            if (localInput) {
 
                 //network it (make sure you dont send the default board)
-                NetworkManager.s_instance.sendCanvasAddition(originDisplayID, pixelWidth, pixelHeight, isPreset, canvasId);
+                NetworkManager.s_instance.sendCanvasAddition(originDisplayID, pixelWidth, pixelHeight,canvasId);
             }
             
         }
 
-        public void addCanvas(bool localInput, byte originDisplayID, int pixelWidth, int pixelHeight, bool isPreset) {
-            addCanvas(localInput, originDisplayID, pixelWidth, pixelHeight, isPreset, (byte)getCanvasListCount());
+        public void addCanvas(bool localInput, byte originDisplayID, int pixelWidth, int pixelHeight) {
+            addCanvas(localInput, originDisplayID, pixelWidth, pixelHeight,  (byte)getCanvasListCount());
         }
 
         public void saveImage(byte canvasId) {

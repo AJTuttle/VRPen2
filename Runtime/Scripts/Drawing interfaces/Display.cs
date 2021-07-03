@@ -15,7 +15,7 @@ namespace VRPen {
         public byte uniqueIdentifier;
         [Tooltip("Sync ui and canvas changes over network")]
         public bool syncDisplay;
-        [Tooltip("Should spawn in with its own canvas")]
+        [Tooltip("Should spawn in with its own canvas. Spawns after fully connected (or offline mode). ONLY WORKS FOR DISPLAYS PRESENT AT START OF SCENE")]
         public bool spawnCanvasOnStart;
         [Tooltip("Full access means that the display can see all canvases")]
         public bool fullAccess;
@@ -49,40 +49,101 @@ namespace VRPen {
             
             //add to displays
             VectorDrawing.s_instance.displays.Add(this);
+            
+            //check if there are any canvases that already exist for the display
+            //should only do something for displays added post-start
+            foreach (VectorCanvas canvas in VectorDrawing.s_instance.canvases) {
+                if (canvas.originDisplayId == uniqueIdentifier) {
+                    addCanvasToDisplay(canvas);
+                }
+            }
+            
+            
         }
 
         private void OnDestroy() {
             VectorDrawing.s_instance.displays.Remove(this);
         }
 
-        public void init() {
-            createInitialCanvas();
+        public void startOfSceneInit() {
+            if (spawnCanvasOnStart) StartCoroutine(createInitialCanvas());
         }
 
 
-        void createInitialCanvas() {
+        IEnumerator createInitialCanvas() {
 
-            //determine if an initial canvas should be created
-            if (spawnCanvasOnStart) {
-
-                //make sure the initial canvas isnt too high
-                if (VectorDrawing.s_instance.canvases.Count >= VectorDrawing.s_instance.MAX_CANVAS_COUNT) {
-                    Debug.LogError("Initial was set to private but this would exceed the max number of canvases.");
-                    return;
+            //wait for user to be connected if in online mode
+            while (!VectorDrawing.OfflineMode && !NetworkManager.s_instance.connectedAndCaughtUp) {
+                yield return null;
+                //if a canvas was already added then return
+                //full access whiteboards need to ensure that at least one of the canvases added was by this display
+                if (fullAccess) {
+                    foreach (KeyValuePair<byte, GameObject> canvasObj in canvasObjs) {
+                        if (VectorDrawing.s_instance.getCanvas(canvasObj.Key).originDisplayId == uniqueIdentifier) {
+                            yield break;
+                        }
+                    }
                 }
+                //non full access can just assume that the current canvas was added by this displayID
+                else {
+                    if (currentLocalCanvas != null) {
+                        yield break;
+                    }
+                }
+            }
+            
 
-                //spawn local canvase
-                VectorDrawing.s_instance.addCanvas(true, uniqueIdentifier, pixelWidth, pixelHeight, true);
-
-
-                //switch to that canvas
-                swapCurrentCanvas((byte)(VectorDrawing.s_instance.canvases.Count - 1), false);
+            //make sure the initial canvas isnt too high
+            if (VectorDrawing.s_instance.canvases.Count >= VectorDrawing.s_instance.MAX_CANVAS_COUNT) {
+                Debug.LogError("Initial was set to private but this would exceed the max number of canvases.");
+                yield break;
             }
 
+            //spawn local canvase
+            VectorDrawing.s_instance.addCanvas(true, uniqueIdentifier, pixelWidth, pixelHeight);
+
+
+            //switch to that canvas
+            swapCurrentCanvas((byte)(VectorDrawing.s_instance.canvases.Count - 1), false);
+
         }
 
+        public void addCanvasToDisplay(VectorCanvas canvas) {
+            
+            //check if it already exists first (may not be much of an error, but could indicate one)
+            if (canvasObjs.ContainsKey(canvas.canvasId)) {
+                Debug.LogError("Display trying to add canvas that it already has.");
+                return;
+            }
+            
+            //make obj
+            GameObject quad = Instantiate(VectorDrawing.s_instance.quadPrefab);
+            Destroy(quad.GetComponent<Collider>());
+            quad.transform.parent = canvasParent;
+            quad.transform.localPosition = Vector3.zero;
+            quad.transform.localRotation = Quaternion.identity;
+            quad.transform.localScale = Vector3.one;
+            quad.name = "" + canvas.canvasId;
+            quad.GetComponent<Renderer>().material = canvas.GetComponent<Renderer>().material;
+            if (shaderOverride != null)
+                quad.GetComponent<Renderer>().material.shader = shaderOverride;
+
+            //turn off renderer
+            quad.GetComponent<Renderer>().enabled = false;
+
+            //update ui
+            UIMan.addCanvas(canvas.canvasId);
+
+            //add the actual obj to display's list
+            canvasObjs.Add(canvas.canvasId, quad);
+
+            //if theres not canvas on the display, switch
+            if (currentLocalCanvas == null) swapCurrentCanvas(canvas.canvasId, false);
+            
+        }
+        
         public void addCanvasPassthrough() {
-            VectorDrawing.s_instance.addCanvas(true, uniqueIdentifier, pixelWidth, pixelHeight, false);
+            VectorDrawing.s_instance.addCanvas(true, uniqueIdentifier, pixelWidth, pixelHeight);
             swapCurrentCanvas((byte)(VectorDrawing.s_instance.canvases.Count - 1), true);
         }
 

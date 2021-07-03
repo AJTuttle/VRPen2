@@ -700,7 +700,7 @@ namespace VRPen {
 
         }
 
-        public void sendCanvasAddition(byte originDisplayID, int width, int height, bool isPreset, byte canvasId) {
+        public void sendCanvasAddition(byte originDisplayID, int width, int height, byte canvasId) {
 
             //dont do anything in offline mode
             if (VectorDrawing.OfflineMode) return;
@@ -725,7 +725,6 @@ namespace VRPen {
             sendBufferList.Add(originDisplayID);
             sendBufferList.AddRange(BitConverter.GetBytes(width));
             sendBufferList.AddRange(BitConverter.GetBytes(height));
-            sendBufferList.Add(isPreset ? (byte)1 : (byte)0);
             sendBufferList.Add(canvasId);
 
 
@@ -1167,11 +1166,10 @@ namespace VRPen {
             byte displayId = ReadByte(packet.data, ref offset);
             int width = ReadInt(packet.data, ref offset);
             int height = ReadInt(packet.data, ref offset);
-            bool isPreset= ReadByte(packet.data, ref offset) == 1;
             byte canvasId = ReadByte(packet.data, ref offset);
 
             //add board
-            VectorDrawing.s_instance.addCanvas(false, displayId, width, height, isPreset, canvasId);
+            VectorDrawing.s_instance.addCanvas(false, displayId, width, height, canvasId);
 
         }
 

@@ -13,6 +13,7 @@ namespace VRPen {
         public List<VectorGraphic> graphics = new List<VectorGraphic>();
 
         public byte canvasId;
+        public byte originDisplayId;
         public int renderQueueCounter = 1;
         public float aspectRatio;
 
@@ -27,13 +28,14 @@ namespace VRPen {
         const float PRESSURE_MULTIPLIER = 0.01f;
 
 
-		public void instantiate(VectorDrawing man, NetworkManager net, byte id, int width, int height) {
+		public void instantiate(VectorDrawing man, NetworkManager net, byte id, int width, int height, byte displayId) {
 
             //set vars
             network = net;
             drawingMan = man;
             canvasId = id;
             aspectRatio = ((float)width) / ((float)height);
+            originDisplayId = displayId;
 
             //set up the render texture stuff
             Transform renderArea = GameObject.Instantiate(renderingPrefab, drawingMan.renderAreaOrigin + new Vector3(0,0,canvasId*2), Quaternion.identity).transform;
