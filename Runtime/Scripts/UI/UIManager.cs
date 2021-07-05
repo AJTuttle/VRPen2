@@ -71,6 +71,8 @@ namespace VRPen {
         public GameObject additionalUIWindowPrefab;
         private List<AdditionalUIWindow> additionalUIWindows = new List<AdditionalUIWindow>();
 
+        private const float UI_SYNC_PERIOD = 0.1f;
+
 		private void Awake() {
             
 
@@ -101,8 +103,8 @@ namespace VRPen {
 		}
 
         private void Update() {
-            //start packing data todo: bring back
-            //if(!sendingStateOverNetwork && NetworkManager.s_instance.connectedAndCaughtUp) startPackingState(NetworkManager.s_instance.UI_SYNC_PERIOD);
+            //start packing data 
+            if(!sendingStateOverNetwork && NetworkManager.s_instance.connectedAndCaughtUp) startPackingState(UI_SYNC_PERIOD);
         }
 
 
@@ -306,6 +308,13 @@ namespace VRPen {
             //dont do anything if we dont wanna sync
             if (!display.syncDisplay) return;
 
+            //if no header to sync, return
+            bool nothingToSync = true;
+            foreach (bool toSync in packetHeaderToSync) {
+                if (toSync) nothingToSync = false;
+            }
+            if (nothingToSync) return;
+            
             //pack data
             List<byte> data = new List<byte>();
 
@@ -317,30 +326,36 @@ namespace VRPen {
 
                     switch ((PacketHeader)x) {
                         case PacketHeader.Slide:
+                            Debug.Log("syncing Slide");
                             data.Add(sideMenuOpen ? (byte)1 : (byte)0);
                             break;
                         case PacketHeader.Calc:
+                            Debug.Log("syncing Calc");
                             data.Add(calculatorParent.activeSelf ? (byte)1 : (byte)0);
                             data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].x));
                             data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].y));
                             break;
                         case PacketHeader.Canvas:
+                            Debug.Log("syncing Canvas");
                             data.Add(canvasMenuParent.activeSelf ? (byte)1 : (byte)0);
                             data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].x));
                             data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].y));
                             break;
                         case PacketHeader.Stamp:
+                            Debug.Log("syncing Stamp");
                             data.Add(stampExplorerParent.activeSelf ? (byte)1 : (byte)0);
                             data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].x));
                             data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].y));
                             data.AddRange(BitConverter.GetBytes(stampExplorerSlider.slider.value));
                             break;
                         case PacketHeader.Clear:
+                            Debug.Log("syncing Clear");
                             data.Add(clearMenuParent.activeSelf ? (byte)1 : (byte)0);
                             data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].x));
                             data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].y));
                             break;
                         case PacketHeader.MovableMenu:
+                            Debug.Log("syncing MovableMenu");
                             data.Add(movableMenuParent.activeSelf ? (byte)1 : (byte)0);
                             data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].x));
                             data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].y));

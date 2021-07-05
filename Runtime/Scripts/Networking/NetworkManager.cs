@@ -380,6 +380,24 @@ namespace VRPen {
                     }
                     
                 }
+                
+                //UI state change 
+                else if (packet.type == PacketType.UIState &&
+                         nonHistoricalPacket.type == PacketType.UIState) {
+                    
+                    //make sure data is set
+                    if (packet.additionalDataIsSet && nonHistoricalPacket.additionalDataIsSet) {
+
+                        //remove if the displayid is the same
+                        if ((byte)packet.additionalData[0] == (byte)nonHistoricalPacket.additionalData[0]) {
+                            return true;
+                        }
+                    }
+                    else {
+                        Debug.LogError("UI state change packet does not have additional data var set");
+                    }
+                    
+                }
 
                 return false;
                 
@@ -1038,7 +1056,7 @@ namespace VRPen {
                 header == PacketType.Undo || header == PacketType.Stamp ) {
                 addPacketToHistoricalCache(packet);
             }
-            else if (header == PacketType.InputDeviceState || header == PacketType.CanvasSwitch) {
+            else if (header == PacketType.InputDeviceState || header == PacketType.CanvasSwitch || header == PacketType.UIState) {
                 addPacketToNonHistoricalCache(packet);
             }
             
@@ -1282,8 +1300,7 @@ namespace VRPen {
 
         void unpackUIState(VRPenPacket packet, ref int offset, bool ignorePacket) {
 
-            //ignore
-            if (ignorePacket) return;
+            
 
 			//data
 			byte displayId = ReadByte(packet.data, ref offset);
@@ -1292,6 +1309,12 @@ namespace VRPen {
             for (int x = 0; x < choppedPacket.Length; x++) {
                 choppedPacket[x] = packet.data[x + offset];
             }
+            
+            //set additional data for use in the cache
+            packet.setAdditionalData(new List<object>(){displayId}, 1);
+            
+            //ignore after getting additional data
+            if (ignorePacket) return;
 
 			//update state
 			display.UIMan.unpackState(choppedPacket);

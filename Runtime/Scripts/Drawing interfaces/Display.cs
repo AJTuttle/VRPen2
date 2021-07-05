@@ -53,7 +53,7 @@ namespace VRPen {
             //check if there are any canvases that already exist for the display
             //should only do something for displays added post-start
             foreach (VectorCanvas canvas in VectorDrawing.s_instance.canvases) {
-                if (canvas.originDisplayId == uniqueIdentifier) {
+                if (fullAccess || canvas.originDisplayId == uniqueIdentifier) {
                     addCanvasToDisplay(canvas);
                 }
             }
