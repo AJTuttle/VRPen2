@@ -473,12 +473,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8ae1555b4e9a5ce4f9fab41745ea2196, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uiMan: {fileID: 0}
   parent: {fileID: 1815966889739287804}
   bg: {fileID: 9115440111596363877}
   topBar: {fileID: 2350566590257542260}
   topBarGrab: {fileID: 5593041214209280352}
   topBarGrabCol: {fileID: 1302555404888394488}
   contentParent: {fileID: 2897841367956490017}
+  Grabbable: {fileID: 404820741653771684}
 --- !u!1 &5794143451477509203
 GameObject:
   m_ObjectHideFlags: 0
@@ -627,7 +629,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   notNetworked: 1
-  type: 5
   parent: {fileID: 6227715490023097184}
   man: {fileID: 0}
   x: 0

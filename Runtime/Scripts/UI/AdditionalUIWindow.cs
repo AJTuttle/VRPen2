@@ -20,6 +20,7 @@ namespace VRPen {
         public RectTransform topBarGrab;
         public BoxCollider topBarGrabCol;
         public RectTransform contentParent;
+        public UIGrabbable grabbable;
         
         //consts
         private const float topBarThickness = 25;

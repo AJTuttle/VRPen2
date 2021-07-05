@@ -10,19 +10,15 @@ namespace VRPen {
 
 	public class UIManager : MonoBehaviour {
         
-        public enum PacketHeader : int {
-            Slide,
-            Calc,
-            Canvas,
-            Stamp,
-            Clear,
-            MovableMenu
-        }
-        bool[] packetHeaderToSync;
-        UIGrabbable[] packetHeaderGrabbables;
+        private bool stateQueued = false;
 
-
-        public List<UIGrabbable> grabbablesAddedOnStart;
+        //grabbable
+        public UIGrabbable canvasListGrabbable;
+        public UIGrabbable calculatorGrabbable;
+        public UIGrabbable stampExplorerGrabbable;
+        public UIGrabbable clearMenuGrabbable;
+        public UIGrabbable movableMenuGrabbable;
+        
 		public GameObject slidingParent;
 		public GameObject SlideMenu;
 		public GameObject SlideMenuParent;
@@ -76,23 +72,6 @@ namespace VRPen {
 		private void Awake() {
             
 
-            //create arrays for syncing
-            packetHeaderToSync = new bool[Enum.GetValues(typeof(PacketHeader)).Length];
-            packetHeaderGrabbables = new UIGrabbable[Enum.GetValues(typeof(PacketHeader)).Length];
-            foreach (UIGrabbable grabbable in grabbablesAddedOnStart) {
-
-                grabbable.initializePos();
-
-                int index = (int)grabbable.type;
-                if (packetHeaderGrabbables[index] != null) {
-                    Debug.LogError("Multiple grabbables were added to uiMan with the same type (not allowed)");
-                }
-                else {
-                    packetHeaderGrabbables[index] = grabbable;
-                }
-            }
-
-
             //grab stamp file names to put in explorer
             addFilesToStampExplorer();
 
@@ -123,7 +102,7 @@ namespace VRPen {
 			menuArrow.transform.GetChild(0).gameObject.SetActive(false);
 			menuArrow.transform.GetChild(1).gameObject.SetActive(true);
 
-			if (localInput) queueState(PacketHeader.Slide);
+			if (localInput) queueState();
 
         }
 
@@ -139,7 +118,7 @@ namespace VRPen {
 			menuArrow.transform.GetChild(0).gameObject.SetActive(true);
 			menuArrow.transform.GetChild(1).gameObject.SetActive(false);
 
-            if (localInput) queueState(PacketHeader.Slide);
+            if (localInput) queueState();
 
 
         }
@@ -153,7 +132,7 @@ namespace VRPen {
 
 
 
-            if (localInput) queueState(PacketHeader.Calc);
+            if (localInput) queueState();
 
 		}
 
@@ -165,7 +144,7 @@ namespace VRPen {
             stampExplorerParent.SetActive(false);
 
 
-            if (localInput) queueState(PacketHeader.Canvas);
+            if (localInput) queueState();
 
         }
         public void clearMenuToggle(bool localInput) {
@@ -176,7 +155,7 @@ namespace VRPen {
             stampExplorerParent.SetActive(false);
             
 
-            if (localInput) queueState(PacketHeader.Clear);
+            if (localInput) queueState();
 
         }
 
@@ -189,7 +168,7 @@ namespace VRPen {
 
 
 
-            if (localInput) queueState(PacketHeader.Stamp);
+            if (localInput) queueState();
         }
 
 		public void closeMenus(bool localInput) {
@@ -197,22 +176,22 @@ namespace VRPen {
             if (clearMenuParent.activeSelf) {
 
 			    clearMenuParent.SetActive(false);
-                if (localInput) queueState(PacketHeader.Clear);
+                if (localInput) queueState();
             }
             if (calculatorParent.activeSelf) {
 
                 calculatorParent.SetActive(false);
-                if (localInput) queueState(PacketHeader.Calc);
+                if (localInput) queueState();
             }
             if (canvasMenuParent.activeSelf) {
 
                 canvasMenuParent.SetActive(false);
-                if (localInput) queueState(PacketHeader.Canvas);
+                if (localInput) queueState();
             }
             if (stampExplorerParent.activeSelf) {
 
                 stampExplorerParent.SetActive(false);
-                if (localInput) queueState(PacketHeader.Stamp);
+                if (localInput) queueState();
             }
             
 
@@ -287,15 +266,13 @@ namespace VRPen {
 
         }
 
-        public void queueState(PacketHeader head) {
-            packetHeaderToSync[(int)head] = true;
+        public void queueState() {
+            stateQueued = true;
         }
         
 
         void dequeueState() {
-            for (int x = 0; x < packetHeaderToSync.Length; x++) {
-                packetHeaderToSync[x] = false;
-            }
+            stateQueued = false;
         }
 
         public void startPackingState(float period) {
@@ -304,66 +281,53 @@ namespace VRPen {
         }
 
         public void packState() {
-
+            
             //dont do anything if we dont wanna sync
             if (!display.syncDisplay) return;
 
-            //if no header to sync, return
-            bool nothingToSync = true;
-            foreach (bool toSync in packetHeaderToSync) {
-                if (toSync) nothingToSync = false;
-            }
-            if (nothingToSync) return;
+            //make sure state is queued
+            if (!stateQueued) return;
             
             //pack data
             List<byte> data = new List<byte>();
 
-            for (int x = 0; x < packetHeaderToSync.Length; x++) {
-                if (packetHeaderToSync[x]) {
 
-                    //header
-                    data.AddRange(BitConverter.GetBytes(x));
+            //side menu
+            data.Add(sideMenuOpen ? (byte)1 : (byte)0);
+            
+            //calc
+            data.Add(calculatorParent.activeSelf ? (byte)1 : (byte)0);
+            data.AddRange(BitConverter.GetBytes(calculatorGrabbable.x));
+            data.AddRange(BitConverter.GetBytes(calculatorGrabbable.y));
+            
+            //canvas menu
+            data.Add(canvasMenuParent.activeSelf ? (byte)1 : (byte)0);
+            data.AddRange(BitConverter.GetBytes(canvasListGrabbable.x));
+            data.AddRange(BitConverter.GetBytes(canvasListGrabbable.y));
+            
+            
+            //stamp menu
+            data.Add(stampExplorerParent.activeSelf ? (byte)1 : (byte)0);
+            data.AddRange(BitConverter.GetBytes(stampExplorerGrabbable.x));
+            data.AddRange(BitConverter.GetBytes(stampExplorerGrabbable.y));
+            data.AddRange(BitConverter.GetBytes(stampExplorerSlider.slider.value));
+            
+            //clear menu
+            data.Add(clearMenuParent.activeSelf ? (byte)1 : (byte)0);
+            data.AddRange(BitConverter.GetBytes(clearMenuGrabbable.x));
+            data.AddRange(BitConverter.GetBytes(clearMenuGrabbable.y));
+            
+            //moveable menu
+            data.Add(movableMenuParent.activeSelf ? (byte)1 : (byte)0);
+            data.AddRange(BitConverter.GetBytes(movableMenuGrabbable.x));
+            data.AddRange(BitConverter.GetBytes(movableMenuGrabbable.y));
 
-                    switch ((PacketHeader)x) {
-                        case PacketHeader.Slide:
-                            Debug.Log("syncing Slide");
-                            data.Add(sideMenuOpen ? (byte)1 : (byte)0);
-                            break;
-                        case PacketHeader.Calc:
-                            Debug.Log("syncing Calc");
-                            data.Add(calculatorParent.activeSelf ? (byte)1 : (byte)0);
-                            data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].x));
-                            data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].y));
-                            break;
-                        case PacketHeader.Canvas:
-                            Debug.Log("syncing Canvas");
-                            data.Add(canvasMenuParent.activeSelf ? (byte)1 : (byte)0);
-                            data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].x));
-                            data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].y));
-                            break;
-                        case PacketHeader.Stamp:
-                            Debug.Log("syncing Stamp");
-                            data.Add(stampExplorerParent.activeSelf ? (byte)1 : (byte)0);
-                            data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].x));
-                            data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].y));
-                            data.AddRange(BitConverter.GetBytes(stampExplorerSlider.slider.value));
-                            break;
-                        case PacketHeader.Clear:
-                            Debug.Log("syncing Clear");
-                            data.Add(clearMenuParent.activeSelf ? (byte)1 : (byte)0);
-                            data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].x));
-                            data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].y));
-                            break;
-                        case PacketHeader.MovableMenu:
-                            Debug.Log("syncing MovableMenu");
-                            data.Add(movableMenuParent.activeSelf ? (byte)1 : (byte)0);
-                            data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].x));
-                            data.AddRange(BitConverter.GetBytes(packetHeaderGrabbables[x].y));
-                            break;
-
-                    }
-                }
-
+            //additional ui windows
+            data.AddRange(BitConverter.GetBytes(additionalUIWindows.Count));
+            for (int x = 0; x < additionalUIWindows.Count; x++) {
+                data.Add(additionalUIWindows[x].parent.activeSelf ? (byte)1 : (byte)0);
+                data.AddRange(BitConverter.GetBytes(additionalUIWindows[x].grabbable.x));
+                data.AddRange(BitConverter.GetBytes(additionalUIWindows[x].grabbable.y));
             }
 
             //dont send if no data
@@ -382,85 +346,93 @@ namespace VRPen {
 
             //unpack
             int offset = 0;
-            while (offset < data.Length) {
-                PacketHeader head = (PacketHeader)ReadInt(data, ref offset);
-                switch (head) {
 
-                    case PacketHeader.Slide:
-                        bool open = ReadByte(data, ref offset) == 1? true: false;
-                        if (open && !sideMenuOpen) {
-                            openSideMenu(false);
-                        }
-                        else if(!open && sideMenuOpen) {
-                            closeSideMenu(false);
-                        }
-                        
-                        break;
-                    case PacketHeader.Calc:
-                        bool calcEn = ReadByte(data, ref offset) == 1 ? true : false;
-                        if (calcEn && !calculatorParent.activeSelf) {
-                            calculatorToggle(false);
-                        }
-                        else if (!calcEn && calculatorParent.activeSelf) {
-                            calculatorToggle(false);
-                        }
-                        Vector2 calcPos = new Vector2(ReadFloat(data, ref offset), ReadFloat(data, ref offset));
-                        packetHeaderGrabbables[(int)PacketHeader.Calc].setExactPos(calcPos.x, calcPos.y);
-                        break;
-                    case PacketHeader.Canvas:
-                        bool canvasEn = ReadByte(data, ref offset) == 1 ? true : false;
-                        if (canvasEn && !canvasMenuParent.activeSelf) {
-                            canvasMenuToggle(false);
-                        }
-                        else if (!canvasEn && canvasMenuParent.activeSelf) {
-                            canvasMenuToggle(false);
-                        }
-                        Vector2 canvasPos = new Vector2(ReadFloat(data, ref offset), ReadFloat(data, ref offset));
-                        packetHeaderGrabbables[(int)PacketHeader.Canvas].setExactPos(canvasPos.x, canvasPos.y);
-                        break;
-                    case PacketHeader.Stamp:
-                        bool stampEn = ReadByte(data, ref offset) == 1 ? true : false;
-                        if (stampEn && !stampExplorerParent.activeSelf) {
-                            stampExplorerToggle(false);
-                        }
-                        else if (!stampEn && stampExplorerParent.activeSelf) {
-                            stampExplorerToggle(false);
-                        }
-                        Vector2 StampPos = new Vector2(ReadFloat(data, ref offset), ReadFloat(data, ref offset));
-                        packetHeaderGrabbables[(int)PacketHeader.Stamp].setExactPos(StampPos.x, StampPos.y);
-                        stampExplorerSlider.setPos(ReadFloat(data, ref offset),false);
-                        break;
-                    case PacketHeader.Clear:
-                        bool clearEn = ReadByte(data, ref offset) == 1 ? true : false;
-                        if (clearEn && !clearMenuParent.activeSelf) {
-                            clearMenuToggle(false);
-                        }
-                        else if (!clearEn && clearMenuParent.activeSelf) {
-                            clearMenuToggle(false);
-                        }
-                        Vector2 clearPos = new Vector2(ReadFloat(data, ref offset), ReadFloat(data, ref offset));
-                        packetHeaderGrabbables[(int)PacketHeader.Clear].setExactPos(clearPos.x, clearPos.y);
-                        break;
-                    case PacketHeader.MovableMenu:
-                        bool menuEn = ReadByte(data, ref offset) == 1 ? true : false;
-                        if (menuEn && !movableMenuParent.activeSelf) {
-                            movableMenuParent.SetActive(true);
-                        }
-                        else if (!menuEn && movableMenuParent.activeSelf) {
-                            movableMenuParent.SetActive(false);
-                        }
-                        Vector2 menuPos = new Vector2(ReadFloat(data, ref offset), ReadFloat(data, ref offset));
-                        packetHeaderGrabbables[(int)PacketHeader.MovableMenu].setExactPos(menuPos.x, menuPos.y);
-                        break;
-
-                }
-                
+            //side
+            bool open = ReadByte(data, ref offset) == 1? true: false;
+            if (open && !sideMenuOpen) {
+                openSideMenu(false);
             }
+            else if(!open && sideMenuOpen) {
+                closeSideMenu(false);
+            }
+            
+            //calc
+            bool calcEn = ReadByte(data, ref offset) == 1 ? true : false;
+            if (calcEn && !calculatorParent.activeSelf) {
+                calculatorToggle(false);
+            }
+            else if (!calcEn && calculatorParent.activeSelf) {
+                calculatorToggle(false);
+            }
+            Vector2 calcPos = new Vector2(ReadFloat(data, ref offset), ReadFloat(data, ref offset));
+            calculatorGrabbable.setExactPos(calcPos.x, calcPos.y);
+            
+            //canvas
+            bool canvasEn = ReadByte(data, ref offset) == 1 ? true : false;
+            if (canvasEn && !canvasMenuParent.activeSelf) {
+                canvasMenuToggle(false);
+            }
+            else if (!canvasEn && canvasMenuParent.activeSelf) {
+                canvasMenuToggle(false);
+            }
+            Vector2 canvasPos = new Vector2(ReadFloat(data, ref offset), ReadFloat(data, ref offset));
+            canvasListGrabbable.setExactPos(canvasPos.x, canvasPos.y);
+            
+            //stamp
+            bool stampEn = ReadByte(data, ref offset) == 1 ? true : false;
+            if (stampEn && !stampExplorerParent.activeSelf) {
+                stampExplorerToggle(false);
+            }
+            else if (!stampEn && stampExplorerParent.activeSelf) {
+                stampExplorerToggle(false);
+            }
+            Vector2 StampPos = new Vector2(ReadFloat(data, ref offset), ReadFloat(data, ref offset));
+            stampExplorerGrabbable.setExactPos(StampPos.x, StampPos.y);
+            stampExplorerSlider.setPos(ReadFloat(data, ref offset),false);
+            
+            //clear
+            bool clearEn = ReadByte(data, ref offset) == 1 ? true : false;
+            if (clearEn && !clearMenuParent.activeSelf) {
+                clearMenuToggle(false);
+            }
+            else if (!clearEn && clearMenuParent.activeSelf) {
+                clearMenuToggle(false);
+            }
+            Vector2 clearPos = new Vector2(ReadFloat(data, ref offset), ReadFloat(data, ref offset));
+            clearMenuGrabbable.setExactPos(clearPos.x, clearPos.y);
+            
+            //movable menu
+            bool menuEn = ReadByte(data, ref offset) == 1 ? true : false;
+            if (menuEn && !movableMenuParent.activeSelf) {
+                movableMenuParent.SetActive(true);
+            }
+            else if (!menuEn && movableMenuParent.activeSelf) {
+                movableMenuParent.SetActive(false);
+            }
+            Vector2 menuPos = new Vector2(ReadFloat(data, ref offset), ReadFloat(data, ref offset));
+            movableMenuGrabbable.setExactPos(menuPos.x, menuPos.y);
+            
+            //additional UI
+            int additionalUICount = ReadInt(data, ref offset);
+            for (int x = 0; x < additionalUICount; x++) {
+                bool en = ReadByte(data, ref offset) == 1 ? true : false;
+                if (en && !additionalUIWindows[x].parent.activeSelf) {
+                    additionalUIWindows[x].parent.SetActive(true);
+                }
+                else if (!en && additionalUIWindows[x].parent.activeSelf) {
+                    additionalUIWindows[x].parent.SetActive(false);
+                }
+                Vector2 pos = new Vector2(ReadFloat(data, ref offset), ReadFloat(data, ref offset));
+                additionalUIWindows[x].grabbable.setExactPos(pos.x, pos.y);
+            }
+            
+
             //get rid of state sync queue since it is now outdated
             dequeueState();
 
         }
-            #region Passthroughs
+          
+        #region Passthroughs
 
         public void addCanvasPassthrough() {
             display.addCanvasPassthrough();

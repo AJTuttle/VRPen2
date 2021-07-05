@@ -366,7 +366,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   notNetworked: 0
-  type: 2
   parent: {fileID: 6896084087635601420}
   man: {fileID: 2242889434718929404}
   x: 0
@@ -1971,7 +1970,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   notNetworked: 0
-  type: 5
   parent: {fileID: 3272727285787175257}
   man: {fileID: 2242889434718929404}
   x: 0
@@ -3444,7 +3442,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   notNetworked: 0
-  type: 3
   parent: {fileID: 1080211796336180140}
   man: {fileID: 2242889434718929404}
   x: 0
@@ -6761,7 +6758,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   notNetworked: 0
-  type: 1
   parent: {fileID: 5015791966552370144}
   man: {fileID: 2242889434718929404}
   x: 0
@@ -9629,12 +9625,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc06493e3e3fe624382f71f94172e96d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  grabbablesAddedOnStart:
-  - {fileID: 6598031056284007514}
-  - {fileID: 2648551383338758531}
-  - {fileID: 4511605526960730962}
-  - {fileID: 3257229639158761234}
-  - {fileID: 1065965697714887950}
+  canvasListGrabbable: {fileID: 3257229639158761234}
+  calculatorGrabbable: {fileID: 2648551383338758531}
+  stampExplorerGrabbable: {fileID: 6598031056284007514}
+  clearMenuGrabbable: {fileID: 4511605526960730962}
+  movableMenuGrabbable: {fileID: 1065965697714887950}
   slidingParent: {fileID: 7745610367778030802}
   SlideMenu: {fileID: 6535228158451260676}
   SlideMenuParent: {fileID: 7987371869153781407}
@@ -13675,7 +13670,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   notNetworked: 0
-  type: 4
   parent: {fileID: 671375678124773425}
   man: {fileID: 2242889434718929404}
   x: 0
@@ -19398,7 +19392,7 @@ MonoBehaviour:
   sizePerScalingMenuItem: 40
   maxSize: 400
   scalingParent: {fileID: 2223262302817515282}
-  slider: {fileID: 0}
+  slider: {fileID: 4841320787031324870}
 --- !u!1 &8502410592334385664
 GameObject:
   m_ObjectHideFlags: 0

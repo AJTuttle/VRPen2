@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,7 +8,6 @@ namespace VRPen {
     public class UIGrabbable : MonoBehaviour {
 
         public bool notNetworked;
-        public UIManager.PacketHeader type;
         public Transform parent;
         public UIManager man;
 
@@ -16,21 +16,19 @@ namespace VRPen {
         float grabX;
         float grabY;
 
-        bool initialized = false;
+        void Awake() {
+            initializePos();
+        }
 
         public void initializePos() {
 
             //set stating values
             x = parent.transform.localPosition.x;
             y = parent.transform.localPosition.y;
-
-            initialized = true;
         }
 
         private void Update() {
-
-            if (!initialized) initializePos();
-
+            
             //lerp to the networked pos if its not already pretty much on it
             if (Vector3.Distance(parent.transform.localPosition, new Vector3(x, y, 0)) > 0.1f) {
                 parent.transform.localPosition = Vector3.Lerp(parent.transform.localPosition, new Vector3(x, y, 0), 0.12f);
@@ -46,11 +44,12 @@ namespace VRPen {
             this.y = parent.transform.localPosition.y;
 
             //network
-           if (!notNetworked) man.queueState(type);
+           if (!notNetworked) man.queueState();
 
         }
 
         public void setExactPos(float x, float y) {
+            Debug.Log("set "+x+" " +y + " " + gameObject.transform.parent.parent.name);
             //parent.transform.localPosition = new Vector3(x, y, 0);
             this.x = x;
             this.y = y;

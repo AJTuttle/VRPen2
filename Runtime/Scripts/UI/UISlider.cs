@@ -22,7 +22,7 @@ namespace VRPen {
         public GameObject scalingParent;
         public Slider slider;
 
-        void Start() {
+        void Awake() {
             slider = GetComponent<Slider>();
 
             //set pos to turn off culled objects
@@ -70,7 +70,7 @@ namespace VRPen {
             slider.value = pos;
 
             if (localInput) {
-                UIMan.queueState(UIManager.PacketHeader.Stamp);
+                UIMan.queueState();
 
             }
 
