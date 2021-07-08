@@ -26,7 +26,8 @@ namespace VRPen {
             
             #if UNITY_ANDROID && !UNITY_EDITOR
                     AndroidJavaClass androidPlugin;
-		            int androidPlugin_res = -1;
+		            int androidPlugin_res_tablet = -1;
+		            int androidPlugin_res_mouse = -1;
 		            AndroidJavaObject context;
             #else
                     [DllImport("VelDevicePlugin")]
@@ -60,7 +61,8 @@ namespace VRPen {
 				    AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
 				    AndroidJavaObject activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
 				    context = activity.Call<AndroidJavaObject>("getApplicationContext");
-				    androidPlugin_res = androidPlugin.CallStatic<int>("runTablet", context);
+                    androidPlugin_res_tablet = androidPlugin.CallStatic<int>("runTablet", context);
+                    androidPlugin_res_mouse = androidPlugin.CallStatic<int>("runUnifyingReceiver", context);
                 #else
                     startStar();
                 #endif
@@ -78,40 +80,51 @@ namespace VRPen {
                 #if UNITY_ANDROID && !UNITY_EDITOR
                     
                     //pen values
-                    int[] penValues = new int[11];
-                    if (androidPlugin_res < 0) {
-				        androidPlugin_res = androidPlugin.CallStatic<int>("runTablet", context);
-			        }
-			        else {
-				        penValues = androidPlugin.CallStatic<int[]>("getTabletValues");
-				        if (penValues != null)
-				        {
-                            Vector2 point = new Vector2(1-penValues[0]/50800f, penValues[1]/30480f);
-                            float pressure = penValues[2] / 8192f;
-                            PenState state = (PenState)penValues[3];
+                    if (androidPlugin_res_tablet < 0) {
+                        androidPlugin_res_tablet = androidPlugin.CallStatic<int>("runTablet", context);
+                    }
+                    else if (androidPlugin_res_mouse < 0) {
+                        androidPlugin_res_mouse = androidPlugin.CallStatic<int>("runUnifyingReceiver", context);
+                    }
+                    else {
+                        
+                        //pen values
+                        int[] penValues = androidPlugin.CallStatic<int[]>("getPenValues");
+                        for (int x = 0; x < penValues.Length / 4; x++) {
+                            Vector2 point = new Vector2(1 - penValues[x * 4 + 0] / 50800f,
+                                penValues[x * 4 + 1] / 30480f);
+                            float pressure = penValues[x * 4 + 2] / 8192f;
+                            PenState state = (PenState) penValues[x * 4 + 3];
                             penSamples.Add(new PenSample(point, pressure, state));
-				        }
-			        }
-                
-                    //btns
-                    for (int i = 0; i < 9; i++) {
-                        btnDown[i] = false;
-                        btnUp[i] = false;
-                    }
-                    for (int x = 0; x < 6; x++){
-                        bool b = penValues[x+5] > 0;
-                        if (!btn[x] && b) {
-                            btnDown[x] = true;
                         }
-                        if (btn[x] && !b) {
-                            btnUp[x] = true;
-                        }
-                        btn[x] = b;
-                    }
+                        
+                        //button values
+                        int[] btnValues = androidPlugin.CallStatic<int[]>("getButtonValues");
+                        int numBtn = btnValues.Length / 7;
                     
-                    //wheel
-                    wheelMagnitudeTracker += penValues[4];
-                
+                        //reset down and released
+                        for (int i = 0; i < 9; i++) {
+                            btnDown[i] = false;
+                            btnUp[i] = false;
+                        }
+                        for (int i = 0; i < numBtn; i++) {
+                            for (int j = 0; j < 6; j++) {
+                                bool b = btnValues[i * 7 + j] > 0;
+                                if (!btn[j] && b) {
+                                    btnDown[j] = true;
+                                }
+                                if (btn[j] && !b) {
+                                    btnUp[j] = true;
+                                }
+                                btn[j] = b;
+                                //wheel
+                                if (j == 6) {
+                                    wheelMagnitudeTracker += btnValues[i * 7 + j];
+                                }
+                            }
+                        }
+                    }
+
                 #else
                     
                     //read raw data
