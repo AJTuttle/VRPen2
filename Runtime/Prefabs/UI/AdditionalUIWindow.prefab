@@ -480,7 +480,7 @@ MonoBehaviour:
   topBarGrab: {fileID: 5593041214209280352}
   topBarGrabCol: {fileID: 1302555404888394488}
   contentParent: {fileID: 2897841367956490017}
-  Grabbable: {fileID: 404820741653771684}
+  grabbable: {fileID: 404820741653771684}
 --- !u!1 &5794143451477509203
 GameObject:
   m_ObjectHideFlags: 0

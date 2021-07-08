@@ -511,8 +511,6 @@ namespace VRPen {
         }
 
         public IEnumerator renderSingleGraphic(VectorGraphic graphic) {
-			
-            Debug.Log("fdsfdsfasfdsfdsfdasfdsafsdafd");
             
             //turn on the edit lock since we dont want it to change now that its been / is being rendered
             graphic.editLock = true;
