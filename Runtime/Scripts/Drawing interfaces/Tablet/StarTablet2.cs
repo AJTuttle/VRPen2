@@ -79,13 +79,12 @@ namespace VRPen {
                 
                 #if UNITY_ANDROID && !UNITY_EDITOR
                     
-                    //pen values
                     if (androidPlugin_res_tablet < 0) {
                         androidPlugin_res_tablet = androidPlugin.CallStatic<int>("runTablet", context);
                     }
-                    else if (androidPlugin_res_mouse < 0) {
-                        androidPlugin_res_mouse = androidPlugin.CallStatic<int>("runUnifyingReceiver", context);
-                    }
+                    // else if (androidPlugin_res_mouse < 0) {
+                    //     androidPlugin_res_mouse = androidPlugin.CallStatic<int>("runUnifyingReceiver", context);
+                    // }
                     else {
                         
                         //pen values
