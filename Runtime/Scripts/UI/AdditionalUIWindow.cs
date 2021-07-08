@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI ;
@@ -28,13 +29,16 @@ namespace VRPen {
         
         void Awake() {
 
-            grabbable.man = uiMan;
             
             thisRect = GetComponent<RectTransform>();
             thisCol = bg.GetComponent<BoxCollider>();
             
         }
 
+        private void Start() {
+            
+            grabbable.man = uiMan;
+        }
 
         public void enable() {
             parent.SetActive(true);
