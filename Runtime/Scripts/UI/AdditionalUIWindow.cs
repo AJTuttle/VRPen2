@@ -35,10 +35,12 @@ namespace VRPen {
 
         public void enable() {
             parent.SetActive(true);
+            uiMan.queueState();
         }
 
         public void disable() {
             parent.SetActive(false);
+            uiMan.queueState();
         }
 
         public bool isEnabled() {
