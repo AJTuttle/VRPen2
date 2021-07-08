@@ -15,7 +15,6 @@ namespace VRPen {
         public StarTablet2 tablet;
 
         //public vars
-        public GameObject localCursor;
         public Display localDisplay;
         public AnimationCurve pressureCurve;
 
@@ -123,6 +122,17 @@ namespace VRPen {
 
         }
 
+
+        public void setNewDisplay(Display display) {
+            //end line and turn off current cursor
+            if (localDisplay != null) {
+                localDisplay.displayCursor.SetActive(false);
+                endLine();
+            }
+            //set display
+            localDisplay = display;
+        }
+        
         void turnWheel(int angle) {
             wheelTransform.RotateAround(wheelTransform.forward, angle);
         }
@@ -150,7 +160,7 @@ namespace VRPen {
             if (currentSample != null && localDisplay.currentLocalCanvas != null) {
 
                 //turn on
-                localCursor.SetActive(true);
+                localDisplay.displayCursor.SetActive(true);
 
                 //aspect rat
                 float aspectRatio = localDisplay.currentLocalCanvas.aspectRatio;
@@ -160,11 +170,11 @@ namespace VRPen {
                 float y = .5f - currentSample.point.y;
                 
                 //apply
-                localCursor.transform.localPosition = new Vector3(x, 0, y);
+                localDisplay.displayCursor.transform.localPosition = new Vector3(x, 0, y);
 
             }
             else {
-                localCursor.SetActive(false);
+                localDisplay.displayCursor.SetActive(false);
             }
 
         }
@@ -177,7 +187,7 @@ namespace VRPen {
 
             //raycast
             RaycastHit[] hits;
-            hits = Physics.RaycastAll(localCursor.transform.position + raycastDistance/2 * localCursor.transform.up, -localCursor.transform.up, raycastDistance);
+            hits = Physics.RaycastAll(localDisplay.displayCursor.transform.position + raycastDistance/2 * localDisplay.displayCursor.transform.up, -localDisplay.displayCursor.transform.up, raycastDistance);
             //Debug.DrawRay(localCursor.transform.position + raycastDistance / 2 * localCursor.transform.up, -localCursor.transform.up, Color.green);
 
 

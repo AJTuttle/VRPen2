@@ -1913,13 +1913,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30aa0945ad768554d86bd64a5d3a1979, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  uniqueIdentifier: 0
+  syncDisplay: 0
+  spawnCanvasOnStart: 0
   fullAccess: 0
-  shaderOverride: {fileID: 4800000, guid: d31b42be86a5ae14f8c8634c95bc3d1c, type: 3}
   pixelWidth: 0
   pixelHeight: 0
-  initialCanvasIsPrivate: 0
+  shaderOverride: {fileID: 4800000, guid: d31b42be86a5ae14f8c8634c95bc3d1c, type: 3}
   UIMan: {fileID: 5679094274534007793}
   canvasParent: {fileID: 1507458689}
+  displayCursor: {fileID: 3235478784702896914}
   stampPrefab: {fileID: 2441548749050361720, guid: cbb90edd4f2d39f4abac245a76f78a78,
     type: 3}
 --- !u!114 &2496159444085833350
@@ -1940,6 +1943,10 @@ MonoBehaviour:
   colorIndicatorUIImages: []
   colorIndicatorRenderers: []
   colorIndicatorRenderersIndex: 
+  defaultColor:
+    serializedVersion: 2
+    rgba: 0
+  defaultState: 0
   sendVisualUpdates: 0
   ownerID: 0
   uniqueIdentifier: 0
