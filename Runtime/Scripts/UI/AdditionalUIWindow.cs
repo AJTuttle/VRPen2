@@ -27,6 +27,9 @@ namespace VRPen {
         private const float contentPadding = 10;
         
         void Awake() {
+
+            grabbable.man = uiMan;
+            
             thisRect = GetComponent<RectTransform>();
             thisCol = bg.GetComponent<BoxCollider>();
             
