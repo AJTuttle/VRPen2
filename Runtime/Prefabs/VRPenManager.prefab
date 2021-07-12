@@ -77,12 +77,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a873e0b5a9fab6048a78d52b4bdccc1b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  autoConnect: 0
-  syncCurrentCanvas: 1
-  syncDisplayUIs: 1
-  UI_SYNC_PERIOD: 0.1
-  spawnRemoteDevicesLocation: {x: 0, y: 0, z: 0}
-  cachePackets: 0
+  cacheSizeDisplays: []
   remoteMarkerPrefab: {fileID: 8217082110612787815, guid: f929d31bb578d7349baa4813213b4f55,
     type: 3}
   remoteTabletPrefab: {fileID: 4162737611858156914, guid: 27a71b00b9c049b41a5f99f8630e898b,
@@ -102,10 +97,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startInOfflineMode: 0
-  displays:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
   canvasBackgrounds:
   - {fileID: 0}
   - {fileID: 0}
@@ -114,35 +105,24 @@ MonoBehaviour:
   autoSavePNGOnExit: 0
   MAX_CANVAS_COUNT: 6
   renderAreaOrigin: {x: 0, y: -5900, z: 0}
-  initalPublicCanvasPixelWidth: 2000
-  initalPublicCanvasPixelHeight: 1200
   pressureCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
-      time: 0.41296047
-      value: 0.875327
-      inSlope: 0.73241234
-      outSlope: 0.73241234
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
       time: 1
       value: 1
-      inSlope: 0
-      outSlope: 0
-      tangentMode: 0
+      inSlope: 1
+      outSlope: 1
+      tangentMode: 34
       weightedMode: 0
       inWeight: 0
       outWeight: 0

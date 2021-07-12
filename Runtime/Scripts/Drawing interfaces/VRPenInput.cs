@@ -280,6 +280,11 @@ namespace VRPen {
 
                 case ToolState.NORMAL:
                     
+                    //update thickness if the display has a thickness modifer
+                    if (data.display.UIMan.optionalLineThicknessModifier != null) {
+                        data.pressure *= data.display.UIMan.optionalLineThicknessModifier.value;
+                    }
+                    
                     //add new line if need new one
                     if (currentLine == null) {
                         currentLine = VectorDrawing.s_instance.createNewLine(NetworkManager.s_instance.getLocalPlayerID(), currentColor, NetworkManager.s_instance.localGraphicIndex,

@@ -36,6 +36,7 @@ namespace VRPen {
 
 		public GameObject canvasButtonPrefab;
 
+        public Slider optionalLineThicknessModifier;
 
 		public bool sideMenuOpen = false;
 		private bool sideMenuMoving = false;
