@@ -1024,6 +1024,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: cursor
       objectReference: {fileID: 0}
+    - target: {fileID: 1532583097125244, guid: aa2d7f39ccadab8438e0301893620fbd, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4067546011760714, guid: aa2d7f39ccadab8438e0301893620fbd, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

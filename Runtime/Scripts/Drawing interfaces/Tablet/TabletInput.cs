@@ -21,7 +21,7 @@ namespace VRPen {
         //private vars
         StarTablet2.PenSample currentSample = null;
         StarTablet2.PenSample lastSample = null;
-        float raycastDistance = 0.01f;
+        float raycastDistance = 0.05f;
         private const float maxNullPressure = 0.0001f;
 
         [Header("Tablet Button Parameters")]
@@ -187,7 +187,7 @@ namespace VRPen {
 
             //raycast
             RaycastHit[] hits;
-            hits = Physics.RaycastAll(localDisplay.displayCursor.transform.position + raycastDistance/2 * localDisplay.displayCursor.transform.up, -localDisplay.displayCursor.transform.up, raycastDistance);
+            hits = Physics.RaycastAll(localDisplay.displayCursor.transform.position - raycastDistance/2 * localDisplay.displayCursor.transform.up, localDisplay.displayCursor.transform.up, raycastDistance);
             //Debug.DrawRay(localCursor.transform.position + raycastDistance / 2 * localCursor.transform.up, -localCursor.transform.up, Color.green);
 
 
