@@ -24045,6 +24045,7 @@ MonoBehaviour:
   defaultSizeBelowScalingMenu: 0
   sizePerScalingMenuItem: 40
   maxSize: 400
+  sync: 1
   scalingParent: {fileID: 2223262302817515282}
   slider: {fileID: 4841320787031324870}
 --- !u!1 &8502410592334385664
