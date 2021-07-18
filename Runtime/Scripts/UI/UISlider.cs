@@ -17,6 +17,8 @@ namespace VRPen {
         public int sizePerScalingMenuItem;
         [Tooltip("Max size (height) of the entire sliding area that is visable at any one time (window size)")]
         public int maxSize;
+        [Tooltip("sync over network")]
+        public bool sync;
 
 
         public GameObject scalingParent;
@@ -69,7 +71,7 @@ namespace VRPen {
             //set slider
             slider.value = pos;
 
-            if (localInput) {
+            if (localInput && sync) {
                 UIMan.queueState();
 
             }
