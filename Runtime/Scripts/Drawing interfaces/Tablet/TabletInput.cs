@@ -163,7 +163,9 @@ namespace VRPen {
                 localDisplay.displayCursor.SetActive(true);
 
                 //aspect rat
-                float aspectRatio = localDisplay.currentLocalCanvas.aspectRatio;
+                float aspectRatio;
+                if (localDisplay.currentLocalCanvas == null) aspectRatio = 1.66667f;
+                else aspectRatio = localDisplay.currentLocalCanvas.aspectRatio;
 
                 //get x and y
                 float x = .5f * aspectRatio - aspectRatio * currentSample.point.x;
