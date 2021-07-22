@@ -157,7 +157,7 @@ namespace VRPen {
 
         void updatelocalCursor() {
 
-            if (currentSample != null && localDisplay.currentLocalCanvas != null) {
+            if (currentSample != null && localDisplay != null) {
 
                 //turn on
                 localDisplay.displayCursor.SetActive(true);
