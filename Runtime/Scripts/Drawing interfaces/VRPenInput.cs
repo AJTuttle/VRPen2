@@ -74,6 +74,10 @@ namespace VRPen {
 
         }
 
+        protected void Update() {
+            base.Update();
+        }
+
         protected void idle() {
             hover = HoverState.NONE;
             endLine();

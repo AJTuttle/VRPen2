@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,7 +20,7 @@ namespace VRPen {
 
 		public Color32 defaultColor;
 		public ToolState defaultState;
-
+		
         //[System.NonSerialized]
         //public InputDevice deviceData;
 
@@ -32,6 +33,16 @@ namespace VRPen {
         public ulong ownerID;
         [Tooltip("Any unique identifier for the device (only needs to be unique for the owner's devices)")]
         public int uniqueIdentifier;
+		[Tooltip("Should the target pos and rot be sent (cannot change after start)")]
+        public bool sendTargetTransform;
+        [Tooltip("Rate to send target transform data (if applicable) (cannot change after start)")]
+        public float targetTransformSendRepeatRate;
+        [Tooltip("Target to be sent and to sync")]
+        public Transform targetTransform;
+        [Tooltip("Target will be constantly interpolating to the most recent network update")]
+        public bool interpolateTargetFromNetwork;
+        private Vector3 interpolatePosTarget;
+        private Quaternion interpolateRotTarget;
 
 
         //state
@@ -49,7 +60,20 @@ namespace VRPen {
 	        //set default stuff
 	        updateColor(defaultColor, false);
             updateModel(defaultState, false);
+            
+            //set default interpolation values
+            if (targetTransform != null) {
+	            interpolatePosTarget = targetTransform.position;
+	            interpolateRotTarget = targetTransform.rotation;
+            }
+            
+            //start sending target
+            if (sendTargetTransform) InvokeRepeating(nameof(sendTarget), 0.1f, targetTransformSendRepeatRate);
 
+        }
+
+        protected void Update() {
+	        interpolateTarget();
         }
 
         private void OnDestroy() {
@@ -60,6 +84,32 @@ namespace VRPen {
 	        currentColor = color;
 	        updateColorIndicators(color, localInput);
 	        
+        }
+
+        void sendTarget() {
+
+	        //ignore if not connected or if no target set
+	        if (targetTransform == null|| !NetworkManager.s_instance.connectedAndCaughtUp) return;
+	        
+	        //send
+	        NetworkManager.s_instance.sendInputVisualTarget(ownerID, uniqueIdentifier, targetTransform);
+	        
+        }
+
+        public void receiveTarget(Vector3 pos, Quaternion rot, bool active) {
+	        //set target
+	        if (targetTransform != null) {
+		        interpolatePosTarget = pos;
+		        interpolateRotTarget = rot;
+		        targetTransform.gameObject.SetActive(active);
+	        }
+        }
+
+        void interpolateTarget() {
+	        if (interpolateTargetFromNetwork) {
+		        targetTransform.position = Vector3.Lerp(targetTransform.position, interpolatePosTarget, 0.1f);
+		        targetTransform.rotation = Quaternion.Lerp(targetTransform.rotation, interpolateRotTarget, 0.1f);
+	        }
         }
 
         public void updateModel(VRPen.VRPenInput.ToolState newState, bool localInput) {

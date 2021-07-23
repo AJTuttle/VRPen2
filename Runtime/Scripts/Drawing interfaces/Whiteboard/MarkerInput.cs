@@ -59,6 +59,9 @@ namespace VRPen {
             
             //reset click value at end of frame
             UIClickDown = false;
+            
+            //base
+            base.Update();
         }
 
 		private void FixedUpdate() {

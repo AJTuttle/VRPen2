@@ -119,7 +119,9 @@ namespace VRPen {
                 tablet.resetWheelMag();
             }
 
-
+            //base
+            base.Update();
+            
         }
 
 

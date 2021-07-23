@@ -21,6 +21,7 @@ namespace VRPen {
 		UIState,
 		CanvasSwitch,
         InputDeviceState,
+        InputDeviceTarget,
         AddStampFile,
         SharedDeviceOwnershipTransfer,
         CacheRequest
@@ -889,6 +890,48 @@ namespace VRPen {
 
         }
 
+        public void sendInputVisualTarget(ulong ownerId, int uniqueDeviceIdentifier, Transform target) {
+            
+            //dont do anything in offline mode
+            if (VectorDrawing.OfflineMode) return;
+
+            //dont send if you havent connected to the other users yet
+            if (!connectedAndCaughtUp) {
+                Debug.LogError("Attempted to send a data packet prior to sending a connect packet. Aborting.");
+                return;
+            }
+            
+            //mmake buffer list
+            List<byte> sendBufferList = new List<byte>();
+            
+            //header
+            sendBufferList.Add((byte)PacketType.InputDeviceTarget);
+            sendBufferList.AddRange(BitConverter.GetBytes(DateTime.Now.Ticks));
+            //add packet index to header
+            sendBufferList.AddRange(BitConverter.GetBytes(localPacketIndex));
+            localPacketIndex++;
+            
+            //add data
+            sendBufferList.AddRange(BitConverter.GetBytes(ownerId));
+            sendBufferList.AddRange(BitConverter.GetBytes(uniqueDeviceIdentifier));
+            sendBufferList.AddRange(BitConverter.GetBytes(target.position.x));
+            sendBufferList.AddRange(BitConverter.GetBytes(target.position.y));
+            sendBufferList.AddRange(BitConverter.GetBytes(target.position.z));
+            sendBufferList.AddRange(BitConverter.GetBytes(target.rotation.x));
+            sendBufferList.AddRange(BitConverter.GetBytes(target.rotation.y));
+            sendBufferList.AddRange(BitConverter.GetBytes(target.rotation.z));
+            sendBufferList.AddRange(BitConverter.GetBytes(target.rotation.w));
+            sendBufferList.Add(target.gameObject.activeInHierarchy? (byte)1 : (byte)0);
+            
+            // convert to an array
+            byte[] sendBuffer = sendBufferList.ToArray();
+            
+
+            //send
+            vrpenEvent?.Invoke(sendBuffer);
+
+        }
+
 		public void sendUIState(byte displayId, byte[] data) {
 
             //dont do anything in offline mode
@@ -1010,8 +1053,8 @@ namespace VRPen {
                 }
                 //non-catchup packet
                 else {
-                    //ignore packets sent by self unless it is a visual event (so that if you have a local-remote version it still works)
-                    if (header != PacketType.InputDeviceState) ignorePacket = true;
+                    //ignore packets sent by self unless it is a visual event or target(so that if you have a local-remote version it still works)
+                    if (header != PacketType.InputDeviceState && header != PacketType.InputDeviceTarget) ignorePacket = true;
                 }
             }
 
@@ -1046,6 +1089,9 @@ namespace VRPen {
             }
             else if (header == PacketType.CacheRequest) {
                 unpackCacheRequest(packet, ref offset, ignorePacket);
+            }
+            else if (header == PacketType.InputDeviceTarget) {
+                unpackInputVisualTarget(packet, ref offset, ignorePacket);
             }
             else {
                 Debug.LogError("Packet type not recognized, ID = " + header);
@@ -1274,6 +1320,27 @@ namespace VRPen {
             
         }
 
+        void unpackInputVisualTarget(VRPenPacket packet, ref int offset, bool ignorePacket) {
+            //ignore
+            if (ignorePacket) return;
+
+            //get data
+            ulong ownerID = ReadULong(packet.data, ref offset);
+            int uniqueID = ReadInt(packet.data, ref offset);
+            Vector3 pos = new Vector3(ReadFloat(packet.data, ref offset), ReadFloat(packet.data, ref offset),
+                ReadFloat(packet.data, ref offset));
+            Quaternion rot = new Quaternion(ReadFloat(packet.data, ref offset), ReadFloat(packet.data, ref offset),
+                ReadFloat(packet.data, ref offset), ReadFloat(packet.data, ref offset));
+            bool active = ReadByte(packet.data, ref offset) == 1;
+            
+            //update device
+            foreach (InputVisuals device in VectorDrawing.s_instance.inputDevices) {
+                if (device.ownerID == ownerID && device.uniqueIdentifier == uniqueID) {
+                    device.receiveTarget(pos, rot, active);
+                }
+            }
+        }
+        
         void unpackInputVisualEvent(VRPenPacket packet, ref int offset, bool ignorePacket) {
 
             //get data

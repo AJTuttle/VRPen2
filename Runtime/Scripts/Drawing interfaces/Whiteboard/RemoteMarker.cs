@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 
 namespace VRPen {
 	public class RemoteMarker : InputVisuals {
@@ -14,7 +15,7 @@ namespace VRPen {
 
 		public TriggerListener triggers;
 		
-		new void Start() {
+		protected void Start() {
 			
 			//set triggers
 			triggers.triggerEnter.AddListener(triggerEnter);
@@ -24,6 +25,11 @@ namespace VRPen {
 			base.Start();
 		}
 
+		protected void Update() {
+			//base
+			base.Update();
+		}
+		
         private void LateUpdate() {
 
 			if (snappedTo) {
