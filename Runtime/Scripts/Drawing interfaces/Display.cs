@@ -39,7 +39,7 @@ namespace VRPen {
         [System.NonSerialized]
         public VectorCanvas currentLocalCanvas;
 
-        public GameObject displayCursor;
+        public Transform cursorParent;
         
         
         //stamp

@@ -16,6 +16,7 @@ namespace VRPen {
 
         //public vars
         public Display localDisplay;
+        public GameObject cursor;
         public AnimationCurve pressureCurve;
 
         //private vars
@@ -46,6 +47,9 @@ namespace VRPen {
             
             //base
             base.Start();
+            
+            //set start display
+            if (localDisplay != null) setNewDisplay(localDisplay);
             
             //add highligh listeners
             button0Event.AddListener(delegate { buttonHighlight(0); });
@@ -126,13 +130,13 @@ namespace VRPen {
 
 
         public void setNewDisplay(Display display) {
-            //end line and turn off current cursor
+            //end line
             if (localDisplay != null) {
-                localDisplay.displayCursor.SetActive(false);
                 endLine();
             }
             //set display
             localDisplay = display;
+            cursor.transform.parent = localDisplay.cursorParent;
         }
         
         void turnWheel(int angle) {
@@ -161,11 +165,12 @@ namespace VRPen {
 
             if (currentSample != null && localDisplay != null) {
 
-                //turn on
-                localDisplay.displayCursor.SetActive(true);
-
+                //set active
+                cursor.SetActive(true);
+                
                 //aspect rat
                 float aspectRatio;
+                //assume 5/3 aspect ratio if no canvas
                 if (localDisplay.currentLocalCanvas == null) aspectRatio = 1.66667f;
                 else aspectRatio = localDisplay.currentLocalCanvas.aspectRatio;
 
@@ -174,11 +179,14 @@ namespace VRPen {
                 float y = .5f - currentSample.point.y;
                 
                 //apply
-                localDisplay.displayCursor.transform.localPosition = new Vector3(x, 0, y);
+                cursor.transform.localPosition = new Vector3(x, 0, y);
+                //cursor.transform.position = cursor.transform.parent.TransformPoint(localDisplay.cursorParent.InverseTransformPoint(new Vector3(x, 0, y)));
+                cursor.transform.up = localDisplay.cursorParent.up;
+                cursor.transform.forward = localDisplay.cursorParent.forward;
 
             }
             else {
-                localDisplay.displayCursor.SetActive(false);
+                cursor.SetActive(false);
             }
 
         }
@@ -191,7 +199,7 @@ namespace VRPen {
 
             //raycast
             RaycastHit[] hits;
-            hits = Physics.RaycastAll(localDisplay.displayCursor.transform.position - raycastDistance/2 * localDisplay.displayCursor.transform.up, localDisplay.displayCursor.transform.up, raycastDistance);
+            hits = Physics.RaycastAll(cursor.transform.position - raycastDistance/2 * cursor.transform.up, cursor.transform.up, raycastDistance);
             //Debug.DrawRay(localCursor.transform.position + raycastDistance / 2 * localCursor.transform.up, -localCursor.transform.up, Color.green);
 
 
