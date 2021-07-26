@@ -100,7 +100,7 @@ namespace VRPen {
             topBarGrabCol.size = new Vector3(width, topBarThickness, .001f);
             
             //minimize button
-            minimizeButton.localPosition = new Vector3(width/ 2f - 23, 0, 0);
+            minimizeButton.localPosition = new Vector3(width/ 2f - 16, 0, 0);
 
         }
 
