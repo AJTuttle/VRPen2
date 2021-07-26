@@ -467,7 +467,7 @@ MonoBehaviour:
   bg: {fileID: 9115440111596363877}
   topBar: {fileID: 2350566590257542260}
   topBarGrab: {fileID: 5593041214209280352}
-  minimizeButton: {fileID: 0}
+  minimizeButton: {fileID: 6351275802144311451}
   topBarGrabCol: {fileID: 1302555404888394488}
   contentParent: {fileID: 2897841367956490017}
   grabbable: {fileID: 404820741653771684}
