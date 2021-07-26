@@ -19,6 +19,7 @@ namespace VRPen {
         public RectTransform bg;
         public RectTransform topBar;
         public RectTransform topBarGrab;
+        public RectTransform minimizeButton;
         public BoxCollider topBarGrabCol;
         public RectTransform contentParent;
         public UIGrabbable grabbable;
@@ -98,6 +99,9 @@ namespace VRPen {
             topBarGrab.sizeDelta = new Vector2(width, topBarThickness);
             topBarGrabCol.size = new Vector3(width, topBarThickness, .001f);
             
+            //minimize button
+            minimizeButton.localPosition = new Vector3(width/ 2f - 23, 0, 0);
+
         }
 
         public void setWindowPos(Vector3 pos) {

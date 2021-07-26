@@ -133,66 +133,87 @@ namespace VRPen {
             
             //get button
             Selectable button = data.hit.collider.GetComponent<Selectable>();
+            UIInputArea area = data.hit.collider.GetComponent<UIInputArea>();
 
-            //add data to passthrough
-            ButtonPassthrough bp;
-            if ((bp = button.GetComponent<ButtonPassthrough>()) != null) {
-                bp.clickedBy = this;
-            }
+            //is button
+            if (button != null) {
 
-            //grabbable if not grabbing something
-            if (grabbed == null && button.GetComponent<UIGrabbable>() != null) {
-                grabbed = button.GetComponent<UIGrabbable>();
-                Vector3 pos = grabbed.parent.parent.InverseTransformPoint(data.hit.point);
-                grabbed.grab(pos.x, pos.y);
-            }
+                //add data to passthrough
+                ButtonPassthrough bp;
+                if ((bp = button.GetComponent<ButtonPassthrough>()) != null) {
+                    bp.clickedBy = this;
+                }
 
-            //slider state
-            if (button is Slider) {
+                //grabbable if not grabbing something
+                if (grabbed == null && button.GetComponent<UIGrabbable>() != null) {
+                    grabbed = button.GetComponent<UIGrabbable>();
+                    Vector3 pos = grabbed.parent.parent.InverseTransformPoint(data.hit.point);
+                    grabbed.grab(pos.x, pos.y);
+                }
 
-                //get value [0-1]
-                float value = data.hit.collider.transform.InverseTransformPoint(data.hit.point).x;
-                float scale = ((BoxCollider)data.hit.collider).size.x;
-                value = value / scale + 0.5f;
+                //slider state
+                if (button is Slider) {
 
-                UISlider slidyBoi = button.GetComponent<UISlider>();
+                    //get value [0-1]
+                    float value = data.hit.collider.transform.InverseTransformPoint(data.hit.point).x;
+                    float scale = ((BoxCollider) data.hit.collider).size.x;
+                    value = value / scale + 0.5f;
 
-                //set value
-                if (slidyBoi != null) slidyBoi.setPos(value, true);
+                    UISlider slidyBoi = button.GetComponent<UISlider>();
+
+                    //set value
+                    if (slidyBoi != null) slidyBoi.setPos(value, true);
+                    else {
+
+                        //scale value to slider extremes
+                        value = ((Slider) button).minValue +
+                                value * (((Slider) button).maxValue - ((Slider) button).minValue);
+                        ((Slider) button).value = value;
+                    }
+
+                }
+
+                //if click event
+                if (UIClickDown) {
+
+                    //select
+                    button.Select();
+
+
+                    //button state
+                    if (button is Button) {
+                        ((Button) button).onClick.Invoke();
+
+                    }
+
+                    //toggle state
+                    else if (button is Toggle) {
+                        ((Toggle) button).isOn = !((Toggle) button).isOn;
+
+                    }
+
+
+                }
+
+                //still select if no click
                 else {
-
-                    //scale value to slider extremes
-                    value = ((Slider)button).minValue + value * (((Slider)button).maxValue - ((Slider)button).minValue);
-                    ((Slider)button).value = value;
+                    button.Select();
                 }
 
             }
-
-            //if click event
-            if (UIClickDown) {
-
-                //select
-                button.Select();
-
-
-                //button state
-                if (button is Button) {
-                    ((Button)button).onClick.Invoke();
-
-                }
-
-                //toggle state
-                else if (button is Toggle) {
-                    ((Toggle)button).isOn = !((Toggle)button).isOn;
-
-                }
-
+            
+            //is area
+            else if (area != null) {
                 
+                //get point in the collider's space
+                Vector3 point = data.hit.collider.transform.InverseTransformPoint(data.hit.point);
+                
+                //invoke input
+                area.input(point.x, point.y, data.pressure);
             }
 
-            //still select if no click
             else {
-                button.Select();
+                Debug.LogError("No selectable found in selectable input event");
             }
 
             //endline
@@ -231,7 +252,7 @@ namespace VRPen {
 
             foreach (RaycastHit hit in hits) {
 
-                if (hit.collider.GetComponent<Selectable>() != null) {
+                if (hit.collider.GetComponent<Selectable>() != null || hit.collider.GetComponent<UIInputArea>() != null) {
 
                     data.hover = HoverState.SELECTABLE;
                     data.hit = hit;
