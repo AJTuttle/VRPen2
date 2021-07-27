@@ -15,12 +15,6 @@ namespace VRPen {
 
     }
     
-    public enum InputDeviceType : byte {
-        Marker,
-        Tablet,
-        Mouse,
-        Facilitative
-    }
 
     public abstract class VRPenInput : InputVisuals {
 		
@@ -28,7 +22,6 @@ namespace VRPen {
         //public vars
         [Header("Necessary Input Parameters")]
         [Space(10)]
-		public InputDeviceType deviceType;
         [System.NonSerialized]
         public bool UIClickDown = false;
 
@@ -39,7 +32,7 @@ namespace VRPen {
 
         //hover
         public enum HoverState {
-            NONE, NODRAW, SELECTABLE, DRAW, PALETTE
+            NONE, NODRAW, SELECTABLE, DRAW, PALETTE, GRABBABLE, AREAINPUT
         }
         [System.NonSerialized]
         public HoverState hover = HoverState.NONE;
@@ -124,6 +117,58 @@ namespace VRPen {
 			
         }
 
+        protected void raycastPriorityDetection(ref InputData data, RaycastHit[] hits) {
+
+            foreach (RaycastHit hit in hits) {
+
+                if (hit.collider.GetComponent<Selectable>() != null) {
+
+                    data.hover = HoverState.SELECTABLE;
+                    data.hit = hit;
+                    break;
+
+                }
+                else if (hit.collider.GetComponent<UIGrabbable>() != null&&
+                         (data.hover == HoverState.NONE || data.hover == HoverState.NODRAW || data.hover == HoverState.DRAW 
+                          || data.hover == HoverState.PALETTE || data.hover == HoverState.AREAINPUT)) {
+
+                    data.hover = HoverState.GRABBABLE;
+                    data.hit = hit;
+
+                }
+                else if (hit.collider.GetComponent<UIInputArea>() != null &&
+                         (data.hover == HoverState.NONE || data.hover == HoverState.NODRAW || data.hover == HoverState.DRAW 
+                          || data.hover == HoverState.PALETTE)) {
+
+                    data.hover = HoverState.AREAINPUT;
+                    data.hit = hit;
+
+                }
+                else if (hit.collider.GetComponent<Tag>() != null && hit.collider.GetComponent<Tag>().tag.Equals("Palette") &&
+                         (data.hover == HoverState.NONE || data.hover == HoverState.NODRAW || data.hover == HoverState.DRAW)) {
+
+                    data.hover = HoverState.PALETTE;
+                    data.hit = hit;
+
+                }
+                else if (hit.collider.GetComponent<Tag>() != null && hit.collider.GetComponent<Tag>().tag.Equals("NoDraw") &&
+                         (data.hover == HoverState.NONE || data.hover == HoverState.DRAW)) {
+
+                    data.hover = HoverState.NODRAW;
+                    data.hit = hit;
+
+                }
+                else if (hit.collider.GetComponent<Tag>() != null && hit.collider.GetComponent<Tag>().tag.Equals("Draw_Area") &&
+                         (data.hover == HoverState.NONE)) {
+
+                    data.hover = HoverState.DRAW;
+                    data.hit = hit;
+
+                }
+
+            }
+            
+        }
 
         void selectableHover(InputData data) {
 
@@ -250,42 +295,7 @@ namespace VRPen {
 
         }
 
-        protected void raycastPriorityDetection(ref InputData data, RaycastHit[] hits) {
-
-            foreach (RaycastHit hit in hits) {
-
-                if (hit.collider.GetComponent<Selectable>() != null || hit.collider.GetComponent<UIInputArea>() != null || hit.collider.GetComponent<UIGrabbable>() != null) {
-
-                    data.hover = HoverState.SELECTABLE;
-                    data.hit = hit;
-                    break;
-
-                }
-                else if (hit.collider.GetComponent<Tag>() != null && hit.collider.GetComponent<Tag>().tag.Equals("Palette") &&
-                   (data.hover == HoverState.NONE || data.hover == HoverState.NODRAW || data.hover == HoverState.DRAW)) {
-
-                    data.hover = HoverState.PALETTE;
-                    data.hit = hit;
-
-                }
-                else if (hit.collider.GetComponent<Tag>() != null && hit.collider.GetComponent<Tag>().tag.Equals("NoDraw") &&
-                    (data.hover == HoverState.NONE || data.hover == HoverState.DRAW)) {
-
-                    data.hover = HoverState.NODRAW;
-                    data.hit = hit;
-
-                }
-                else if (hit.collider.GetComponent<Tag>() != null && hit.collider.GetComponent<Tag>().tag.Equals("Draw_Area") &&
-                    (data.hover == HoverState.NONE)) {
-
-                    data.hover = HoverState.DRAW;
-                    data.hit = hit;
-
-                }
-
-            }
-            
-        }
+        
 
         void canvasHover(InputData data) {
             
