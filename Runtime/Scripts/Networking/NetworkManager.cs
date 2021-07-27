@@ -81,10 +81,13 @@ namespace VRPen {
         private List<VRPenPacket> cacheHistoricalPackets = new List<VRPenPacket>(); 
         //non historical packets are for when the history doesnt matter (ie. UI state)
         private List<VRPenPacket> cacheNonHistoricalPackets = new List<VRPenPacket>(); 
+        [Header("Required")]
+        [Space(10)]
+        [Tooltip("When sending cache, what is the maximum size per packet (in bytes)")]
+        public int cachePacketMaxSendingSize; //max ammount of bytes to be sent in one cache packet
         [Header("Optional")]
         [Space(10)]
         public List<TextMeshPro> cacheSizeDisplays;
-        private const int cachePacketMaxSendingSize = 10000; //max ammount of bytes to be sent in one cache packet
         
         
         //on connect packet
