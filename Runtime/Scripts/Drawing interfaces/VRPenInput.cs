@@ -134,6 +134,7 @@ namespace VRPen {
             //get button
             Selectable button = data.hit.collider.GetComponent<Selectable>();
             UIInputArea area = data.hit.collider.GetComponent<UIInputArea>();
+            UIGrabbable currentGrab = data.hit.collider.GetComponent<UIGrabbable>();
 
             //is button
             if (button != null) {
@@ -143,14 +144,7 @@ namespace VRPen {
                 if ((bp = button.GetComponent<ButtonPassthrough>()) != null) {
                     bp.clickedBy = this;
                 }
-
-                //grabbable if not grabbing something
-                if (grabbed == null && button.GetComponent<UIGrabbable>() != null) {
-                    grabbed = button.GetComponent<UIGrabbable>();
-                    Vector3 pos = grabbed.parent.parent.InverseTransformPoint(data.hit.point);
-                    grabbed.grab(pos.x, pos.y);
-                }
-
+                
                 //slider state
                 if (button is Slider) {
 
@@ -200,6 +194,14 @@ namespace VRPen {
                     button.Select();
                 }
 
+            }
+            
+            //grab event
+            else if (grabbed == null && currentGrab != null) {
+                Debug.Log("hujuhuju");
+                grabbed = currentGrab;
+                Vector3 pos = grabbed.parent.parent.InverseTransformPoint(data.hit.point);
+                grabbed.grab(pos.x, pos.y);
             }
             
             //is area
@@ -252,7 +254,7 @@ namespace VRPen {
 
             foreach (RaycastHit hit in hits) {
 
-                if (hit.collider.GetComponent<Selectable>() != null || hit.collider.GetComponent<UIInputArea>() != null) {
+                if (hit.collider.GetComponent<Selectable>() != null || hit.collider.GetComponent<UIInputArea>() != null || hit.collider.GetComponent<UIGrabbable>() != null) {
 
                     data.hover = HoverState.SELECTABLE;
                     data.hit = hit;
