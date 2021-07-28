@@ -110,6 +110,8 @@ namespace VRPen {
             
             //use raycast data to do stuff
             if (hover == HoverState.DRAW) canvasHover(data);
+            else if (hover == HoverState.AREAINPUT) areaInputHover(data);
+            else if (hover == HoverState.GRABBABLE) grabbableHover(data);
             else if (hover == HoverState.NODRAW || hover == HoverState.NONE) noDrawHover(data);
             else if (hover == HoverState.PALETTE) paletteHover(data);
             else if (hover == HoverState.SELECTABLE) selectableHover(data);
@@ -170,6 +172,35 @@ namespace VRPen {
             
         }
 
+        void areaInputHover(InputData data) {
+            UIInputArea area = data.hit.collider.GetComponent<UIInputArea>();
+            
+            //get point in the collider's space
+            Vector3 point = data.hit.collider.transform.InverseTransformPoint(data.hit.point);
+                
+            //invoke input
+            area.input(point.x, point.y, data.pressure);
+            
+            //endline
+            endLine();
+        }
+
+        void grabbableHover(InputData data) {
+            
+            UIGrabbable currentGrab = data.hit.collider.GetComponent<UIGrabbable>();
+            
+            //grab event
+            if (grabbed == null && currentGrab != null) {
+                grabbed = currentGrab;
+                Vector3 pos = grabbed.parent.parent.InverseTransformPoint(data.hit.point);
+                grabbed.grab(pos.x, pos.y);
+            }
+            
+            //endline
+            endLine();
+            
+        }
+        
         void selectableHover(InputData data) {
 
             //update vars
@@ -178,94 +209,60 @@ namespace VRPen {
             
             //get button
             Selectable button = data.hit.collider.GetComponent<Selectable>();
-            UIInputArea area = data.hit.collider.GetComponent<UIInputArea>();
-            UIGrabbable currentGrab = data.hit.collider.GetComponent<UIGrabbable>();
+            
+            //add data to passthrough
+            ButtonPassthrough bp;
+            if ((bp = button.GetComponent<ButtonPassthrough>()) != null) {
+                bp.clickedBy = this;
+            }
+            
+            //slider state
+            if (button is Slider) {
 
-            //is button
-            if (button != null) {
+                //get value [0-1]
+                float value = data.hit.collider.transform.InverseTransformPoint(data.hit.point).x;
+                float scale = ((BoxCollider) data.hit.collider).size.x;
+                value = value / scale + 0.5f;
 
-                //add data to passthrough
-                ButtonPassthrough bp;
-                if ((bp = button.GetComponent<ButtonPassthrough>()) != null) {
-                    bp.clickedBy = this;
-                }
-                
-                //slider state
-                if (button is Slider) {
+                UISlider slidyBoi = button.GetComponent<UISlider>();
 
-                    //get value [0-1]
-                    float value = data.hit.collider.transform.InverseTransformPoint(data.hit.point).x;
-                    float scale = ((BoxCollider) data.hit.collider).size.x;
-                    value = value / scale + 0.5f;
-
-                    UISlider slidyBoi = button.GetComponent<UISlider>();
-
-                    //set value
-                    if (slidyBoi != null) slidyBoi.setPos(value, true);
-                    else {
-
-                        //scale value to slider extremes
-                        value = ((Slider) button).minValue +
-                                value * (((Slider) button).maxValue - ((Slider) button).minValue);
-                        ((Slider) button).value = value;
-                    }
-
-                }
-
-                //if click event
-                if (UIClickDown) {
-
-                    //select
-                    button.Select();
-
-
-                    //button state
-                    if (button is Button) {
-                        ((Button) button).onClick.Invoke();
-
-                    }
-
-                    //toggle state
-                    else if (button is Toggle) {
-                        ((Toggle) button).isOn = !((Toggle) button).isOn;
-
-                    }
-
-
-                }
-
-                //still select if no click
+                //set value
+                if (slidyBoi != null) slidyBoi.setPos(value, true);
                 else {
-                    button.Select();
+
+                    //scale value to slider extremes
+                    value = ((Slider) button).minValue +
+                            value * (((Slider) button).maxValue - ((Slider) button).minValue);
+                    ((Slider) button).value = value;
                 }
 
             }
-            
-            //grab event
-            else if (grabbed == null && currentGrab != null) {
-                Debug.Log("hujuhuju");
-                grabbed = currentGrab;
-                Vector3 pos = grabbed.parent.parent.InverseTransformPoint(data.hit.point);
-                grabbed.grab(pos.x, pos.y);
-            }
-            
-            //is area
-            else if (area != null) {
-                
-                //get point in the collider's space
-                Vector3 point = data.hit.collider.transform.InverseTransformPoint(data.hit.point);
-                
-                //invoke input
-                area.input(point.x, point.y, data.pressure);
+
+            //if click event
+            if (UIClickDown) {
+
+                //select
+                button.Select();
+
+                //button state
+                if (button is Button) {
+                    ((Button) button).onClick.Invoke();
+                }
+
+                //toggle state
+                else if (button is Toggle) {
+                    ((Toggle) button).isOn = !((Toggle) button).isOn;
+                }
+
             }
 
+            //still select if no click
             else {
-                Debug.LogError("No selectable found in selectable input event");
+                button.Select();
             }
 
             //endline
             endLine();
-
 
         }
 

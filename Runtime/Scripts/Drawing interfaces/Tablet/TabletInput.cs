@@ -17,6 +17,8 @@ namespace VRPen {
         //public vars
         public Display localDisplay;
         public GameObject cursor;
+        public GameObject cursorDrawing;
+        public GameObject cursorGesture;
         public AnimationCurve pressureCurve;
 
         //private vars
@@ -105,11 +107,24 @@ namespace VRPen {
                 if (tablet.getButton(5)) {
                     gestureInput();
                     idleThisFrame = true;
+                    
+                    //set cursor
+                    cursorGesture.SetActive(true);
+                    cursorDrawing.SetActive(false);
                 }
                 //vrpen input
                 else if (currentSample.pressure > 0 || UIClickDown) {
                     input();
                     idleThisFrame = false;
+                    
+                    //set cursor
+                    cursorGesture.SetActive(false);
+                    cursorDrawing.SetActive(true);
+                }
+                else {
+                    //set cursor
+                    cursorGesture.SetActive(false);
+                    cursorDrawing.SetActive(true);
                 }
 
                 lastSample = currentSample;
