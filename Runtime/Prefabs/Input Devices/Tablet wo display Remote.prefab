@@ -1606,7 +1606,7 @@ MonoBehaviour:
   uniqueIdentifier: 0
   sendTargetTransform: 0
   targetTransformSendRepeatRate: 0
-  targetTransform: {fileID: 4644938484910795057}
+  targetTransform: {fileID: 3586504438579064561}
   interpolateTargetFromNetwork: 1
 --- !u!1 &7989640084503134154
 GameObject:
@@ -1987,17 +1987,31 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 30901394752619148, guid: aa2d7f39ccadab8438e0301893620fbd,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 25031ead2e8c9fd4d825947d4b7b86fc, type: 2}
+    - target: {fileID: 156745278178433195, guid: aa2d7f39ccadab8438e0301893620fbd,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 25031ead2e8c9fd4d825947d4b7b86fc, type: 2}
+    - target: {fileID: 8180316957889241740, guid: aa2d7f39ccadab8438e0301893620fbd,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8860361658894705968, guid: aa2d7f39ccadab8438e0301893620fbd,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aa2d7f39ccadab8438e0301893620fbd, type: 3}
 --- !u!4 &3586504438579064561 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4067546011760714, guid: aa2d7f39ccadab8438e0301893620fbd,
-    type: 3}
-  m_PrefabInstance: {fileID: 3588139244180117179}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &4644938484910795057 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 8195851278943305610, guid: aa2d7f39ccadab8438e0301893620fbd,
     type: 3}
   m_PrefabInstance: {fileID: 3588139244180117179}
   m_PrefabAsset: {fileID: 0}
