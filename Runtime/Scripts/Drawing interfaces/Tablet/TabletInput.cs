@@ -102,8 +102,7 @@ namespace VRPen {
                 updatelocalCursor();
 
                 //gesture
-                if (currentSample.state == StarTablet2.PenState.RBUTTON_AIR ||
-                    currentSample.state == StarTablet2.PenState.RBUTTON_TOUCH) {
+                if (tablet.getButton(5)) {
                     gestureInput();
                     idleThisFrame = true;
                 }
@@ -152,15 +151,16 @@ namespace VRPen {
         void gestureInput() {
             
             //press
-            if (currentSample.state == StarTablet2.PenState.RBUTTON_TOUCH ||
-                lastSample.state != StarTablet2.PenState.RBUTTON_TOUCH) {
+            if (currentSample.state == StarTablet2.PenState.TOUCH &&
+                lastSample.state != StarTablet2.PenState.TOUCH) {
                 
                 //swipe start
                 swipeStart = currentSample.point;
             }
             //release
-            else if (lastSample.state == StarTablet2.PenState.RBUTTON_TOUCH || 
-                     currentSample.state != StarTablet2.PenState.RBUTTON_TOUCH) {
+            else if (lastSample.state == StarTablet2.PenState.TOUCH && 
+                     currentSample.state != StarTablet2.PenState.TOUCH) {
+                
                 
                 //swipe
                 if (Vector2.Distance(currentSample.point, swipeStart) >= minSwipeDistance) {
@@ -169,25 +169,22 @@ namespace VRPen {
                     if (Mathf.Abs(dir.y) > Mathf.Abs(dir.x)) {
                         //up
                         if (dir.y > 0) {
-                            Debug.Log("UPPPP");
+                            swipeGestureUp.Invoke();
                         }
                         //down
                         else {
-                            
-                            Debug.Log("DWONN");
+                            swipeGestureDown.Invoke();
                         }
                     }
                     //left or right
                     else {
                         //right
                         if (dir.x > 0) {
-                            
-                            Debug.Log("RIGHT");
+                            swipeGestureRight.Invoke();
                         }
                         //left
                         else {
-                            
-                            Debug.Log("LEFT");
+                            swipeGestureLeft.Invoke();
                         }
                     }
                 } 
@@ -197,7 +194,7 @@ namespace VRPen {
                     doubleTapStart = 0;
                     
                     //invoke
-                    Debug.Log("DOUBLBLE");
+                    doubleTapGesture.Invoke();
                 }
                 //double tap start
                 else {
