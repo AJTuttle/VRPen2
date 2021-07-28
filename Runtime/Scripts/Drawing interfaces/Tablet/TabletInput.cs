@@ -225,7 +225,10 @@ namespace VRPen {
             }
             //set display
             localDisplay = display;
+            //move cursor
+            Vector3 cursorSize = cursor.transform.localScale;
             cursor.transform.parent = localDisplay.cursorParent;
+            cursor.transform.localScale = cursorSize;
         }
         
         void turnWheel(int angle) {
