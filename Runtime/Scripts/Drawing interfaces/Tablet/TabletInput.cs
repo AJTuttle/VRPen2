@@ -53,7 +53,7 @@ namespace VRPen {
         
         
         //gesture vars
-        private const float minSwipeDistance = 0.1f;
+        private const float minSwipeDistance = 0.06f;
         private const float doubleTapMaxTime = 0.3f;
         private Vector2 swipeStart;
         private float doubleTapStart = 0; //not set when swiped
