@@ -17,8 +17,9 @@ namespace VRPen {
         //public vars
         public Display localDisplay;
         public GameObject cursor;
-        public GameObject cursorDrawing;
-        public GameObject cursorGesture;
+        public GameObject cursorMesh0;
+        public GameObject cursorMesh1;
+        public GameObject cursorMesh2;
         public AnimationCurve pressureCurve;
 
         //private vars
@@ -109,22 +110,17 @@ namespace VRPen {
                     idleThisFrame = true;
                     
                     //set cursor
-                    cursorGesture.SetActive(true);
-                    cursorDrawing.SetActive(false);
+                    setCursorMesh(1);
                 }
-                //vrpen input
+                //vrpen press input
                 else if (currentSample.pressure > 0 || UIClickDown) {
                     input();
                     idleThisFrame = false;
-                    
-                    //set cursor
-                    cursorGesture.SetActive(false);
-                    cursorDrawing.SetActive(true);
                 }
+                //vrpen hover input
                 else {
-                    //set cursor
-                    cursorGesture.SetActive(false);
-                    cursorDrawing.SetActive(true);
+                    //call get input data even if no pressure, since this will update the cursor
+                    getInputData();
                 }
 
                 lastSample = currentSample;
@@ -163,6 +159,13 @@ namespace VRPen {
             
         }
 
+        void setCursorMesh(int x) {
+            //set active
+            cursorMesh0.SetActive(x == 0);
+            cursorMesh1.SetActive(x == 1);
+            cursorMesh2.SetActive(x == 2);
+        }
+        
         void gestureInput() {
             
             //press
@@ -288,6 +291,7 @@ namespace VRPen {
 
             //init returns
             InputData data = new InputData();
+            
 
             //raycast
             RaycastHit[] hits;
@@ -299,6 +303,17 @@ namespace VRPen {
             raycastPriorityDetection(ref data, hits);
             
             
+            //set cursor 
+            if (data.hover == HoverState.DRAW) {
+                setCursorMesh(0);
+            }
+            else if (data.hover == HoverState.PALETTE || data.hover == HoverState.GRABBABLE ||
+                     data.hover == HoverState.SELECTABLE || data.hover == HoverState.AREAINPUT) {
+                setCursorMesh(1);
+            }
+            else {
+                setCursorMesh(2);
+            }
 
             //pressure
             data.pressure = currentSample.pressure;
