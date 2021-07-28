@@ -41,6 +41,21 @@ namespace VRPen {
         public UnityEvent button4Event;
         public UnityEvent button5Event;
         
+        [Header("Tablet Gesture Events")]
+        [Space(10)]
+        public UnityEvent swipeGestureLeft;
+        public UnityEvent swipeGestureRight;
+        public UnityEvent swipeGestureUp;
+        public UnityEvent swipeGestureDown;
+        public UnityEvent doubleTapGesture;
+        
+        
+        //gesture vars
+        private const float minSwipeDistance = 0.1f;
+        private const float doubleTapMaxTime = 0.3f;
+        private Vector2 swipeStart;
+        private float doubleTapStart = 0; //not set when swiped
+        
         
         
         void Start() {
@@ -86,8 +101,14 @@ namespace VRPen {
                 //updateCursor
                 updatelocalCursor();
 
-                //input
-                if (currentSample.pressure > 0 || UIClickDown) {
+                //gesture
+                if (currentSample.state == StarTablet2.PenState.RBUTTON_AIR ||
+                    currentSample.state == StarTablet2.PenState.RBUTTON_TOUCH) {
+                    gestureInput();
+                    idleThisFrame = true;
+                }
+                //vrpen input
+                else if (currentSample.pressure > 0 || UIClickDown) {
                     input();
                     idleThisFrame = false;
                 }
@@ -128,7 +149,63 @@ namespace VRPen {
             
         }
 
-
+        void gestureInput() {
+            
+            //press
+            if (currentSample.state == StarTablet2.PenState.RBUTTON_TOUCH ||
+                lastSample.state != StarTablet2.PenState.RBUTTON_TOUCH) {
+                
+                //swipe start
+                swipeStart = currentSample.point;
+            }
+            //release
+            else if (lastSample.state == StarTablet2.PenState.RBUTTON_TOUCH || 
+                     currentSample.state != StarTablet2.PenState.RBUTTON_TOUCH) {
+                
+                //swipe
+                if (Vector2.Distance(currentSample.point, swipeStart) >= minSwipeDistance) {
+                    Vector2 dir = currentSample.point - swipeStart;
+                    //up or down
+                    if (Mathf.Abs(dir.y) > Mathf.Abs(dir.x)) {
+                        //up
+                        if (dir.y > 0) {
+                            Debug.Log("UPPPP");
+                        }
+                        //down
+                        else {
+                            
+                            Debug.Log("DWONN");
+                        }
+                    }
+                    //left or right
+                    else {
+                        //right
+                        if (dir.x > 0) {
+                            
+                            Debug.Log("RIGHT");
+                        }
+                        //left
+                        else {
+                            
+                            Debug.Log("LEFT");
+                        }
+                    }
+                } 
+                //double tap end
+                else if (Time.time <= doubleTapStart + doubleTapMaxTime) {
+                    //reset double tap start
+                    doubleTapStart = 0;
+                    
+                    //invoke
+                    Debug.Log("DOUBLBLE");
+                }
+                //double tap start
+                else {
+                    doubleTapStart = Time.time;
+                }
+            }
+        }
+        
         public void setNewDisplay(Display display) {
             //end line
             if (localDisplay != null) {
