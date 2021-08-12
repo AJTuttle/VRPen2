@@ -1608,6 +1608,7 @@ MonoBehaviour:
   targetTransformSendRepeatRate: 0
   targetTransform: {fileID: 3586504438579064561}
   interpolateTargetFromNetwork: 1
+  interpolateTargetRate: 0.2
 --- !u!1 &7989640084503134154
 GameObject:
   m_ObjectHideFlags: 0

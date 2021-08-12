@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace VRPen {
@@ -41,6 +42,8 @@ namespace VRPen {
         public Transform targetTransform;
         [Tooltip("Target will be constantly interpolating to the most recent network update")]
         public bool interpolateTargetFromNetwork;
+        [FormerlySerializedAs("interpolationRate")] [Tooltip("Percent interpolation per frame [0,1]")]
+        public float interpolateTargetRate;
         private Vector3 interpolatePosTarget;
         private Quaternion interpolateRotTarget;
 
@@ -107,8 +110,8 @@ namespace VRPen {
 
         void interpolateTarget() {
 	        if (interpolateTargetFromNetwork) {
-		        targetTransform.position = Vector3.Lerp(targetTransform.position, interpolatePosTarget, 0.1f);
-		        targetTransform.rotation = Quaternion.Lerp(targetTransform.rotation, interpolateRotTarget, 0.1f);
+		        targetTransform.position = Vector3.Lerp(targetTransform.position, interpolatePosTarget, interpolateTargetRate);
+		        targetTransform.rotation = Quaternion.Lerp(targetTransform.rotation, interpolateRotTarget, interpolateTargetRate);
 	        }
         }
 
