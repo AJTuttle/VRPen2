@@ -305,7 +305,7 @@ namespace VRPen {
             
             //set cursor 
             if (data.hover == HoverState.DRAW) {
-                if (data.display.currentLocalCanvas != null) setCursorMesh(0);
+                if (data.display != null && data.display.currentLocalCanvas != null) setCursorMesh(0);
                 else setCursorMesh(2);
             }
             else if (data.hover == HoverState.PALETTE || data.hover == HoverState.GRABBABLE ||
