@@ -276,8 +276,7 @@ namespace VRPen {
                 //apply
                 cursor.transform.localPosition = new Vector3(x, 0, y);
                 //cursor.transform.position = cursor.transform.parent.TransformPoint(localDisplay.cursorParent.InverseTransformPoint(new Vector3(x, 0, y)));
-                cursor.transform.up = localDisplay.cursorParent.up;
-                cursor.transform.forward = localDisplay.cursorParent.forward;
+                cursor.transform.localRotation = Quaternion.identity;
 
             }
             else {
@@ -295,7 +294,7 @@ namespace VRPen {
 
             //raycast
             RaycastHit[] hits;
-            hits = Physics.RaycastAll(cursor.transform.position - raycastDistance/2 * cursor.transform.up, cursor.transform.up, raycastDistance);
+            hits = Physics.RaycastAll(cursor.transform.position + raycastDistance/2 * cursor.transform.up, -cursor.transform.up, raycastDistance);
             //Debug.DrawRay(localCursor.transform.position + raycastDistance / 2 * localCursor.transform.up, -localCursor.transform.up, Color.green);
 
 
