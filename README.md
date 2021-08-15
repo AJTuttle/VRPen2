@@ -20,5 +20,6 @@ VRpen comes with the follow input devices, but is built to be easy to add new cu
 - VR Markers
 - Mouse
 - Touch screen
+- Graphics tablets
 ## Import the package
 [img]
