@@ -1,7 +1,10 @@
 # VRPen2
 ## Introduction
 VRPen is an internet-networked light-weight Unity package for collaborative drawing. While initially made as a drawing solution for VR software, it has evolved into a generic drawing package for Unity.
-[img]
+
+<img src="/Runtime/Materials/Readme_images/readme-img0.PNG" width="600" >
+<img src="/Runtime/Materials/Readme_images/readme-img1.PNG" width="600" >
+
 ## VRPen has many drawing functions
 VRPen has a variety of functions and features, including...
 - Adding stamps (images)
@@ -22,4 +25,9 @@ VRpen comes with the follow input devices, but is built to be easy to add new cu
 - Touch screen
 - Graphics tablets
 ## Import the package
-[img]
+```diff
+- Note: This package is in development and will undergo changes.
+```
+
+<img src="/Runtime/Materials/Readme_images/readme-img2.PNG" width="300" >
+<img src="/Runtime/Materials/Readme_images/readme-img3.PNG" width="300" >
