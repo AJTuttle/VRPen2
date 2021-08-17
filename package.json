@@ -16,11 +16,6 @@
   },
   "samples": [
     {
-      "displayName": "C#",
-      "description": "C# socket local networking sample (not working).",
-      "path": "Samples~/C# local networking"
-    },
-    {
       "displayName": "Photon",
       "description": "Photon networking sample.",
       "path": "Samples~/Photon sample scene"
