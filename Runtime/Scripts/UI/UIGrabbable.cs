@@ -49,7 +49,6 @@ namespace VRPen {
         }
 
         public void setExactPos(float x, float y) {
-            Debug.Log("set "+x+" " +y + " " + gameObject.transform.parent.parent.name);
             //parent.transform.localPosition = new Vector3(x, y, 0);
             this.x = x;
             this.y = y;

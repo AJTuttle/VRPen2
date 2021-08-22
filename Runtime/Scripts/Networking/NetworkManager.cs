@@ -797,7 +797,7 @@ namespace VRPen {
 
         }
 
-        public void sendStamp(int stampIndex, float x, float y, float size, float rot, byte canvasId, int graphicIndex) {
+        public void sendStamp(StampType type, string text, int stampIndex, float x, float y, float size, float rot, byte canvasId, int graphicIndex) {
 
             //dont do anything in offline mode
             if (VectorDrawing.OfflineMode) return;
@@ -819,6 +819,12 @@ namespace VRPen {
             localPacketIndex++;
             
             //data
+            sendBufferList.Add((byte)type);
+            sendBufferList.Add((text != null)? (byte)1 :(byte)0);
+            byte[] textBytes = Encoding.ASCII.GetBytes(name);
+            sendBufferList.AddRange(BitConverter.GetBytes(textBytes.Length));
+            sendBufferList.AddRange(textBytes);
+            
             sendBufferList.AddRange(BitConverter.GetBytes(stampIndex));
             sendBufferList.AddRange(BitConverter.GetBytes(x));
             sendBufferList.AddRange(BitConverter.GetBytes(y));
@@ -1277,6 +1283,13 @@ namespace VRPen {
             if (ignorePacket) return;
 
             //data
+            StampType type = (StampType)ReadByte(packet.data, ref offset);
+            string text = null;
+            if (ReadByte(packet.data, ref offset) == 1) {
+                int textLength = ReadInt(packet.data, ref offset);
+                byte[] textBytes = ReadByteArray(packet.data, ref offset, textLength);
+                text = Encoding.ASCII.GetString(textBytes);
+            }
             int stampIndex = ReadInt(packet.data, ref offset);
             float x = ReadFloat(packet.data, ref offset);
             float y = ReadFloat(packet.data, ref offset);
@@ -1286,10 +1299,10 @@ namespace VRPen {
             int graphicIndex = ReadInt(packet.data, ref offset);
 
             //get stamptexture
-            Texture2D text = PersistantData.getStampTexture(stampIndex);
+            Texture2D texture = PersistantData.getStampTexture(stampIndex);
 
             //add stamp
-            //vectorMan.stamp(text, stampIndex, player.connectionId, graphicIndex, x, y, size, rot, canvasId, false);
+            VectorDrawing.s_instance.stamp(type, text, texture, stampIndex, packet.sender, graphicIndex, x, y, size, rot, canvasId, false);
             
         }
 

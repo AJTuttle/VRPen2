@@ -273,7 +273,7 @@ namespace VRPen {
             //network
             if (localInput) {
                 if (stampIndex == -1) Debug.LogError("Tried to network a non-networkable stamp (stamp index == -1)");
-                else NetworkManager.s_instance.sendStamp(stampIndex, x, y, size, rotation, canvasId, graphicIndex);
+                else NetworkManager.s_instance.sendStamp(type, text, stampIndex, x, y, size, rotation, canvasId, graphicIndex);
             }
             
             //return
