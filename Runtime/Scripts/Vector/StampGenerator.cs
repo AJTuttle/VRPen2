@@ -111,6 +111,11 @@ namespace VRPen {
         }
 
         public void confirmStamp() {
+
+            if (display == null || display.currentLocalCanvas == null) {
+                Debug.LogWarning("Can't stamp since display or canvas is missing");
+                return; 
+            }
             
             Vector3 pos = display.canvasParent.InverseTransformPoint(transform.position);
             VectorStamp stamp = null;
