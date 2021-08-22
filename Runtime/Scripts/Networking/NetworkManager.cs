@@ -821,7 +821,7 @@ namespace VRPen {
             //data
             sendBufferList.Add((byte)type);
             sendBufferList.Add((text != null)? (byte)1 :(byte)0);
-            byte[] textBytes = Encoding.ASCII.GetBytes(name);
+            byte[] textBytes = Encoding.ASCII.GetBytes(text);
             sendBufferList.AddRange(BitConverter.GetBytes(textBytes.Length));
             sendBufferList.AddRange(textBytes);
             
