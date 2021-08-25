@@ -82,7 +82,7 @@ MonoBehaviour:
   cacheSizeDisplays: []
   remoteMarkerPrefab: {fileID: 8217082110612787815, guid: f929d31bb578d7349baa4813213b4f55,
     type: 3}
-  remoteTabletPrefab: {fileID: 4162737611858156914, guid: 27a71b00b9c049b41a5f99f8630e898b,
+  remoteTabletPrefab: {fileID: 7989640083969955989, guid: 1226d7dd7c1f39a42b715d2cccbb96a8,
     type: 3}
   remoteMousePrefab: {fileID: 6923511768144376201, guid: 84fccfdf48296f14ebfe5897c7167efb,
     type: 3}

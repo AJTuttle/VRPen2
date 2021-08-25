@@ -31,7 +31,9 @@ namespace VRPen {
         }
 
         void setStampUIParentSize() {
-            stampUIParent.localScale = Vector3.one / canvasScale.scaleFactor * displayObj.transform.localScale.x / 1.25f;
+            //weird multiplier is bandaid fix
+            //the issue has to do with using a ui on the screenspace
+            stampUIParent.localScale = Vector3.one / canvasScale.scaleFactor * displayObj.transform.localScale.x * 0.715f; 
         }
 
         private void Update() {

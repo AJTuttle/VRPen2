@@ -180,7 +180,7 @@ namespace VRPen {
         }
 
         public ulong getLocalPlayerID() {
-            if (!localPlayerHasID) {
+            if (!VectorDrawing.OfflineMode && !localPlayerHasID) {
                 Debug.LogError("Local player id used before being set");
             }
             return localPlayerId;
