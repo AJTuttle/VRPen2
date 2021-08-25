@@ -19,7 +19,7 @@ VRPen only renders new lines and graphics. By not clearing previous drawing data
 ## VRPen is easily networked
 VRPen is not separately networked but is simple to integrate with any pre-existing networking solution. VRPen also has an integrated light-weight caching system for users that join late.
 ## VRPen has generic input
-VRpen comes with the follow input devices and is built to be easy to add new custom input devices.
+VRpen comes with the following input devices and is built in such a way that it is easy to add new custom input devices.
 - VR Markers
 - Mouse
 - Touch screen
