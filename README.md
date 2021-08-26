@@ -15,6 +15,7 @@ VRPen has a variety of functions and features, including...
 - Backgrounds
 - Undo
 - Clear
+- Image Exporting
 - Color changing
 - Line thickness changing
 ## VRPen takes advantage of both bitmap and vector drawing benefits
