@@ -124,12 +124,34 @@ namespace VRPen {
 
         }
 
+        public void additionalUIToggle(bool localInput, AdditionalUIWindow additionalUIWindow) {
+            
+            calculatorParent.SetActive(false);
+            canvasMenuParent.SetActive(false);
+            clearMenuParent.SetActive(false);
+            stampExplorerParent.SetActive(false);
+            foreach (var window in additionalUIWindows) {
+                if (window == additionalUIWindow) {
+                    if (window.isEnabled()) window.setActive(false);
+                    else window.setActive(true);
+                }
+                else {
+                    window.setActive(false);
+                }
+            }
+
+            if (localInput) queueState();
+        }
+        
 		public void calculatorToggle(bool localInput) {
 
 			calculatorParent.SetActive(!calculatorParent.activeSelf);
 			canvasMenuParent.SetActive(false);
 			clearMenuParent.SetActive(false);
             stampExplorerParent.SetActive(false);
+            foreach (var window in additionalUIWindows) {
+                window.setActive(false);
+            }
 
 
 
@@ -143,7 +165,9 @@ namespace VRPen {
 			calculatorParent.SetActive(false);
 			clearMenuParent.SetActive(false);
             stampExplorerParent.SetActive(false);
-
+            foreach (var window in additionalUIWindows) {
+                window.setActive(false);
+            }
 
             if (localInput) queueState();
 
@@ -154,7 +178,9 @@ namespace VRPen {
 			calculatorParent.SetActive(false);
 			canvasMenuParent.SetActive(false);
             stampExplorerParent.SetActive(false);
-            
+            foreach (var window in additionalUIWindows) {
+                window.setActive(false);
+            }
 
             if (localInput) queueState();
 
@@ -166,7 +192,9 @@ namespace VRPen {
             calculatorParent.SetActive(false);
             canvasMenuParent.SetActive(false);
             stampExplorerParent.SetActive(!stampExplorerParent.activeSelf);
-
+            foreach (var window in additionalUIWindows) {
+                window.setActive(false);
+            }
 
 
             if (localInput) queueState();
@@ -195,7 +223,13 @@ namespace VRPen {
                 if (localInput) queueState();
             }
             
-
+            foreach (var window in additionalUIWindows) {
+                if (window.isEnabled()) {
+                    window.setActive(false);
+                    if (localInput) queueState();
+                }
+            }
+            
 		}
    
 
@@ -418,10 +452,10 @@ namespace VRPen {
             for (int x = 0; x < additionalUICount; x++) {
                 bool en = ReadByte(data, ref offset) == 1 ? true : false;
                 if (en && !additionalUIWindows[x].parent.activeSelf) {
-                    additionalUIWindows[x].parent.SetActive(true);
+                    additionalUIWindows[x].setActive(true);
                 }
                 else if (!en && additionalUIWindows[x].parent.activeSelf) {
-                    additionalUIWindows[x].parent.SetActive(false);
+                    additionalUIWindows[x].setActive(false);
                 }
                 Vector2 pos = new Vector2(ReadFloat(data, ref offset), ReadFloat(data, ref offset));
                 additionalUIWindows[x].grabbable.setExactPos(pos.x, pos.y);

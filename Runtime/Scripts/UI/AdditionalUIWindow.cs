@@ -41,16 +41,26 @@ namespace VRPen {
             grabbable.man = uiMan;
         }
 
-        public void enable() {
-            parent.SetActive(true);
-            uiMan.queueState();
+        public void enable(bool localInput) {
+            if (isEnabled()) return;
+            
+            //toggle
+            uiMan.additionalUIToggle(localInput, this);
+            
         }
 
-        public void disable() {
-            parent.SetActive(false);
-            uiMan.queueState();
+        public void disable(bool localInput) {
+            if (!isEnabled()) return;
+            
+            //toggle
+            uiMan.additionalUIToggle(localInput, this);
+            
         }
 
+        public void setActive(bool active) {
+            parent.SetActive(active);
+        }
+        
         public bool isEnabled() {
             return parent.activeInHierarchy;
         }

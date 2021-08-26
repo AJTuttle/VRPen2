@@ -331,7 +331,7 @@ namespace VRPen {
             //make obj
             //GameObject obj = Instantiate(stampTest) ;
             GameObject obj = GameObject.Instantiate(textStampPrefab);
-            obj.transform.parent = canvas.vectorParent;
+            obj.transform.SetParent(canvas.vectorParent);
             obj.transform.localPosition = Vector3.zero;
 
             //convert from [0,1] to [-180,180]
