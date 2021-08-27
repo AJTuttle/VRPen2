@@ -16,6 +16,7 @@ namespace VRPen {
         
         //pub vars
         public GameObject parent;
+        public GameObject content;
         public RectTransform bg;
         public RectTransform topBar;
         public RectTransform topBarGrab;
@@ -73,7 +74,7 @@ namespace VRPen {
             }
 
             //add new contnnt
-            GameObject content = GameObject.Instantiate(prefab, contentParent);
+            content = GameObject.Instantiate(prefab, contentParent);
             contentRect = content.GetComponent<RectTransform>();
             contentRect.anchorMin = new Vector2(.5f, .5f);
             contentRect.anchorMax = new Vector2(.5f, .5f);

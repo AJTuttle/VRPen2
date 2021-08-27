@@ -59,7 +59,7 @@ namespace VRPen {
         }
 
         //text instantiate
-        public void instantiate(VectorDrawing man, ulong playerId, Display display, string text) {
+        public void instantiate(VectorDrawing man, ulong playerId, Display display, string text, Color textColor) {
             
             //set type
             type = StampType.text;
@@ -70,7 +70,7 @@ namespace VRPen {
             this.display = display;
 
 
-            setText(text);
+            setText(text, textColor);
             setSize(size);
             setRot(rot);
         }
@@ -80,8 +80,9 @@ namespace VRPen {
             imageMat.mainTexture = tex;
         }
 
-        void setText(string text) {
+        void setText(string text, Color textColor) {
             textObj.text = text;
+            textObj.color = textColor;
         }
 
         public void setSize(float value) {
@@ -119,7 +120,7 @@ namespace VRPen {
             
             Vector3 pos = display.canvasParent.InverseTransformPoint(transform.position);
             VectorStamp stamp = null;
-            stamp = vectorMan.stamp(type, textObj.text, imageMat != null ? imageMat.mainTexture: null, stampIndex, playerId,
+            stamp = vectorMan.stamp(type, textObj.text, textObj.color, imageMat != null ? imageMat.mainTexture: null, stampIndex, playerId,
                 NetworkManager.s_instance.localGraphicIndex,
                 -pos.x * display.canvasParent.transform.parent.localScale.x /
                 display.canvasParent.transform.parent.localScale.y, -pos.y, size, rot,

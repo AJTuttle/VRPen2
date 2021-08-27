@@ -33,7 +33,7 @@ namespace VRPen {
         void setStampUIParentSize() {
             //weird multiplier is bandaid fix
             //the issue has to do with using a ui on the screenspace
-            stampUIParent.localScale = Vector3.one / canvasScale.scaleFactor * displayObj.transform.localScale.x * 0.715f; 
+            stampUIParent.localScale = Vector3.one / canvasScale.scaleFactor * displayObj.transform.localScale.x * 0.71f; 
         }
 
         private void Update() {
@@ -67,6 +67,13 @@ namespace VRPen {
             touchInput.canvasMove = toggle;
             moveIcon.SetActive(toggle);
             drawIcons.SetActive(!toggle);
+        }
+        
+        public void turnOnCanvasMove() {
+
+            touchInput.canvasMove = true;
+            moveIcon.SetActive(true);
+            drawIcons.SetActive(!true);
         }
     }
 

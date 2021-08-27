@@ -169,7 +169,7 @@ namespace VRPen {
 
         
         
-        public void newStamp(StampType type, Transform parent, int stampIndex, string text) {
+        public void newStamp(StampType type, Transform parent, int stampIndex, string text, Color textColor) {
             if (currentStamp != null) currentStamp.close();
 
             GameObject obj = Instantiate(stampPrefab, parent);
@@ -180,7 +180,7 @@ namespace VRPen {
             }
             else {
                 currentStamp.instantiate(VectorDrawing.s_instance, NetworkManager.s_instance.getLocalPlayerID(), this,
-                    text);
+                    text, textColor);
             }
         }
         

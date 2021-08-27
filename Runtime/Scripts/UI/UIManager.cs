@@ -521,11 +521,11 @@ namespace VRPen {
 
         public void stampPassthrough(int stampId) {
             stampExplorerToggle(true);
-            display.newStamp(StampType.image, stampUIParent, stampId, null);
+            display.newStamp(StampType.image, stampUIParent, stampId, null, Color.black);
         }
         
-        public void stampPassthrough(string text) {
-            display.newStamp(StampType.text, stampUIParent, -1, text);
+        public void stampPassthrough(string text, Color textColor) {
+            display.newStamp(StampType.text, stampUIParent, -1, text, textColor);
         }
         
 

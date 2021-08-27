@@ -25,7 +25,7 @@ namespace VRPen {
         //[System.NonSerialized]
         //public InputDevice deviceData;
 
-        protected Color32 currentColor = new Color32(0, 0, 0, 255);
+        private Color32 currentColor = new Color32(0, 0, 0, 255);
 
         [Header("Optional Vars for Network Syncing Visuals")] 
         [Space(10)]
@@ -89,6 +89,10 @@ namespace VRPen {
 	        
         }
 
+        public Color32 getColor() {
+	        return currentColor;
+        }
+        
         void sendTarget() {
 
 	        //ignore if not connected or if no target set

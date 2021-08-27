@@ -321,13 +321,13 @@ namespace VRPen {
                     
                     //add new line if need new one
                     if (currentLine == null) {
-                        currentLine = VectorDrawing.s_instance.createNewLine(NetworkManager.s_instance.getLocalPlayerID(), currentColor, NetworkManager.s_instance.localGraphicIndex,
+                        currentLine = VectorDrawing.s_instance.createNewLine(NetworkManager.s_instance.getLocalPlayerID(), getColor(), NetworkManager.s_instance.localGraphicIndex,
                             data.display.currentLocalCanvas, true);
                         NetworkManager.s_instance.localGraphicIndex++;
                         VectorDrawing.s_instance.undoStack.Add(currentLine);
                     }
                     
-                    VectorDrawing.s_instance.draw(NetworkManager.s_instance.getLocalPlayerID(), currentLine.localIndex, false, currentColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
+                    VectorDrawing.s_instance.draw(NetworkManager.s_instance.getLocalPlayerID(), currentLine.localIndex, false, getColor(), xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
                     
                     break;
 

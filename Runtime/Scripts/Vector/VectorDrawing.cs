@@ -254,7 +254,7 @@ namespace VRPen {
         }
 
         //non networked stamps use a stamp index of -1 (for example when stamping is used for the background)
-        public VectorStamp stamp(StampType type, string text, Texture stampTex, int stampIndex, ulong ownerId, int graphicIndex, float x, float y, float size, float rotation, byte canvasId, bool localInput) {
+        public VectorStamp stamp(StampType type, string text, Color textColor, Texture stampTex, int stampIndex, ulong ownerId, int graphicIndex, float x, float y, float size, float rotation, byte canvasId, bool localInput) {
             
             //get canvas
             VectorCanvas canvas = getCanvas(canvasId);
@@ -269,7 +269,7 @@ namespace VRPen {
                 stamp = createStamp(stampTex, canvas, ownerId, graphicIndex, size, rotation, localInput);
             }
             else {
-                stamp = createStamp(text, canvas, ownerId, graphicIndex, size, rotation, localInput);
+                stamp = createStamp(text, textColor, canvas, ownerId, graphicIndex, size, rotation, localInput);
             }
 
             //got vector pos
@@ -281,7 +281,7 @@ namespace VRPen {
             //network
             if (localInput) {
                 if (stampIndex == -1) Debug.LogError("Tried to network a non-networkable stamp (stamp index == -1)");
-                else NetworkManager.s_instance.sendStamp(type, text, stampIndex, x, y, size, rotation, canvasId, graphicIndex);
+                else NetworkManager.s_instance.sendStamp(type, text, textColor, stampIndex, x, y, size, rotation, canvasId, graphicIndex);
             }
             
             //return
@@ -334,7 +334,7 @@ namespace VRPen {
 
         }
 
-        VectorStamp createStamp(string text, VectorCanvas canvas, ulong ownerId,
+        VectorStamp createStamp(string text, Color textColor, VectorCanvas canvas, ulong ownerId,
             int graphicIndex, float size, float rotation, bool isLocal) {
             //make obj
             //GameObject obj = Instantiate(stampTest) ;
@@ -365,6 +365,7 @@ namespace VRPen {
             //tmp
             TextMeshPro tmp = obj.GetComponent<TextMeshPro>();
             tmp.text = text;
+            tmp.color = textColor;
             tmp.fontMaterial.renderQueue = canvas.renderQueueCounter;
             canvas.renderQueueCounter++;
 

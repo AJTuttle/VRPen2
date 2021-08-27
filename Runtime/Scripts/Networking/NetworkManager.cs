@@ -797,7 +797,7 @@ namespace VRPen {
 
         }
 
-        public void sendStamp(StampType type, string text, int stampIndex, float x, float y, float size, float rot, byte canvasId, int graphicIndex) {
+        public void sendStamp(StampType type, string text, Color textColor, int stampIndex, float x, float y, float size, float rot, byte canvasId, int graphicIndex) {
 
             //dont do anything in offline mode
             if (VectorDrawing.OfflineMode) return;
@@ -824,7 +824,9 @@ namespace VRPen {
             byte[] textBytes = Encoding.ASCII.GetBytes(text);
             sendBufferList.AddRange(BitConverter.GetBytes(textBytes.Length));
             sendBufferList.AddRange(textBytes);
-            
+            sendBufferList.AddRange(BitConverter.GetBytes(textColor.r));
+            sendBufferList.AddRange(BitConverter.GetBytes(textColor.g));
+            sendBufferList.AddRange(BitConverter.GetBytes(textColor.b));
             sendBufferList.AddRange(BitConverter.GetBytes(stampIndex));
             sendBufferList.AddRange(BitConverter.GetBytes(x));
             sendBufferList.AddRange(BitConverter.GetBytes(y));
@@ -1290,6 +1292,9 @@ namespace VRPen {
                 byte[] textBytes = ReadByteArray(packet.data, ref offset, textLength);
                 text = Encoding.ASCII.GetString(textBytes);
             }
+
+            Color textColor = new Color(ReadFloat(packet.data, ref offset), ReadFloat(packet.data, ref offset),
+                ReadFloat(packet.data, ref offset));
             int stampIndex = ReadInt(packet.data, ref offset);
             float x = ReadFloat(packet.data, ref offset);
             float y = ReadFloat(packet.data, ref offset);
@@ -1302,7 +1307,7 @@ namespace VRPen {
             Texture2D texture = PersistantData.getStampTexture(stampIndex);
 
             //add stamp
-            VectorDrawing.s_instance.stamp(type, text, texture, stampIndex, packet.sender, graphicIndex, x, y, size, rot, canvasId, false);
+            VectorDrawing.s_instance.stamp(type, text, textColor, texture, stampIndex, packet.sender, graphicIndex, x, y, size, rot, canvasId, false);
             
         }
 
