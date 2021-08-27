@@ -48,7 +48,7 @@ namespace VRPen {
 
 
         [Space(5)]
-        [Header("Line Smoothing and compression parameters")]
+        [Header("Line Smoothing, compression, and processing parameters")]
         [Space(15)]
         [Tooltip("Minimum distance from the last drawn point before a new one is registered, this primarilly is used for performance but also helps a bit with smoothing.")]
         [Range(0f, 0.1f)]
@@ -56,6 +56,14 @@ namespace VRPen {
         [Tooltip("For each new line segment, if its angle to the previous line segment is higher than this then it is a cusp. This means that it will not rotate the last point. Recommended values between 110 and 160.")]
         [Range(90, 180)]
         public float minCuspAngle;
+        [Tooltip("Set anti-alias level for canvases")]
+        public AntiAliasOption antiAliasingLevel;
+        public enum AntiAliasOption : int{
+            None = 1,
+            TwoSamples = 2,
+            FourSamples = 4,
+            EigthSamples = 8,
+        }
 
         [Space(5)]
         [Header("Optimization Parameters")]

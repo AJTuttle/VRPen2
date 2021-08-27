@@ -44,6 +44,7 @@ namespace VRPen {
             //instance material and make the render texture pipe to it
             Material mat = GetComponent<Renderer>().material;
 			renderTexture = new RenderTexture(renderTexturePresets);
+            renderTexture.antiAliasing = (int)VectorDrawing.s_instance.antiAliasingLevel;
             renderTexture.width = width;
             renderTexture.height = height;
             mat.mainTexture = renderTexture;

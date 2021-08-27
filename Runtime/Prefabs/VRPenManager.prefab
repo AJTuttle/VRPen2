@@ -134,6 +134,7 @@ MonoBehaviour:
   enableHotkeys: 0
   minDistanceDelta: 0.005
   minCuspAngle: 110
+  antiAliasingLevel: 1
   lineDataStepSize: 50
   quadPrefab: {fileID: 5229868460911306089, guid: 78c7fe814c087254fa5566c0b51e29f3,
     type: 3}
