@@ -576,8 +576,18 @@ namespace VRPen {
                 //set flag
                 connectedAndCaughtUp = true; 
                 
+                //rerender all canvases
+                Invoke(nameof(rerenderAllCanvases), .1f);
+                
             }
 
+        }
+
+        void rerenderAllCanvases() {
+            //rerender all canvases
+            foreach (var canvas in VectorDrawing.s_instance.canvases) {
+                StartCoroutine(canvas.rerenderCanvas());
+            }
         }
 
         public void sendCacheRequest(ulong requestFromID) {

@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 using UnityEngine.UI;
 
 
@@ -10,9 +12,12 @@ namespace VRPen {
 
     //this is supplemental ui functions specifically for use with the touch use-case (phone/tablet)
     public class TouchUIFunctions : MonoBehaviour {
-
+        
+        public static TouchUIFunctions s_instance;
+        
         public GameObject displayObj;
         public CanvasScaler canvasScale;
+        public RectTransform canvasRect;
         public TouchInput touchInput;
         public UIManager uiMan;
 
@@ -26,14 +31,17 @@ namespace VRPen {
 
         public Transform stampUIParent;
 
+        private void Awake() {
+            s_instance = this;
+        }
+
         void Start() {
             setStampUIParentSize();
         }
 
-        void setStampUIParentSize() {
-            //weird multiplier is bandaid fix
-            //the issue has to do with using a ui on the screenspace
-            stampUIParent.localScale = Vector3.one / canvasScale.scaleFactor * displayObj.transform.localScale.x * 0.71f; 
+        public void setStampUIParentSize() {
+            //fix for screenspace ui being different that world space
+            stampUIParent.localScale = Vector3.one / canvasScale.scaleFactor * displayObj.transform.localScale.x * canvasRect.sizeDelta.y * canvasScale.scaleFactor / 1000f; 
         }
 
         private void Update() {

@@ -520,11 +520,15 @@ namespace VRPen {
         }
 
         public void stampPassthrough(int stampId) {
+            //update stamp ui size if using a touch ui (since the touch ui scales by window size weirdly)
+            if (TouchUIFunctions.s_instance != null) TouchUIFunctions.s_instance.setStampUIParentSize();
             stampExplorerToggle(true);
             display.newStamp(StampType.image, stampUIParent, stampId, null, Color.black);
         }
         
         public void stampPassthrough(string text, Color textColor) {
+            //update stamp ui size if using a touch ui (since the touch ui scales by window size weirdly)
+            if (TouchUIFunctions.s_instance != null) TouchUIFunctions.s_instance.setStampUIParentSize();
             display.newStamp(StampType.text, stampUIParent, -1, text, textColor);
         }
         

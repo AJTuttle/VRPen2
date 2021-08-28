@@ -367,6 +367,7 @@ namespace VRPen {
             tmp.text = text;
             tmp.color = textColor;
             tmp.fontMaterial.renderQueue = canvas.renderQueueCounter;
+            tmp.sortingOrder = 0;
             canvas.renderQueueCounter++;
 
 
