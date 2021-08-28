@@ -1,9 +1,12 @@
 # VRPen2
-## Introduction
+
+## Sample
 
 Link to a simple collaborative WebGL sample: https://ajtuttle.github.io/VRPen2-WebGL-Sample/
 
 Troubleshooting: https://github.com/AJTuttle/VRPen2-WebGL-Sample
+
+## Introduction
 
 VRPen is an internet-networked light-weight Unity package for collaborative drawing. While initially made as a drawing solution for VR software, it has evolved into a generic drawing package for Unity.
 
