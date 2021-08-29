@@ -339,7 +339,7 @@ namespace VRPen {
                         RenderTexture tex = (RenderTexture)data.display.currentLocalCanvas.GetComponent<Renderer>().material.mainTexture;
                         int xPos = tex.width - (int)((pos.x + .5f) * tex.width);
                         int yPos = (int)((pos.y + .5f) * tex.height);
-                        //int yPos = tex.height - (int)((pos.y + .5f) * tex.height); for some reason, need to do this to make it work on webgl
+                        //int yPos = tex.height - (int)((pos.y + .5f) * tex.height); //for some reason, need to do this to make it work on webgl
                         Texture2D tempTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
                         RenderTexture.active = tex;
                         tempTexture.ReadPixels(new Rect(xPos - 1, yPos - 1, tex.width, tex.height), 0, 0);

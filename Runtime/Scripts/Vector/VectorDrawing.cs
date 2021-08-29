@@ -319,6 +319,7 @@ namespace VRPen {
             currentStamp.createdLocally = isLocal;
             currentStamp.ownerId = ownerId;
             currentStamp.localIndex = graphicIndex;
+            currentStamp.canvasId = canvas.canvasId;
             canvas.graphics.Add(currentStamp);
 
 
@@ -359,6 +360,7 @@ namespace VRPen {
             currentStamp.createdLocally = isLocal;
             currentStamp.ownerId = ownerId;
             currentStamp.localIndex = graphicIndex;
+            currentStamp.canvasId = canvas.canvasId;
             canvas.graphics.Add(currentStamp);
 
             
