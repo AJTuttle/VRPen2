@@ -35,7 +35,7 @@ VRPen only renders new lines and graphics when it needs to. By not clearing prev
 ## VRPen is easily networked
 VRPen is not separately networked but is simple to integrate with any pre-existing networking solution. VRPen also has an integrated light-weight caching system for users that join late.
 ## VRpen has generic output
-VRPen have both canvases, and displays. Simply put, canvases are the actually drawings, while displays are where the canvases are displayed. VRPen can simply have one canvas for each display, but it can also be setup to have displays that contain more than one canvas, multiple displays that contain the same canvases, or any combination. 
+VRPen has both canvases, and displays. Simply put, canvases are the actually drawings, while displays are where the canvases are displayed. VRPen can simply have one canvas for each display, but it can also be setup to have displays that contain more than one canvas, multiple displays that contain the same canvases, or any combination. 
 ## VRPen has generic input
 VRpen comes with the following input devices and is built in such a way that it is easy to add new custom input devices.
 - VR Markers
