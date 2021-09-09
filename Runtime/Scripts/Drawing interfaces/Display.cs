@@ -13,8 +13,10 @@ namespace VRPen {
         [Space(10)]
         [Tooltip("Any unique identifier for the device")]
         public byte uniqueIdentifier;
-        [Tooltip("Sync ui and canvas changes over network")]
-        public bool syncDisplay;
+        [Tooltip("Sync canvas changes over network")]
+        public bool syncCanvas;
+        [Tooltip("Sync ui state over network")]
+        public bool syncUIState;
         [Tooltip("Should spawn in with its own canvas. Spawns after fully connected (or offline mode). ONLY WORKS FOR DISPLAYS PRESENT AT START OF SCENE")]
         public bool spawnCanvasOnStart;
         [Tooltip("Full access means that the display can see all canvases")]
@@ -204,7 +206,7 @@ namespace VRPen {
             canvasObjs[currentLocalCanvas.canvasId].GetComponent<Renderer>().enabled = true;
 
             //sync
-            if (localInput && syncDisplay) NetworkManager.s_instance.sendCanvasChange(uniqueIdentifier, canvasId);
+            if (localInput && syncCanvas) NetworkManager.s_instance.sendCanvasChange(uniqueIdentifier, canvasId);
             
         }
 

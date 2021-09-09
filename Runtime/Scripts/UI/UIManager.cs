@@ -318,7 +318,7 @@ namespace VRPen {
         public void packState() {
             
             //dont do anything if we dont wanna sync
-            if (!display.syncDisplay) return;
+            if (!display.syncUIState) return;
 
             //make sure state is queued
             if (!stateQueued) return;
