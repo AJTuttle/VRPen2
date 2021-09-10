@@ -221,7 +221,9 @@ namespace VRPen {
 
                 //get value [0-1]
                 float value = data.hit.collider.transform.InverseTransformPoint(data.hit.point).x;
-                float scale = ((BoxCollider) data.hit.collider).size.x;
+                BoxCollider sliderCol = (BoxCollider) data.hit.collider;
+                float scale = sliderCol.size.x - sliderCol.size.y; //the minus y is for since the furthest left or right
+                                                                   //is half the diameter of the bubble (y/2) off 
                 value = value / scale + 0.5f;
 
                 UISlider slidyBoi = button.GetComponent<UISlider>();
