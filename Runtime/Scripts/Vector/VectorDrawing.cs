@@ -35,6 +35,9 @@ namespace VRPen {
         public bool startInOfflineMode;
         [Tooltip("A constant background that gets spawned with certain canvas IDs (the canvas ID is the index of this array). Don't fret if this list doesnt match the length of canvases.")]
         public Texture[] canvasBackgrounds;
+        public bool overrideBackgroundPose;
+        public float backgroundSizeOverride;
+        public float backgroundRotOverride;
         [Tooltip("In build, canvases will autosave on applicationQuit and scenechange event.")]
         public bool autoSavePNGOnExit;
         [Tooltip("Max number of unique canvases stored")]

@@ -506,7 +506,9 @@ namespace VRPen {
 			
 			//set background
 			if (drawingMan.canvasBackgrounds.Length > canvasId && drawingMan.canvasBackgrounds[canvasId] != null) {
-				drawingMan.stamp(StampType.image, null, Color.black, drawingMan.canvasBackgrounds[canvasId], -1, ulong.MaxValue, canvasId, 0, 0, 1, 0.5f, canvasId, false);
+                float size =VectorDrawing.s_instance.overrideBackgroundPose ? VectorDrawing.s_instance.backgroundSizeOverride : 1;
+                float rot =VectorDrawing.s_instance.overrideBackgroundPose ? VectorDrawing.s_instance.backgroundRotOverride : 0.5f;
+				drawingMan.stamp(StampType.image, null, Color.black, drawingMan.canvasBackgrounds[canvasId], -1, ulong.MaxValue, canvasId, 0, 0, size, rot, canvasId, false);
 			}
 
         }
