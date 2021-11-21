@@ -49,8 +49,6 @@ namespace VRPen {
                 int belowMenuVisable = -totalMenuSize + defaultSizeBelowScalingMenu + menuPos + maxSize;
                 if (belowMenuVisable < 0) belowMenuVisable = 0;
 
-                Debug.Log(aboveMenuVisable + "  " + belowMenuVisable);
-
                 //turn off culled menu items
                 int topCulledCount = (int)((menuPos - defaultSizeAboveScalingMenu + sizePerScalingMenuItem/2) / sizePerScalingMenuItem);
                 if (topCulledCount < 0) topCulledCount = 0;

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
@@ -571,7 +572,7 @@ namespace VRPen {
         }
 
         public void saveImage(byte canvasId) {
-			TextureSaver.export(getCanvas(canvasId).renderTexture);
+			TextureSaver.export(getCanvas(canvasId).renderTexture, "Save_C"+canvasId + "_"+ DateTime.UtcNow.ToString("yyyy-MM-dd_HH-mm-ss-ff"));
 		}
 
 
