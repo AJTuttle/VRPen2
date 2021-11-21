@@ -25,6 +25,8 @@ namespace VRPen {
 			#else
             string saveDir = Application.dataPath;
 			#endif
+	        if (VectorDrawing.s_instance.savedPNGPathOverride.Length > 0)
+		        saveDir = VectorDrawing.s_instance.savedPNGPathOverride;
 	        saveDir += "\\"+name;
 	        if (count > 0) saveDir += "(" + count +")";
 	        saveDir += ".png";

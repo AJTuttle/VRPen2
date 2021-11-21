@@ -41,6 +41,7 @@ namespace VRPen {
         public float backgroundRotOverride;
         [Tooltip("In build, canvases will autosave on applicationQuit and scenechange event.")]
         public bool autoSavePNGOnExit;
+        public string savedPNGPathOverride;
         [Tooltip("Max number of unique canvases stored")]
         public int MAX_CANVAS_COUNT;
         [Tooltip("The render area is where the meshs for the drawing is constructed and rendered, this var sets its location in the scene")]

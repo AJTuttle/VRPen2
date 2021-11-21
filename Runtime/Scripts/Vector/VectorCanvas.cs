@@ -1,8 +1,9 @@
 ﻿ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+ using UnityEngine.Events;
 
-namespace VRPen {
+ namespace VRPen {
 
     public class VectorCanvas : MonoBehaviour {
 
@@ -26,6 +27,10 @@ namespace VRPen {
 		public RenderTexture renderTexture;
 
         const float PRESSURE_MULTIPLIER = 0.01f;
+
+        //EVENT: rerenders, clears, adding of graphics, etc //event
+        public delegate void VRPenMajorCanvasUpdate(byte id);
+        public event VRPenMajorCanvasUpdate majorCanvasUpdateEvent;
 
 
 		public void instantiate(VectorDrawing man, NetworkManager net, byte id, int width, int height, byte displayId) {
@@ -448,6 +453,9 @@ namespace VRPen {
             foreach (VectorGraphic graphic in graphics) {
                 if (!graphic.editLock) graphic.mr.enabled = true;
             }
+            
+            //throw event
+            majorCanvasUpdateEvent?.Invoke(canvasId);
 
         }
 
@@ -510,6 +518,9 @@ namespace VRPen {
                 float rot =VectorDrawing.s_instance.overrideBackgroundPose ? VectorDrawing.s_instance.backgroundRotOverride : 0.5f;
 				drawingMan.stamp(StampType.image, null, Color.black, drawingMan.canvasBackgrounds[canvasId], -1, ulong.MaxValue, canvasId, 0, 0, size, rot, canvasId, false);
 			}
+            
+            //throw event
+            majorCanvasUpdateEvent?.Invoke(canvasId);
 
         }
 
@@ -527,6 +538,9 @@ namespace VRPen {
             
             //turn off graphic.mr if it still exists (it could have been deleted in the 2 frames, especially in catchup sequences)
             if (graphic.mr != null) graphic.mr.enabled = false;
+            
+            //throw event
+            majorCanvasUpdateEvent?.Invoke(canvasId);
 
         }
 
