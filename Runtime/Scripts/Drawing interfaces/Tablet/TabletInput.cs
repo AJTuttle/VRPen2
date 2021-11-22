@@ -105,8 +105,15 @@ namespace VRPen {
                 updatelocalCursor();
 
                 //gesture
-                if (tablet.getButton(5)) {
-                    gestureInput();
+                if (currentSample.state ==  StarTablet2.PenState.LBUTTON_TOUCH || currentSample.state ==  StarTablet2.PenState.LBUTTON_AIR) {
+                    
+                    //gets tart and end
+                    bool start = lastSample.state != StarTablet2.PenState.LBUTTON_TOUCH &&
+                                 currentSample.state == StarTablet2.PenState.LBUTTON_TOUCH;
+                    bool release = currentSample.state == StarTablet2.PenState.LBUTTON_AIR &&
+                                   lastSample.state == StarTablet2.PenState.LBUTTON_TOUCH;
+                    
+                    gestureInput(start, release);
                     idleThisFrame = true;
                     
                     //set cursor
@@ -166,19 +173,16 @@ namespace VRPen {
             cursorMesh2.SetActive(x == 2);
         }
         
-        void gestureInput() {
+        void gestureInput(bool start, bool release) {
             
             //press
-            if (currentSample.state == StarTablet2.PenState.TOUCH &&
-                lastSample.state != StarTablet2.PenState.TOUCH) {
+            if (start) {
                 
                 //swipe start
                 swipeStart = currentSample.point;
             }
             //release
-            else if (lastSample.state == StarTablet2.PenState.TOUCH && 
-                     currentSample.state != StarTablet2.PenState.TOUCH) {
-                
+            else if (release) {
                 
                 //swipe
                 if (Vector2.Distance(currentSample.point, swipeStart) >= minSwipeDistance) {
@@ -213,6 +217,7 @@ namespace VRPen {
                     
                     //invoke
                     doubleTapGesture.Invoke();
+                    
                 }
                 //double tap start
                 else {
