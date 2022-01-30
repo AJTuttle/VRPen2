@@ -115,7 +115,8 @@ namespace VRPen {
             else if (hover == HoverState.NODRAW || hover == HoverState.NONE) noDrawHover(data);
             else if (hover == HoverState.PALETTE) paletteHover(data);
             else if (hover == HoverState.SELECTABLE) selectableHover(data);
-		
+            
+            
 			
         }
 
@@ -297,7 +298,6 @@ namespace VRPen {
         
 
         void canvasHover(InputData data) {
-            
 
             //return if no canvas
             if (data.display.currentLocalCanvas == null) {

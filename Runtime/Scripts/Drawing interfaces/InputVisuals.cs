@@ -15,6 +15,7 @@ namespace VRPen {
         public GameObject eyedropperModel;
         public GameObject eraserModel;
 
+        public bool colorIndicatorsForceOpaque;
         public List<Image> colorIndicatorUIImages;
         public List<Renderer> colorIndicatorRenderers;
 		public List<int> colorIndicatorRenderersIndex;
@@ -133,7 +134,12 @@ namespace VRPen {
             if (localInput && sendVisualUpdates) NetworkManager.s_instance.sendInputVisualEvent(ownerID, uniqueIdentifier, currentColor, newState);
         }
 
-		private void updateColorIndicators(Color32 color, bool localInput) {
+		private void updateColorIndicators(Color32 color, bool localInput)
+		{
+
+			//set opacity if needed
+			if (colorIndicatorsForceOpaque) color = new Color32(color.r, color.g, color.b, Byte.MaxValue);
+			
 			if (colorIndicatorRenderers.Count != colorIndicatorRenderersIndex.Count) {
 				Debug.Log("There is not the same ammount of color indicators as there are indices.");
 				return;
