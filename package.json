@@ -19,6 +19,11 @@
       "displayName": "Photon",
       "description": "Photon networking sample.",
       "path": "Samples~/Photon sample scene"
+    },
+    {
+      "displayName": "VelNet",
+      "description": "VelNet networking sample.",
+      "path": "Samples~/Velnet sample scene"
     }
 
   ]
