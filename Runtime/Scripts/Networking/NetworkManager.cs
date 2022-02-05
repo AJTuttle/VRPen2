@@ -447,6 +447,8 @@ namespace VRPen {
 
         void sendCache(ulong receiverId) {
             
+            VRPen.Debug.Log("Sending VRPen cache to user ID: " + receiverId);
+            
             //get cache
             List<byte[]> fullCache = getCache();
             
@@ -1136,7 +1138,7 @@ namespace VRPen {
             
             //get data
             ulong responderId = ReadULong(packet.data, ref offset);
-            
+
             //send cache if this user is the responder
             if (responderId == localPlayerId) {
                 sendCache(packet.sender);
