@@ -321,6 +321,12 @@ namespace VRPen {
                         data.pressure *= data.display.UIMan.optionalLineThicknessModifier.value;
                     }
                     
+                    //end line if 0 pressure
+                    if (data.pressure == 0) {
+                        endLine();
+                        return;
+                    }
+                    
                     //add new line if need new one
                     if (currentLine == null) {
                         currentLine = VectorDrawing.s_instance.createNewLine(NetworkManager.s_instance.getLocalPlayerID(), getColor(), NetworkManager.s_instance.localGraphicIndex,
@@ -330,7 +336,7 @@ namespace VRPen {
                     }
                     
                     VectorDrawing.s_instance.draw(NetworkManager.s_instance.getLocalPlayerID(), currentLine.localIndex, false, getColor(), xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
-                    
+                    if(data.pressure == 0) UnityEngine.Debug.LogError("test no pressh");
                     break;
 
                 case ToolState.EYEDROPPER:
@@ -364,6 +370,12 @@ namespace VRPen {
 
                 case ToolState.ERASE:
 
+                    //end line if 0 pressure
+                    if (data.pressure == 0) {
+                        endLine();
+                        return;
+                    }
+                    
                     //add new line if need new one
                     if (currentLine == null) {
                         currentLine = VectorDrawing.s_instance.createNewLine(NetworkManager.s_instance.getLocalPlayerID(), data.display.currentLocalCanvas.bgColor, NetworkManager.s_instance.localGraphicIndex,
@@ -373,6 +385,7 @@ namespace VRPen {
                     }
                     
                     VectorDrawing.s_instance.draw(NetworkManager.s_instance.getLocalPlayerID(), currentLine.localIndex, false, data.display.currentLocalCanvas.bgColor, xFloat, yFloat, data.pressure, data.display.currentLocalCanvas.canvasId, true);
+                    if(data.pressure == 0) UnityEngine.Debug.LogError("test no pressh");
                     break;
 
                 //case ToolState.STAMP:
