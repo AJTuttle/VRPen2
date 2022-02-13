@@ -11,9 +11,9 @@ namespace VRPen {
 
 		[Header("Optional Visual Parameters")]
         [Space(10)]
-        public GameObject markerModel;
-        public GameObject eyedropperModel;
-        public GameObject eraserModel;
+        public List<GameObject> markerModels;
+        public List<GameObject> eyedropperModels;
+        public List<GameObject> eraserModels;
 
         public bool colorIndicatorsForceOpaque;
         public List<Image> colorIndicatorUIImages;
@@ -126,9 +126,21 @@ namespace VRPen {
             state = newState;
 
             //switch models
-            if (markerModel != null) markerModel.SetActive(newState == ToolState.NORMAL);
-            if (eraserModel != null) eraserModel.SetActive(newState == ToolState.ERASE);
-            if (eyedropperModel != null) eyedropperModel.SetActive(newState == ToolState.EYEDROPPER);
+            if (markerModels != null) {
+	            foreach (GameObject obj in markerModels) {
+		            obj.SetActive(newState == ToolState.NORMAL);
+	            }
+            }
+            if (eraserModels != null) {
+	            foreach (GameObject obj in eraserModels) {
+		            obj.SetActive(newState == ToolState.ERASE);
+	            }
+            }
+            if (eyedropperModels != null) {
+	            foreach (GameObject obj in eyedropperModels) {
+		            obj.SetActive(newState == ToolState.EYEDROPPER);
+	            }
+            }
 
             //network
             if (localInput && sendVisualUpdates) NetworkManager.s_instance.sendInputVisualEvent(ownerID, uniqueIdentifier, currentColor, newState);
