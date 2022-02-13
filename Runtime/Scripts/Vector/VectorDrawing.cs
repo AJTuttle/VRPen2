@@ -540,12 +540,10 @@ namespace VRPen {
 
             //make canvas
             VectorCanvas temp = GameObject.Instantiate(canvasPrefab, canvasParent).GetComponent<VectorCanvas>();
+            canvases.Add(temp);
             temp.instantiate(this, NetworkManager.s_instance, canvasId, pixelWidth, pixelHeight, originDisplayID);
             temp.GetComponent<Renderer>().enabled = false;
 
-            //add to list
-            canvases.Add(temp);
-            
             //make copys of texture
             foreach (Display display in displays) {
                 

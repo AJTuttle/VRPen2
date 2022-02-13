@@ -506,18 +506,20 @@ using UnityEngine;
 
         IEnumerator fillboard() {
 
+            //set background img if available
+            if (drawingMan.canvasBackgrounds.Length > canvasId && drawingMan.canvasBackgrounds[canvasId] != null) {
+                float size =VectorDrawing.s_instance.overrideBackgroundPose ? VectorDrawing.s_instance.backgroundSizeOverride : 1;
+                float rot =VectorDrawing.s_instance.overrideBackgroundPose ? VectorDrawing.s_instance.backgroundRotOverride : 0.5f;
+                drawingMan.stamp(StampType.image, null, Color.black, drawingMan.canvasBackgrounds[canvasId], -1, ulong.MaxValue, canvasId, 0, 0, size, rot, canvasId, false);
+            }
+            
+            //set background color
             renderCam.clearFlags = CameraClearFlags.SolidColor;
             renderCam.backgroundColor = bgColor;
             yield return null;
             yield return null;
             renderCam.clearFlags = CameraClearFlags.Nothing;
 			
-			//set background
-			if (drawingMan.canvasBackgrounds.Length > canvasId && drawingMan.canvasBackgrounds[canvasId] != null) {
-                float size =VectorDrawing.s_instance.overrideBackgroundPose ? VectorDrawing.s_instance.backgroundSizeOverride : 1;
-                float rot =VectorDrawing.s_instance.overrideBackgroundPose ? VectorDrawing.s_instance.backgroundRotOverride : 0.5f;
-				drawingMan.stamp(StampType.image, null, Color.black, drawingMan.canvasBackgrounds[canvasId], -1, ulong.MaxValue, canvasId, 0, 0, size, rot, canvasId, false);
-			}
             
             //throw event
             majorCanvasUpdateEvent?.Invoke(canvasId);
