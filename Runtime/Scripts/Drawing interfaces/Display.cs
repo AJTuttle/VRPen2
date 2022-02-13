@@ -158,11 +158,12 @@ namespace VRPen {
        
         public void eyedropperPassthrough(VRPenInput input) {
             if (input.state != VRPenInput.ToolState.EYEDROPPER) input.switchTool(VRPenInput.ToolState.EYEDROPPER);
-            
+            else input.switchTool(VRPenInput.ToolState.NORMAL);
         }
 
         public void erasePassthrough(VRPenInput input) {
             if (input.state != VRPenInput.ToolState.ERASE) input.switchTool(VRPenInput.ToolState.ERASE);
+            else input.switchTool(VRPenInput.ToolState.NORMAL);
         }
 
         public void markerPassthrough(VRPenInput input) {
