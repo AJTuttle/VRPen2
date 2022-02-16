@@ -41,6 +41,10 @@ namespace VRPen {
         public float targetTransformSendRepeatRate;
         [Tooltip("Target to be sent and to sync")]
         public Transform targetTransform;
+        [Tooltip("Target should be sent as local to a display (false = global space)")]
+        public bool targetLocalToDisplay;
+        [Tooltip("Display ID to set the target local to")]
+        public byte targetLocalToDisplayID;
         [Tooltip("Target will be constantly interpolating to the most recent network update")]
         public bool interpolateTargetFromNetwork;
         [FormerlySerializedAs("interpolationRate")] [Tooltip("Percent interpolation per frame [0,1]")]
@@ -99,17 +103,71 @@ namespace VRPen {
 	        //ignore if not connected or if no target set
 	        if (targetTransform == null|| !NetworkManager.s_instance.connectedAndCaughtUp) return;
 	        
-	        //send
-	        NetworkManager.s_instance.sendInputVisualTarget(ownerID, uniqueIdentifier, targetTransform);
+	        //send target based on whether it needs to be sent as local to another transform
+	        if (targetLocalToDisplay) {
+		        Display display = VectorDrawing.s_instance.displays.Find(x => x.uniqueIdentifier == targetLocalToDisplayID);
+		        
+		        //cant find display
+		        if (display == null) {
+			        //error
+			        UnityEngine.Debug.LogError("Could not find display to sync input device transform to.");
+			        
+			        //send
+			        NetworkManager.s_instance.sendInputVisualTarget(ownerID, uniqueIdentifier, targetTransform.gameObject, targetTransform.position, targetTransform.rotation, false, 0);
+		        }
+		        
+		        //found local display
+		        else {
+			        
+			        //get local vars
+			        Vector3 localPos = display.transform.InverseTransformPoint(targetTransform.position);
+			        Quaternion localRot = Quaternion.Inverse(display.transform.rotation) * targetTransform.rotation;
+			        
+			        //send
+			        NetworkManager.s_instance.sendInputVisualTarget(ownerID, uniqueIdentifier, targetTransform.gameObject, localPos, localRot, true, targetLocalToDisplayID);
+		        }
+	        }
+	        
+	        //global
+	        else {
+		        //send
+		        NetworkManager.s_instance.sendInputVisualTarget(ownerID, uniqueIdentifier, targetTransform.gameObject, targetTransform.position, targetTransform.rotation, false, 0);
+	        }
 	        
         }
 
-        public void receiveTarget(Vector3 pos, Quaternion rot, bool active) {
+        public void receiveTarget(Vector3 pos, Quaternion rot, bool active, bool localToDisplay, byte localToDisplayID) {
 	        //set target
 	        if (targetTransform != null) {
-		        interpolatePosTarget = pos;
-		        interpolateRotTarget = rot;
+		        
+		        //if local
+		        if (localToDisplay) {
+			        
+			        //get display
+			        Display display = VectorDrawing.s_instance.displays.Find(x => x.uniqueIdentifier == localToDisplayID);
+			        
+			        //error, use global
+			        if (display == null) {
+				        interpolatePosTarget = pos;
+				        interpolateRotTarget = rot;
+			        }
+			        
+			        //set local
+			        else {
+				        interpolatePosTarget = display.transform.TransformPoint(pos);
+				        interpolateRotTarget = display.transform.rotation * rot;
+			        }
+		        }
+		        
+		        //set global
+		        else {
+			        interpolatePosTarget = pos;
+			        interpolateRotTarget = rot;
+		        }
+		        
+		        //set active
 		        targetTransform.gameObject.SetActive(active);
+		        
 	        }
         }
 
