@@ -193,6 +193,12 @@ namespace VRPen {
 
         public void swapCurrentCanvas(byte canvasId, bool localInput) {
 
+            //ignore if already on canvas
+            if (currentLocalCanvas != null && currentLocalCanvas.canvasId == canvasId) {
+                UnityEngine.Debug.Log("Trying to swap to canvas that display is already on. (This is not likely to cause a problem in it of itself). [display="+uniqueIdentifier+", canvas="+canvasId+"]");
+                return;
+            }
+
             //end local drawing if it is drawing
             foreach (InputVisuals input in VectorDrawing.s_instance.inputDevices){
                 if (input is VRPenInput && ((VRPenInput)input).currentLine != null &&
