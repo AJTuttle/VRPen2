@@ -49,6 +49,10 @@ namespace VRPen {
         [System.NonSerialized]
         public StampGenerator currentStamp;
 
+        
+        public delegate void CanvasChangeEvent(VectorCanvas previousCanvas, VectorCanvas newCanvas);
+        public event CanvasChangeEvent canvasChangeEvent;
+        
         private void Start() {
             
             //add to displays
@@ -208,9 +212,13 @@ namespace VRPen {
             }
 
             //swap canvas
+            VectorCanvas previousCanvas = currentLocalCanvas;
             if(currentLocalCanvas != null) canvasObjs[currentLocalCanvas.canvasId].GetComponent<Renderer>().enabled = false;
             currentLocalCanvas = VectorDrawing.s_instance.getCanvas(canvasId);
             canvasObjs[currentLocalCanvas.canvasId].GetComponent<Renderer>().enabled = true;
+            
+            //event
+            canvasChangeEvent.Invoke(previousCanvas, currentLocalCanvas);
 
             //sync
             if (localInput && syncCanvas) NetworkManager.s_instance.sendCanvasChange(uniqueIdentifier, canvasId);
