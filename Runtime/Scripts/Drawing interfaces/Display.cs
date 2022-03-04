@@ -218,7 +218,7 @@ namespace VRPen {
             canvasObjs[currentLocalCanvas.canvasId].GetComponent<Renderer>().enabled = true;
             
             //event
-            canvasChangeEvent.Invoke(previousCanvas, currentLocalCanvas);
+            canvasChangeEvent?.Invoke(previousCanvas, currentLocalCanvas);
 
             //sync
             if (localInput && syncCanvas) NetworkManager.s_instance.sendCanvasChange(uniqueIdentifier, canvasId);
