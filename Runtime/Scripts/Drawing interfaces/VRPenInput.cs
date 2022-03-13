@@ -124,19 +124,51 @@ namespace VRPen {
 
             foreach (RaycastHit hit in hits) {
 
+                //get depth data
+                bool useDepth = false;
+                int currDepth = 0;
+                if (data.hover == HoverState.GRABBABLE) {
+                    currDepth = data.hit.collider.GetComponent<Graphic>().depth;
+                    useDepth = true;
+                }
+                else if (data.hover == HoverState.SELECTABLE) {
+                    if (data.hit.collider.GetComponent<Slider>())
+                        currDepth = data.hit.collider.GetComponent<Slider>().targetGraphic.depth;
+                    else currDepth = data.hit.collider.GetComponent<Graphic>().depth;
+                    useDepth = true;
+                }
+                
+                //
                 if (hit.collider.GetComponent<Selectable>() != null) {
+                    
+                    if (useDepth) {
+                        int depth;
+                        if (data.hit.collider.GetComponent<Slider>())
+                            depth = data.hit.collider.GetComponent<Slider>().targetGraphic.depth;
+                        else depth = data.hit.collider.GetComponent<Graphic>().depth;
+                        if (depth > currDepth) {
+                            data.hover = HoverState.SELECTABLE;
+                            data.hit = hit;
+                        }
+                    }
+                    else {
+                        data.hover = HoverState.SELECTABLE;
+                        data.hit = hit;
+                    }
 
-                    data.hover = HoverState.SELECTABLE;
-                    data.hit = hit;
-                    break;
 
                 }
-                else if (hit.collider.GetComponent<UIGrabbable>() != null&&
-                         (data.hover == HoverState.NONE || data.hover == HoverState.NODRAW || data.hover == HoverState.DRAW 
-                          || data.hover == HoverState.PALETTE || data.hover == HoverState.AREAINPUT)) {
-
-                    data.hover = HoverState.GRABBABLE;
-                    data.hit = hit;
+                else if (hit.collider.GetComponent<UIGrabbable>() != null) {
+                    if (useDepth) {
+                        if (hit.collider.GetComponent<Graphic>().depth > currDepth) {
+                            data.hover = HoverState.GRABBABLE;
+                            data.hit = hit;
+                        }
+                    }
+                    else {
+                        data.hover = HoverState.GRABBABLE;
+                        data.hit = hit;
+                    }
 
                 }
                 else if (hit.collider.GetComponent<UIInputArea>() != null &&
