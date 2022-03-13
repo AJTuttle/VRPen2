@@ -143,9 +143,9 @@ namespace VRPen {
                     
                     if (useDepth) {
                         int depth;
-                        if (data.hit.collider.GetComponent<Slider>())
-                            depth = data.hit.collider.GetComponent<Slider>().targetGraphic.depth;
-                        else depth = data.hit.collider.GetComponent<Graphic>().depth;
+                        if (hit.collider.GetComponent<Slider>())
+                            depth = hit.collider.GetComponent<Slider>().targetGraphic.depth;
+                        else depth = hit.collider.GetComponent<Graphic>().depth;
                         if (depth > currDepth) {
                             data.hover = HoverState.SELECTABLE;
                             data.hit = hit;
