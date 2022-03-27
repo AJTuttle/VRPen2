@@ -49,23 +49,34 @@ namespace VRPen {
         bool[] btnDown = new bool[9];
         bool[] btnUp = new bool[9];
         int wheelMagnitudeTracker = 0;
+        private bool started = false;
         
         
         #region start
 
             private void Start() {
+                StartCoroutine(startAfterFrame());
+
+            }
+
+            IEnumerator startAfterFrame() {
+                
+                //wait frame
+                yield return null;
                 
                 //start
                 #if UNITY_ANDROID && !UNITY_EDITOR
-				    androidPlugin = new AndroidJavaClass("vel.engr.uga.edu.hidplugin.HidPlugin");
-				    AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-				    AndroidJavaObject activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
-				    context = activity.Call<AndroidJavaObject>("getApplicationContext");
-                    androidPlugin_res_tablet = androidPlugin.CallStatic<int>("runTablet", context);
-                    androidPlugin_res_mouse = androidPlugin.CallStatic<int>("runUnifyingReceiver", context);
+				        androidPlugin = new AndroidJavaClass("vel.engr.uga.edu.hidplugin.HidPlugin");
+				        AndroidJavaClass unityPlayer = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+				        AndroidJavaObject activity = unityPlayer.GetStatic<AndroidJavaObject>("currentActivity");
+				        context = activity.Call<AndroidJavaObject>("getApplicationContext");
+                        androidPlugin_res_tablet = androidPlugin.CallStatic<int>("runTablet", context);
+                        androidPlugin_res_mouse = androidPlugin.CallStatic<int>("runUnifyingReceiver", context);
                 #else
                     startStar();
                 #endif
+
+                started = true;
             }
 
         #endregion
@@ -73,6 +84,13 @@ namespace VRPen {
         #region update
 
             private void Update() {
+                
+                //wait untill started
+                if (!started) {
+                    UnityEngine.Debug.Log("Waiting for tablet plugin to init before polling (this message +" +
+                                          "is expected to occur once or twice while application is loading, if this continues to occur there was an error)");
+                    return;
+                }
                 
                 //clear samples
                 penSamples.Clear();
