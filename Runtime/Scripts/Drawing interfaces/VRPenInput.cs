@@ -147,12 +147,12 @@ namespace VRPen {
                             depth = hit.collider.GetComponent<Slider>().targetGraphic.depth;
                         else depth = hit.collider.GetComponent<Graphic>().depth;
                         if (depth > currDepth) {
-                            data.hover = HoverState.SELECTABLE;
+                            data.hover = hit.collider.GetComponent<Selectable>().interactable ? HoverState.SELECTABLE : HoverState.NODRAW;
                             data.hit = hit;
                         }
                     }
                     else {
-                        data.hover = HoverState.SELECTABLE;
+                        data.hover = hit.collider.GetComponent<Selectable>().interactable ? HoverState.SELECTABLE : HoverState.NODRAW;
                         data.hit = hit;
                     }
 
