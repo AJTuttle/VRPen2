@@ -378,7 +378,15 @@ namespace VRPen {
                         //make copy of rendertexture to texture2d to get pixel
                         RenderTexture tex = (RenderTexture)data.display.currentLocalCanvas.GetComponent<Renderer>().material.mainTexture;
                         int xPos = tex.width - (int)((pos.x + .5f) * tex.width);
-                        int yPos = (int)((pos.y + .5f) * tex.height);
+                        int yPos;
+                        
+                        //flip yPos if using android (android seems to flip it, noticed when working on pico neo 3)
+                        #if UNITY_ANDROID && !UNITY_EDITOR
+                            yPos = tex.height - (int)((pos.y + .5f) * tex.height);
+                        #else
+                            yPos = (int)((pos.y + .5f) * tex.height);
+                        #endif
+                        
                         //int yPos = tex.height - (int)((pos.y + .5f) * tex.height); //for some reason, need to do this to make it work on webgl
                         Texture2D tempTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
                         RenderTexture.active = tex;
