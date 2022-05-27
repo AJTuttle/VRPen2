@@ -11,13 +11,11 @@ namespace VRPen {
 
         public Camera cam;
         public float pressure = 0;
-        public Display display;
 
         public Renderer colorMat;
 
         //canvas tranlation vars
         public bool canvasMove = false;
-        public GameObject displayObj;
         public bool firstCanvasMoveInput = true;
         Vector3 lastCanvasMovePos;
 
@@ -72,12 +70,31 @@ namespace VRPen {
             //detect hit based off priority
             raycastPriorityDetection(ref data, hits);
 
+            
+            
             //no hit found
             if (data.hover == HoverState.NONE) {
                 return data;
             }
+            
+            //find display
+            Display localDisplay = null;
+            Display[] displays = FindObjectsOfType<Display>();
+            foreach(Display display in displays) {
+                if (data.hit.collider.transform.IsChildOf(display.transform)) {
+                    localDisplay = display;
+                    break;
+                }
+            }
+            if (localDisplay == null) {
+                Debug.LogError("could not find display");
+            }
+            else {
+                data.display = localDisplay;
+            }
+            
             //if we need to move th canvas
-            else if (data.hover == HoverState.DRAW && canvasMove) {
+            if (data.hover == HoverState.DRAW && canvasMove) {
 
                 
 
@@ -85,10 +102,10 @@ namespace VRPen {
                     firstCanvasMoveInput = false;
                 }
                 else {
-                    float zBefore = displayObj.transform.localPosition.z;
+                    float zBefore = data.display.transform.localPosition.z;
                     Vector3 delta = data.hit.point - lastCanvasMovePos;
-                    displayObj.transform.position += delta;
-                    displayObj.transform.localPosition = new Vector3(displayObj.transform.localPosition.x, displayObj.transform.localPosition.y, zBefore);
+                    data.display.transform.position += delta;
+                    data.display.transform.localPosition = new Vector3(data.display.transform.localPosition.x, data.display.transform.localPosition.y, zBefore);
                 }
                 
                 lastCanvasMovePos = data.hit.point;
@@ -102,11 +119,8 @@ namespace VRPen {
             //pressure
             data.pressure = pressure;
 
-            //find display (touch input assumes theres only 1 display, so we can just set it as  public param)
-            data.display = display;
-            
-            
-            
+
+
 
             //return
             return data;
